@@ -32,6 +32,10 @@ add = "store"
 plural = "designs"
 store = "design"
 aspects = ["core", "links", "status", "supersede", "sources"]
+label = "Design decisions"
+requires_body = true
+extract = "design"
+report_taint = true
 
 [design.fields]
 status = "VARCHAR"
@@ -44,6 +48,9 @@ body_hash = "VARCHAR"
 plural = "plans"
 store = "plans"
 aspects = ["core", "links", "status", "progress", "ordered", "sources"]
+label = "Plan items"
+extract = "plan"
+export_with_deps = true
 
 [plan.fields]
 status = "VARCHAR"
@@ -53,6 +60,29 @@ reviewed = "VARCHAR"
 created = "VARCHAR"
 updated = "VARCHAR"
 body_hash = "VARCHAR"
+
+# A graph facet's statuses each play an engine ROLE (crib/facets.py ROLES);
+# `transitions` are verbs that move an item to a status; `edges` are the
+# default link kind toward each target facet ("*" for the rest).
+[design.status]
+values = { proposed = "gated", active = "open", superseded = "retired" }
+initial = "active"
+transitions = { promote = "active" }
+
+[design.edges]
+plan = "follows"
+design = "rests_on"
+"*" = "informed_by"
+
+[plan.status]
+values = { todo = "open", "in-progress" = "claimed", parked = "paused", declined = "dropped", done = "done", verified = "done" }
+initial = "todo"
+transitions = { park = "parked", decline = "declined" }
+
+[plan.edges]
+plan = "follows"
+design = "rests_on"
+"*" = "informed_by"
 
 [learning]
 plural = "learnings"

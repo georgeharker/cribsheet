@@ -175,13 +175,15 @@ def _as_int(value: Any) -> int | None:
 #   follows      ordering: blocked until the target is done
 #   rests_on     grounding: blocked while the target is stale (or proposed)
 #   informed_by  context: checked for change, never blocks
-DEP_KINDS = ("follows", "rests_on", "informed_by")
+DEP_KINDS = facets.LINK_KINDS
 
 
-def dep_kind_default(target_kind: str | None) -> str:
-    """The kind a dependency gets when none is written: a plan target is
-    ordering, a decision is grounding, anything else (a note) is context."""
-    return {"plan": "follows", "design": "rests_on"}.get(target_kind or "", "informed_by")
+def dep_kind_default(target_kind: str | None, source_kind: str | None = None) -> str:
+    """The kind a dependency gets when none is written: the source facet's
+    default toward the target's (crib.facets.link_default) — for the built-ins,
+    a plan target is ordering, a decision is grounding, anything else (a note)
+    is context."""
+    return facets.link_default(source_kind, target_kind)
 
 
 def frontmatter_deps(fm: dict[str, Any]) -> tuple[list[str], dict[str, str]]:

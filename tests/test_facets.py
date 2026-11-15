@@ -273,3 +273,106 @@ def test_the_starter_declares_nothing_until_an_example_is_uncommented():
         "timeout": "int",
         "next_run": "date",
     }
+
+
+# ── the graph spec: statuses play engine roles (facet registry step 5) ───────
+
+
+def test_the_builtin_graph_specs_reproduce_the_old_constants():
+    from crib import designs
+
+    plan, design = facets.by_noun("plan"), facets.by_noun("design")
+    assert designs.PLAN_STATUSES == (
+        "todo",
+        "in-progress",
+        "parked",
+        "declined",
+        "done",
+        "verified",
+    )
+    assert designs.DESIGN_STATUSES == ("proposed", "active", "superseded")
+    assert designs.DONE_STATUSES == ("done", "verified")
+    assert (plan.initial, design.initial) == ("todo", "active")
+    assert plan.with_role("claimed") == ("in-progress",)
+    assert plan.with_role("paused", "dropped") == ("parked", "declined")
+    assert design.with_role("gated") == ("proposed",)
+    assert design.with_role("retired") == ("superseded",)
+    assert dict(plan.transitions) == {"park": "parked", "decline": "declined"}
+    assert dict(design.transitions) == {"promote": "active"}
+    assert (design.label, plan.label) == ("Design decisions", "Plan items")
+    assert design.requires_body and not plan.requires_body
+    assert design.report_taint and not plan.report_taint
+    assert plan.export_with_deps and not design.export_with_deps
+    assert (design.extract, plan.extract) == ("design", "plan")
+
+
+def test_default_link_kinds_follow_the_source_facets_edges():
+    from crib.items import dep_kind_default
+
+    for target, kind in (
+        ("plan", "follows"),
+        ("design", "rests_on"),
+        ("note", "informed_by"),
+        (None, "informed_by"),
+    ):
+        assert dep_kind_default(target) == kind
+        assert dep_kind_default(target, "plan") == kind
+        assert dep_kind_default(target, "design") == kind
+
+
+_GRAPH = {
+    "plural": "incidents",
+    "aspects": ["links", "status", "progress"],
+    "status": {
+        "values": {
+            "open": "open",
+            "mitigated": "claimed",
+            "resolved": "done",
+            "wontfix": "dropped",
+        },
+        "initial": "open",
+        "transitions": {"resolve": "resolved"},
+    },
+    "edges": {"plan": "follows", "*": "informed_by"},
+}
+
+
+def test_a_declared_graph_spec_parses():
+    s = parse("incident", _GRAPH)
+    assert s.role("mitigated") == "claimed" and s.with_role("done") == ("resolved",)
+    assert s.initial == "open" and dict(s.transitions) == {"resolve": "resolved"}
+    assert facets.to_toml([s]) and load(facets.to_toml([s])) == (s,)
+
+
+@pytest.mark.parametrize(
+    ("patch", "match"),
+    [
+        ({"status": {"values": {"open": "busy"}}}, "unknown status roles"),
+        ({"status": {"values": {"open": "open"}, "initial": "nope"}}, "initial status"),
+        (
+            {
+                "status": {
+                    "values": {"open": "open", "x": "done"},
+                    "transitions": {"go": "gone"},
+                }
+            },
+            "not one of its statuses",
+        ),
+        (
+            {"status": {"values": {"open": "open"}}},
+            "progress aspect needs a status with role done",
+        ),
+        ({"edges": {"plan": "blocks"}}, "link kind"),
+        ({"aspects": ["links", "progress"]}, "needs \\['status'\\]"),
+    ],
+)
+def test_a_bad_graph_spec_is_refused(patch, match):
+    with pytest.raises(FacetSpecError, match=match):
+        parse("incident", {**_GRAPH, **patch})
+
+
+def test_status_and_edges_need_their_aspects():
+    with pytest.raises(FacetSpecError, match="needs the status aspect"):
+        parse("t", {"plural": "ts", "status": {"values": {"a": "open"}}})
+    with pytest.raises(FacetSpecError, match="needs the links aspect"):
+        parse("t", {"plural": "ts", "edges": {"*": "informed_by"}})

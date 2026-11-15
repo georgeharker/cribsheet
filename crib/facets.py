@@ -43,6 +43,22 @@ ASPECTS: Mapping[str, frozenset[str]] = MappingProxyType(
     }
 )
 
+# The link kinds (what a dependency MEANS; the engine gives each its gating):
+# follows (ordering: waits until done), rests_on (grounding: blocked while
+# its target is gated or stale), informed_by (context: never blocks).
+LINK_KINDS = ("follows", "rests_on", "informed_by")
+
+# The roles a graph facet's statuses play (the engine implements each):
+#   open     live; may be the initial status
+#   claimed  someone is on it: listed first in next
+#   gated    blessed by nobody yet: its changes taint nothing, and what
+#            rests_on it is blocked
+#   paused   carries a revisit trigger; visible, never "pick me"
+#   dropped  carries a revisit trigger; satisfies nothing, hidden by default
+#   done     satisfies follows; a moved cited source gives `revisit`
+#   retired  superseded: dependents go stale (dep-superseded)
+ROLES = ("open", "claimed", "gated", "paused", "dropped", "done", "retired")
+
 # The store column types a facet field may have.
 FIELD_TYPES = frozenset({"VARCHAR", "VARCHAR[]", "BIGINT", "DOUBLE", "BOOLEAN", "JSON"})
 
@@ -139,7 +155,9 @@ RESERVED_NAMES = frozenset(
 HOME = "note"
 
 _KEYS = frozenset(
-    {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable"}
+    {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
+     "status", "edges", "label", "requires_body", "extract", "report_taint",
+     "export_with_deps"}
 )
 
 
@@ -166,6 +184,30 @@ class FacetSpec:
     # Canonical verbs a declared facet turned off: never registered, no CLI
     # subcommand, in no tool set.
     disabled: frozenset[str] = frozenset()
+    # The status aspect: each status name's role (in order), the initial one,
+    # and the transition verbs (verb -> status).
+    statuses: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    initial: str | None = None
+    transitions: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    # The links aspect: the default link kind toward each target facet ("*").
+    edges: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    label: str | None = None  # how a listing of these items is headed
+    requires_body: bool = False  # an item must say something (a decision)
+    extract: str | None = None  # the import procedure's prompt (design | plan)
+    # Its staleness is REPORTED (a `tainted` marker on hits and exports, rows in
+    # `check`, a next-step hint), not only felt through blocking (decisions).
+    report_taint: bool = False
+    # An export includes the items its own items depend on (a plan export
+    # carries the decisions it rests on).
+    export_with_deps: bool = False
+
+    def role(self, status: str | None) -> str | None:
+        """The role `status` plays, or None (not one of this facet's)."""
+        return self.statuses.get(status or "")
+
+    def with_role(self, *roles: str) -> tuple[str, ...]:
+        """This facet's statuses playing any of `roles`, in declared order."""
+        return tuple(s for s, r in self.statuses.items() if r in roles)
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -272,8 +314,67 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         verb_names=MappingProxyType(dict(verbs)),
         params=MappingProxyType(params),
         disabled=frozenset(str(v) for v in disable),
+        **_graph_keys(noun, raw, have),
         builtin=builtin,
     )
+
+
+def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, Any]:
+    """A spec's status / edges / label keys, checked against its aspects."""
+    out: dict[str, Any] = {}
+    st = raw.get("status")
+    if st is not None and "status" not in have:
+        raise FacetSpecError(f"facet {noun!r}: a status table needs the status aspect")
+    if "status" in have:
+        if not isinstance(st, dict) or not isinstance(st.get("values"), dict) or not st["values"]:
+            raise FacetSpecError(
+                f"facet {noun!r}: the status aspect needs [{noun}.status] values = "
+                "{status = role, ...}")
+        if bad := set(st) - {"values", "initial", "transitions"}:
+            raise FacetSpecError(f"facet {noun!r}: unknown status keys {sorted(bad)}")
+        values = {str(k): str(v) for k, v in st["values"].items()}
+        if unknown := sorted(set(values.values()) - set(ROLES)):
+            raise FacetSpecError(
+                f"facet {noun!r}: unknown status roles {unknown} (roles: {list(ROLES)})")
+        initial = st.get("initial") or next(iter(values))
+        if initial not in values:
+            raise FacetSpecError(f"facet {noun!r}: initial status {initial!r} isn't one of its statuses")
+        transitions = st.get("transitions") or {}
+        if not isinstance(transitions, dict):
+            raise FacetSpecError(f"facet {noun!r}: transitions must be a table of verb = status")
+        for verb, to in transitions.items():
+            _ident(verb, f"facet {noun!r}: transition verb")
+            if to not in values:
+                raise FacetSpecError(
+                    f"facet {noun!r}: transition {verb!r} goes to {to!r}, not one of its statuses")
+        if "progress" in have and "done" not in values.values():
+            raise FacetSpecError(f"facet {noun!r}: the progress aspect needs a status with role done")
+        if "supersede" in have and "retired" not in values.values():
+            raise FacetSpecError(f"facet {noun!r}: the supersede aspect needs a status with role retired")
+        out.update(statuses=MappingProxyType(values), initial=initial,
+                   transitions=MappingProxyType(dict(transitions)))
+    edges = raw.get("edges")
+    if edges is not None:
+        if "links" not in have:
+            raise FacetSpecError(f"facet {noun!r}: an edges table needs the links aspect")
+        if not isinstance(edges, dict) or not all(v in LINK_KINDS for v in edges.values()):
+            raise FacetSpecError(
+                f"facet {noun!r}: edges are target = link kind (one of {list(LINK_KINDS)})")
+        out["edges"] = MappingProxyType({str(k): str(v) for k, v in edges.items()})
+    if (label := raw.get("label")) is not None:
+        out["label"] = str(label)
+    if raw.get("requires_body"):
+        out["requires_body"] = True
+    for key in ("report_taint", "export_with_deps"):
+        if raw.get(key):
+            if "links" not in have:
+                raise FacetSpecError(f"facet {noun!r}: {key} needs the links aspect")
+            out[key] = True
+    if (ex := raw.get("extract")) is not None:
+        if ex not in ("design", "plan"):
+            raise FacetSpecError(f"facet {noun!r}: extract is design or plan, not {ex!r}")
+        out["extract"] = ex
+    return out
 
 
 def check(specs: Iterable[FacetSpec]) -> tuple[FacetSpec, ...]:
@@ -411,6 +512,15 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"legacy_stores = {arr(s.legacy_stores)}")
         if s.disabled:
             out.append(f"disable = {arr(sorted(s.disabled))}")
+        if s.label:
+            out.append(f"label = {q(s.label)}")
+        if s.requires_body:
+            out.append("requires_body = true")
+        if s.extract:
+            out.append(f"extract = {q(s.extract)}")
+        for key in ("report_taint", "export_with_deps"):
+            if getattr(s, key):
+                out.append(f"{key} = true")
         own = dict(s.params) if s.params else {
             n: t for n, t in s.fields.items() if n not in brought}
         if own:
@@ -419,6 +529,18 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
         if s.verb_names:
             out.append(f"\n[{s.noun}.verbs]")
             out += [f"{v} = {q(n)}" for v, n in s.verb_names.items()]
+        if s.statuses:
+            def inline(m: Mapping[str, str]) -> str:
+                return "{ " + ", ".join(f"{q(k)} = {q(v)}" for k, v in m.items()) + " }"
+
+            out.append(f"\n[{s.noun}.status]")
+            out.append(f"values = {inline(s.statuses)}")
+            out.append(f"initial = {q(s.initial or '')}")
+            if s.transitions:
+                out.append(f"transitions = {inline(s.transitions)}")
+        if s.edges:
+            out.append(f"\n[{s.noun}.edges]")
+            out += [f"{q(t)} = {q(k)}" for t, k in s.edges.items()]
         out.append("")
     return "\n".join(out)
 
@@ -475,6 +597,20 @@ def starter() -> str:
     nothing until an example is uncommented."""
     ref = "\n".join(f"# {line}" if line else "#" for line in to_toml(BUILTINS).splitlines())
     return STARTER + ref + "\n"
+
+
+# The built-in graph facets' shared default link kinds: what a link means
+# when its SOURCE isn't known (and the rule every built-in source follows).
+_DEFAULT_EDGES = MappingProxyType(
+    {"plan": "follows", "design": "rests_on", "*": "informed_by"})
+
+
+def link_default(source: str | None, target: str | None) -> str:
+    """The link kind a dependency gets when none is written: the source facet's
+    `edges` table, by target facet (`"*"` for the rest)."""
+    spec = _BY_NOUN.get(source or "")
+    table = spec.edges if spec is not None and spec.edges else _DEFAULT_EDGES
+    return table.get(target or "") or table.get("*") or "informed_by"
 
 
 def get(noun: str | None) -> FacetSpec | None:
