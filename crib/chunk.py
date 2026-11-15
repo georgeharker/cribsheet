@@ -7,6 +7,7 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import NamedTuple
 
+from . import facets
 from .sources import SRC_PREFIX
 from .util import sha1_hex
 
@@ -24,8 +25,8 @@ CHUNK_SCHEMA_VERSION = 3
 
 # Which kind of item a chunk belongs to, from the pillar store it was indexed
 # into. Data says `kind` (singular); the pillar directories keep their names.
-PILLAR_KIND = {"notes": "note", "design": "design", "plans": "plan",
-               "learnings": "learning"}
+# (The facet registry, crib.facets, is the list of pillars.)
+PILLAR_KIND = {spec.store: spec.noun for spec in facets.FACETS}
 KIND_PILLAR = {kind: pillar for pillar, kind in PILLAR_KIND.items()} | {"doc": "notes"}
 
 

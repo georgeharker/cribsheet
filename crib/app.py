@@ -21,7 +21,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
-from . import __version__, claudemem, notes
+from . import __version__, claudemem, facets, notes
 from .chunk import (
     CHUNK_SCHEMA_VERSION,
     kind_of,
@@ -43,7 +43,14 @@ from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
-from .notestore import DESIGN_SPEC, LEARNINGS_SPEC, PLANS_SPEC, NoteStore
+from .notestore import (
+    DESIGN_SPEC,
+    LEARNINGS_SPEC,
+    NOTES_SPEC,
+    PLANS_SPEC,
+    STORE_SPECS,
+    NoteStore,
+)
 from .paths import Paths, ProjectPathResolver, ProjectPaths, check_project_name, confine
 from .project_services import ProjectServices
 from .refs import Refs
@@ -213,25 +220,18 @@ class Crib:
         # over the SAME shared backends (vector store / IndexEngine / ring /
         # resolver) — the pillars differ only by their StoreSpec. Crib keeps
         # delegators for the notes pillar (below); the facet layers own theirs.
-        self.notestore = NoteStore(
-            paths, store, self.index, self.versions, self.project_paths
-        )
-        self.designstore = NoteStore(
-            paths, store, self.index, self.versions, self.project_paths, DESIGN_SPEC
-        )
-        self.planstore = NoteStore(
-            paths, store, self.index, self.versions, self.project_paths, PLANS_SPEC
-        )
-        self.learningstore = NoteStore(
-            paths, store, self.index, self.versions, self.project_paths, LEARNINGS_SPEC
-        )
-        # Routing table for relpath-first entry points (the watcher, migration).
+        # One per facet in the registry (crib.facets), by store name: the
+        # routing table for relpath-first entry points (the watcher, migration).
         self.pillars: dict[str, NoteStore] = {
-            "notes": self.notestore,
-            "design": self.designstore,
-            "plans": self.planstore,
-            "learnings": self.learningstore,
+            spec.name: NoteStore(
+                paths, store, self.index, self.versions, self.project_paths, spec
+            )
+            for spec in STORE_SPECS.values()
         }
+        self.notestore = self.pillars[NOTES_SPEC.name]
+        self.designstore = self.pillars[DESIGN_SPEC.name]
+        self.planstore = self.pillars[PLANS_SPEC.name]
+        self.learningstore = self.pillars[LEARNINGS_SPEC.name]
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None  # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
@@ -4624,8 +4624,7 @@ class Crib:
         return diagnose(self, self.resolve_project(project, cwd))
 
     # The pillars one cross-kind lookup searches, as (kind, store) pairs.
-    _LOOKUP_PILLARS = (("note", "notes"), ("design", "design"), ("plan", "plans"),
-                       ("learning", "learnings"))
+    _LOOKUP_PILLARS = tuple((s.noun, s.store) for s in facets.FACETS)
 
     def lookup_all(
         self,

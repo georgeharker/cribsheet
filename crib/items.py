@@ -23,6 +23,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from . import facets
 from .util import sha1_hex
 
 # How much of the body the body vector sees. The embedder truncates at its own
@@ -34,35 +35,14 @@ BODY_CHARS = 2000
 # missing from frontmatter. A JSON field holds a structured frontmatter value
 # (as JSON text). `body_hash` is the identity of the prose (`prose_hash`), what
 # a dependent's `checked` records: the design/plan graph is built from these.
+# The pillar facets' fields come from their specs (crib.facets); the kinds
+# below are crib's own, not pillars.
 FACETS: Mapping[str, Mapping[str, str]] = {
-    "note": {"source": "VARCHAR", "tags": "VARCHAR[]", "source_path": "VARCHAR"},
-    "design": {
-        "status": "VARCHAR",
-        "rank": "VARCHAR",
-        "created": "VARCHAR",
-        "updated": "VARCHAR",
-        "body_hash": "VARCHAR",
-    },
-    "plan": {
-        "status": "VARCHAR",
-        "rank": "VARCHAR",
-        "trigger": "JSON",
-        "reviewed": "VARCHAR",
-        "created": "VARCHAR",
-        "updated": "VARCHAR",
-        "body_hash": "VARCHAR",
-    },
+    **{spec.noun: spec.fields for spec in facets.FACETS},
     # The enrichments (crib.enrichments): a section's keyword_index terms for one
     # label, and one summary_index alias line (its vector is the item's).
     "keywords": {"label": "VARCHAR", "section_hash": "VARCHAR", "terms": "VARCHAR[]"},
     "summary": {"label": "VARCHAR", "section_hash": "VARCHAR", "n": "BIGINT"},
-    "learning": {
-        "symbol_ref": "VARCHAR",
-        "lang": "VARCHAR",
-        "file": "VARCHAR",
-        "signature": "VARCHAR",
-        "symbol_was": "VARCHAR[]",
-    },
     # A code symbol's record (crib.codeindex), minus its edges (calls,
     # called_by, references and membership live in crib_edges).
     "symbol": {

@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from . import facets
+
 if TYPE_CHECKING:
     from .app import Crib
 
@@ -145,7 +147,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
 def _duplicate_ids(crib: Crib, proj: str) -> list[dict[str, Any]]:
     """One id in several files (an interrupted move): from the chunk metadata."""
     out = []
-    for kind in ("note", "design", "plan", "learning"):
+    for kind in facets.nouns():
         by_id: dict[str, set[str]] = {}
         for m in crib.store.get_meta({"project": proj, "kind": kind}).values():
             if m.get("item_id") and m.get("relpath"):

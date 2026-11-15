@@ -11,13 +11,14 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
+from . import facets
 from .errors import CribUserError
 
 if TYPE_CHECKING:
     from .app import Crib
 
 KINDS = ("note", "design", "plan", "learning", "symbol")
-_PILLAR_KINDS = ("note", "design", "plan", "learning")
+_PILLAR_KINDS = facets.nouns()
 
 
 def _brief(it: Any) -> dict[str, Any]:

@@ -1,0 +1,62 @@
+# The built-in facets: crib's own pillars, declared the way any facet is
+# (see crib/facets.py). Shipped with the package. A system facets file may turn
+# a built-in off or extend it additively, never override it.
+#
+#   [<noun>]   the item kind and its verb prefix (note_*), singular
+#   plural     its tool-set name (`--tools notes:ro`)
+#   store      its pillar: the directory under a project's data root, and the
+#              index scope every chunk of it carries
+#   aspects    the engine behaviours it has; each brings its own data and verbs
+#   legacy_stores  older directory names whose content now belongs here
+#   [<noun>.fields]  its own typed store columns (crib_<noun>_meta), in order
+#
+# Table order is the registry's order: lookups and sweeps visit facets in it.
+
+[note]
+plural = "notes"
+store = "notes"
+aspects = ["core", "generated"]
+
+[note.fields]
+source = "VARCHAR"
+tags = "VARCHAR[]"
+source_path = "VARCHAR"
+
+[design]
+plural = "designs"
+store = "design"
+aspects = ["core", "links", "status", "supersede", "sources"]
+
+[design.fields]
+status = "VARCHAR"
+rank = "VARCHAR"
+created = "VARCHAR"
+updated = "VARCHAR"
+body_hash = "VARCHAR"
+
+[plan]
+plural = "plans"
+store = "plans"
+aspects = ["core", "links", "status", "progress", "ordered", "sources"]
+
+[plan.fields]
+status = "VARCHAR"
+rank = "VARCHAR"
+trigger = "JSON"
+reviewed = "VARCHAR"
+created = "VARCHAR"
+updated = "VARCHAR"
+body_hash = "VARCHAR"
+
+[learning]
+plural = "learnings"
+store = "learnings"
+aspects = ["core", "anchored"]
+legacy_stores = ["code-learnings"]
+
+[learning.fields]
+symbol_ref = "VARCHAR"
+lang = "VARCHAR"
+file = "VARCHAR"
+signature = "VARCHAR"
+symbol_was = "VARCHAR[]"

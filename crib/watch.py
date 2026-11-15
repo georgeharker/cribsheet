@@ -17,6 +17,7 @@ import time
 from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
 
+from . import facets
 from .util import spawn
 
 # `*.tmp` covers the dotted temp form too (fnmatch on the basename), so there is
@@ -53,7 +54,7 @@ def _ignored(path: Path) -> bool:
 # A legacy pre-migration path (`<p>/notes/design/x.md`) still decodes — through
 # the notes branch — so stragglers pulled in from an unmigrated machine keep
 # indexing until the reconcile self-heal moves them.
-PILLAR_SEGMENTS = ("notes", "design", "plans", "learnings")
+PILLAR_SEGMENTS = facets.stores()
 
 
 def decode(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:

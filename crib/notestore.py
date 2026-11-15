@@ -19,8 +19,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from . import facets, notes
 from .chunk import kind_of
-from . import notes
+from .facets import FacetSpec
 from .errors import CribUserError
 from .notes import Note, NoteParseError
 from .paths import check_relpath, confine
@@ -47,15 +48,23 @@ class StoreSpec:
     reserved: tuple[str, ...] = ()
 
 
-# Every facet pillar's content is refused on the note verbs — including the
-# legacy `code-learnings/` spelling, whose files the migration moves to the
-# `learnings/` sibling.
-NOTES_SPEC = StoreSpec("notes", "notes",
-                       reserved=("design/", "plans/",
-                                 "learnings/", "code-learnings/"))
-DESIGN_SPEC = StoreSpec("design", "design", facet="design")
-PLANS_SPEC = StoreSpec("plans", "plans", facet="plan")
-LEARNINGS_SPEC = StoreSpec("learnings", "learnings", facet="learning")
+def store_spec(facet: FacetSpec) -> StoreSpec:
+    """The note store for a facet. The home facet (notes) refuses every other
+    facet's store directory as a relpath prefix, including legacy spellings
+    (`code-learnings/`, whose files the migration moves to `learnings/`)."""
+    if facet.noun != facets.HOME:
+        return StoreSpec(facet.store, facet.store, facet=facet.noun)
+    others = [s for s in facets.FACETS if s.noun != facet.noun]
+    return StoreSpec(facet.store, facet.store, reserved=tuple(
+        f"{name}/" for s in others for name in (s.store, *s.legacy_stores)))
+
+
+# One per facet in the registry, by noun.
+STORE_SPECS = {spec.noun: store_spec(spec) for spec in facets.FACETS}
+NOTES_SPEC = STORE_SPECS["note"]
+DESIGN_SPEC = STORE_SPECS["design"]
+PLANS_SPEC = STORE_SPECS["plan"]
+LEARNINGS_SPEC = STORE_SPECS["learning"]
 
 
 class NoteStore:
