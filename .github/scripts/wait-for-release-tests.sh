@@ -15,7 +15,7 @@ while :; do
   run=$(gh api "repos/$REPO/actions/workflows/release.yml/runs?head_sha=$SHA&event=push&per_page=1" \
         --jq '.workflow_runs[0].id // empty')
   if [[ -n "$run" ]]; then
-    # the called ci.yml's jobs, named "tests / tests" and "tests / tests (3.14)"
+    # the called ci.yml's job(s), named "tests / tests"
     jobs=$(gh api "repos/$REPO/actions/runs/$run/jobs?per_page=100" \
            --jq '[.jobs[] | select(.name | startswith("tests"))]')
     total=$(jq 'length' <<<"$jobs")

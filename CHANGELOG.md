@@ -51,8 +51,8 @@ version has no heading here.
   shared store needs `--shared`. `crib facets show` lists every facet and its
   state; `--toml` exports the registry.
 - **Releases test themselves.** Every release tag runs the full suite once, on
-  the tagged commit and on Python 3.13 and 3.14; the PyPI and plugin releases
-  each publish only if it passed.
+  the tagged commit; the PyPI and plugin releases each publish only if it
+  passed.
 
 ### Changed
 
@@ -64,8 +64,11 @@ version has no heading here.
 
 ### Upgrading
 
-- Nothing to do: built-in facets and the store layout are unchanged, so the
-  first start rebuilds nothing. A facet you declare waits for
+- **Python 3.14 or newer is now required** (3.13 was the floor). On 3.13,
+  pip and uv keep you on 0.23.1; `uvx` and the plugins fetch a 3.14 for crib
+  on their own.
+- Otherwise nothing to do: built-in facets and the store layout are
+  unchanged, so the first start rebuilds nothing. A facet you declare waits for
   `crib facets sync --apply`, then a daemon restart.
 
 ## [0.23.1] - 2026-11-13

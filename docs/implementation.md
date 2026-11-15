@@ -282,7 +282,7 @@ Found while writing this map; none are bugs, all are friction.
    the tool/method surface, not help it.
 5. **~~Doc-glob asymmetry.~~ ✓ Resolved (2026-07-07).** The watcher now filters
    doc-extension events by the project's `.crib` `docs:` globs (`_matches_doc_globs`,
-   `full_match` mirroring the sweep's `Path.glob` — hence the py3.13 floor), so it
+   `full_match` mirroring the sweep's `Path.glob` — hence a 3.13+ floor; crib requires 3.14), so it
    and the sweep agree on which prose is a doc regardless of arrival. The sweep's
    prune is authoritative too: `index_docs_insitu` now `forget`s (index-only drop)
    anything under the prefix the globs no longer match — cleaning up docs that

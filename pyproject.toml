@@ -3,7 +3,7 @@ name = "cribsheet"
 version = "0.23.1"
 description = "Local MCP server: markdown memory with a DuckDB embedding index"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 # The real product needs all of these — they were "extras" only nominally (the
 # code degrades gracefully without each, but that's a testing property, not an
 # install profile). fastembed: the recommended embedder, ONNX (no torch).

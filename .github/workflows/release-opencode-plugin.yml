@@ -24,8 +24,7 @@ on:
     tags: ["v*"]
 
 jobs:
-  # The suite runs ONCE per release tag, in release.yml (on Python 3.13 and
-  # 3.14); this waits for its verdict on the tagged commit and publishes only
+  # The suite runs ONCE per release tag, in release.yml; this waits for its verdict on the tagged commit and publishes only
   # if it passed (.github/scripts/wait-for-release-tests.sh).
   tests:
     runs-on: ubuntu-latest
