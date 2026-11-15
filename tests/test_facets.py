@@ -228,3 +228,48 @@ def test_disable():
         parse("t", {"plural": "ts", "disable": ["move"]}, builtin=True)
     with pytest.raises(FacetSpecError, match="disables every one"):
         parse("t", {"plural": "ts", "disable": list(facets.verbs_for({"core"}, False))})
+
+
+def test_to_toml_round_trips_the_builtins():
+    again = load(facets.to_toml(facets.BUILTINS), builtin=True)
+    assert again == facets.BUILTINS
+
+
+def test_to_toml_writes_a_declared_facets_own_field_types():
+    s = parse(
+        "ticket",
+        {
+            "plural": "tickets",
+            "aspects": ["anchored"],
+            "fields": {"severity": "int", "due": "date"},
+            "disable": ["rehome"],
+        },
+    )
+    text = facets.to_toml([s])
+    assert 'severity = "int"' in text and 'due = "date"' in text
+    assert "symbol_ref" not in text  # the aspect brings it
+    assert load(text) == (s,)
+
+
+def test_the_starter_declares_nothing_until_an_example_is_uncommented():
+    text = facets.starter()
+    assert load(text) == ()
+    # uncomment the routine example: a valid declared facet
+    lines, on = [], False
+    for line in text.splitlines():
+        if line.startswith("# [routine"):
+            on = True
+        elif on and not line.startswith("#"):
+            on = False
+        if on and line.startswith("# "):
+            line = line[2:]
+        elif on and line == "#":
+            line = ""
+        lines.append(line)
+    (routine,) = load("\n".join(lines))
+    assert routine.noun == "routine" and routine.disabled == {"import"}
+    assert dict(routine.params) == {
+        "schedule": "str",
+        "timeout": "int",
+        "next_run": "date",
+    }

@@ -388,6 +388,95 @@ def fingerprint(spec: FacetSpec) -> str:
     )
 
 
+def to_toml(specs: Iterable[FacetSpec]) -> str:
+    """Specs as a facets file (the format `load` reads): a built-in's fields
+    in its store column types, a declared facet's in its own (int/str/date),
+    the aspects' own fields left out (they come with the aspect)."""
+
+    def q(v: str) -> str:
+        return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+    def arr(vs: Iterable[str]) -> str:
+        return "[" + ", ".join(q(v) for v in vs) + "]"
+
+    out: list[str] = []
+    for s in specs:
+        brought = {n for a in s.aspects for n in ASPECT_FIELDS.get(a, {})}
+        out.append(f"[{s.noun}]")
+        out.append(f"plural = {q(s.plural)}")
+        if s.store != s.plural:
+            out.append(f"store = {q(s.store)}")
+        out.append(f"aspects = {arr(['core', *sorted(s.aspects - {'core'})])}")
+        if s.legacy_stores:
+            out.append(f"legacy_stores = {arr(s.legacy_stores)}")
+        if s.disabled:
+            out.append(f"disable = {arr(sorted(s.disabled))}")
+        own = dict(s.params) if s.params else {
+            n: t for n, t in s.fields.items() if n not in brought}
+        if own:
+            out.append(f"\n[{s.noun}.fields]")
+            out += [f"{n} = {q(t)}" for n, t in own.items()]
+        if s.verb_names:
+            out.append(f"\n[{s.noun}.verbs]")
+            out += [f"{v} = {q(n)}" for v, n in s.verb_names.items()]
+        out.append("")
+    return "\n".join(out)
+
+
+STARTER = '''# crib's system facets file: declare your own kinds of item (facets).
+#
+# Every facet is a spec: a noun, a plural (its tool set), its aspects (what
+# the engine does for it) and its own typed fields. A declared facet gets the
+# verbs of its aspects as MCP tools and CLI commands: `<noun>_add`, `_read`,
+# `_lookup`, ... (`crib <noun> ...`).
+#
+#   aspects: core (always: add, read, edit, append, forget, lookup, apropos,
+#            locate, versions, restore, reindex, import, move), enriched
+#            (summaries/keywords: summarize, elaborate, distill), anchored
+#            (items about a code symbol, like learnings: add, edit, forget,
+#            read, reaffirm, migrate, report, rehome)
+#   fields:  int | str | date; set on add/edit, filtered on lookup and list
+#            (`where=[{field, op, value}]`: == != < <= > >= for int/date,
+#            == != re for str)
+#   disable: verbs this facet doesn't want
+#
+# After an edit here: `crib facets sync` shows what the store needs,
+# `crib facets sync --apply` does it, then restart the daemon. A repo maps a
+# facet onto a directory of its own in its `.crib`:
+#   facets:
+#     routine: {dir: workflows, glob: "*.md"}    # read_only?, ids: stamp|derived
+#
+# Uncomment an example to start.
+
+# [routine]
+# plural = "routines"
+# aspects = ["core", "enriched"]
+# disable = ["import"]
+#
+# [routine.fields]
+# schedule = "str"
+# timeout = "int"
+# next_run = "date"
+
+# [review]
+# plural = "reviews"
+# aspects = ["core", "anchored"]
+#
+# [review.fields]
+# changeset_id = "str"
+# severity = "int"
+
+# ── crib's built-in facets, for reference (they can't be changed here yet) ──
+'''
+
+
+def starter() -> str:
+    """The starter system facets file: everything commented, so it declares
+    nothing until an example is uncommented."""
+    ref = "\n".join(f"# {line}" if line else "#" for line in to_toml(BUILTINS).splitlines())
+    return STARTER + ref + "\n"
+
+
 def get(noun: str | None) -> FacetSpec | None:
     """The facet named `noun`, or None (a non-facet kind: doc, symbol, ...)."""
     return _BY_NOUN.get(noun or "")

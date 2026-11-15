@@ -1178,3 +1178,33 @@ def test_a_moved_mapping_rereads_the_new_dir_and_drops_the_old(tmp_path):
     assert out["before"] == ["a.md"]
     assert out["after"] == ["b.md"]
     assert out["unchanged"] == {}  # nothing changed: nothing written
+
+
+def test_crib_facets_init_and_show_toml(tmp_path):
+    out = _run(
+        tmp_path,
+        None,
+        """
+        import contextlib, io, os
+        from pathlib import Path
+        from crib.cli import main
+        def cli(*argv):
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = main(list(argv))
+            return code, buf.getvalue()
+        f = Path(os.environ["CRIB_FACETS_FILE"])
+        if f.exists():
+            f.unlink()
+        out["init"] = cli("facets", "init")
+        out["written"] = f.read_text().startswith("# crib's system facets file")
+        out["again"] = cli("facets", "init")
+        out["force"] = cli("facets", "init", "--force")[0]
+        out["toml"] = cli("facets", "show", "--toml")[1]
+    """,
+    )
+    assert out["init"][0] == 0 and "wrote" in out["init"][1]
+    assert out["written"] is True
+    assert out["again"][0] == 1 and "already exists" in out["again"][1]
+    assert out["force"] == 0
+    assert "[note]" in out["toml"] and '[note.verbs]\nadd = "store"' in out["toml"]

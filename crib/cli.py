@@ -2030,9 +2030,16 @@ def build_parser() -> argparse.ArgumentParser:
         "facets", help="the facet registry: show it, conform the store to it"
     )
     facetsub = n_facets.add_subparsers(dest="facets_cmd", required=True)
-    facetsub.add_parser(
+    _fsh = facetsub.add_parser(
         "show", help="every facet (built-in and declared) and its state in this store"
     )
+    _fsh.add_argument("--toml", action="store_true",
+                      help="print the effective registry as a facets file instead")
+    _fi = facetsub.add_parser(
+        "init", help="write a starter system facets file (examples, all commented)"
+    )
+    _fi.add_argument("--force", action="store_true",
+                     help="overwrite an existing facets file")
     _fs = facetsub.add_parser(
         "sync",
         help="conform the store to the declared facets (a plan unless --apply)",
@@ -4153,9 +4160,21 @@ def _user_errors() -> tuple[type[BaseException], ...]:
 
 
 def _facets_cmd(args: Any) -> int:
-    """`crib facets show|sync`: local, against this machine's store."""
+    """`crib facets show|init|sync`: local, against this machine's store."""
     from . import facets
 
+    if args.facets_cmd == "init":
+        f = facets.system_file()
+        if f.exists() and not args.force:
+            print(f"{f} already exists: edit it, or re-run with --force to replace it")
+            return 1
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(facets.starter())
+        print(f"wrote {f}: uncomment an example, then `crib facets sync --apply`")
+        return 0
+    if args.facets_cmd == "show" and args.toml:
+        print(facets.to_toml(facets.FACETS), end="")
+        return 0
     crib = Crib.open()
     plan = {p["facet"]: p for p in crib.store.facet_plan()}
     if args.facets_cmd == "show":
