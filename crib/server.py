@@ -13,6 +13,9 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from . import facets as _facets
+from . import verbs as _verbs
+
 from .app import Crib
 from .errors import CribUserError
 from .session import (
@@ -315,6 +318,8 @@ _POLICIES = ("read", "write", "source", "session", "none")
 # CLI's nouns use — plus `system`: status/ops/project_reconcile (the poll/meta
 # surface) always ride along, filtered or not, because polling a job needs no
 # code intelligence.
+# A declared facet (crib.facets) is its own set, named by its plural, after
+# crib's own.
 TOOL_SET_NAMES = (
     "notes",
     "designs",
@@ -324,6 +329,7 @@ TOOL_SET_NAMES = (
     "projects",
     "memory",
     "system",
+    *(s.plural for s in _facets.FACETS if not s.builtin),
 )
 _SET_FAMILIES = {
     "note": "notes",
@@ -333,6 +339,7 @@ _SET_FAMILIES = {
     "learning": "learnings",
     "project": "projects",
     "memory": "memory",
+    **{s.noun: s.plural for s in _facets.FACETS if not s.builtin},
 }
 TOOL_SETS: dict[str, str] = {}  # tool name -> set name, filled as tools register
 _EXPOSED: frozenset[str] | None = None  # None (the default) = every set
@@ -346,9 +353,15 @@ _RO: frozenset[str] = frozenset()  # the exposed-but-READ-ONLY sets
 # Derived-index maintenance (reindex/distill/elaborate/summarize/code_index/
 # code_convert) counts as WRITING: it costs generation and rewrites indexes.
 READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
-    "notes": frozenset(
-        {"note_lookup", "note_apropos", "note_read", "note_locate", "note_versions"}
-    ),
+    # every generated family's (notes', any declared facet's): its templates'
+    # read-only verbs (crib.verbs)
+    **{
+        s.plural: frozenset(
+            _verbs.tool_name(s, t.verb) for t in _verbs.verbs_of(s) if t.read_only
+        )
+        for s in _facets.FACETS
+        if _verbs.generated(s)
+    },
     "designs": frozenset(
         {
             "design_list",
@@ -744,8 +757,6 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
     # Every generated facet's verb family (crib.verbs): the notes tools, and
     # any declared facet's. Registered here, where the hand-written notes
     # tools were, through the same `crib_tool` policy declaration.
-    from . import verbs as _verbs
-
     _verbs.register(crib, crib_tool)
 
     @crib_tool("none")

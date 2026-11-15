@@ -295,3 +295,140 @@ def test_a_declared_facet_gets_cli_subcommands_paired_with_its_tools(tmp_path):
     assert out["rendered"] == out["hits"]  # --render goes to widget apropos
     assert out["note_hits"] == []
     assert out["help"] == "widget"
+
+
+def test_every_core_and_enriched_verb_works_on_a_declared_facet(tmp_path):
+    """Facet registry step 2e: the declared facet's own MCP tools, end to end,
+    through FastMCP's in-memory client; generation stubbed (no LLM)."""
+    src = tmp_path / "spec-sheet.md"
+    src.write_text("# Spec sheet\n\nimported flange tolerances\n")
+    out = _run(
+        tmp_path,
+        WIDGET,
+        f"""
+        import asyncio
+        from fastmcp import Client
+        from crib import generate
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+
+        async def fake(cfg, prompt, text, **kw):
+            return "COMPRESSED " + text.split()[0] if kw.get("purpose") == "distill" \\
+                else "sprocketology\\ntorqueish"
+        async def fake_structured(*a, **kw):
+            return None  # bulk declines: the per-section path runs
+        generate.agenerate = fake
+        generate.agenerate_structured = fake_structured
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+
+        async def main():
+            async with Client(mcp) as c:
+                async def call(name, **args):
+                    return (await c.call_tool(name, args)).data
+                a = await call("widget_add", content="sprocket torque spec", title="Sprocket",
+                               project="p")
+                rel = a["relpath"]
+                # a note with the SAME relpath, to prove the facet stays its own
+                await crib.store_note("sprocket torque spec", "Sprocket", "p")
+                out["add"] = rel
+                out["read"] = await call("widget_read", relpath=rel, project="p")
+                out["locate"] = await call("widget_locate", relpath=rel, project="p")
+                await call("widget_append", relpath=rel, content="appended line",
+                           heading="More", project="p")
+                await call("widget_edit", relpath=rel, new_content="edited sprocket body",
+                           project="p")
+                out["after_edit"] = await call("widget_read", relpath=rel, project="p")
+                hits = await call("widget_lookup", query="edited sprocket", project="p")
+                out["lookup"] = [(h["relpath"], h["store"]) for h in hits]
+                ap = await call("widget_apropos", query="edited sprocket", project="p")
+                out["apropos"] = [h["section"] for h in ap]
+                vs = await call("widget_versions", relpath=rel, project="p")
+                out["versions"] = len(vs)
+                await call("widget_restore", relpath=rel, version=vs[-1]["version"],
+                           project="p")
+                out["restored"] = await call("widget_read", relpath=rel, project="p")
+                out["reindex"] = (await call("widget_reindex", project="p"))["files"]
+                imp = await call("widget_import", paths=[{str(src)!r}], project="p")
+                out["import"] = imp["files"]
+                d = await call("widget_distill", relpath=rel, project="p")
+                out["distill"] = [d["changed"], await call("widget_read", relpath=rel,
+                                                           project="p")]
+                e = await call("widget_elaborate", label="keywords", relpath=rel,
+                               project="p")
+                s = await call("widget_summarize", label="summary", relpath=rel,
+                               project="p")
+                out["enrich"] = [e["written"], e["total"], s["written"], s["total"]]
+                m = await call("widget_move", relpath=rel, to_project="q",
+                               to_relpath="moved.md", project="p")
+                out["move"] = m["to"]
+                await call("widget_forget", relpath="moved.md", project="q")
+                out["gone"] = not (crib.pillars["widgets"].root("q") / "moved.md").exists()
+                out["note_intact"] = "sprocket torque spec" in crib.read_note(rel, "p")
+        asyncio.run(main())
+    """,
+    )
+    rel = out["add"]
+    assert "sprocket torque spec" in out["read"]
+    assert "/widgets/" in out["locate"]
+    assert "edited sprocket body" in out["after_edit"]
+    assert out["lookup"] and all(st == "widgets" for _, st in out["lookup"])
+    assert out["lookup"][0][0] == rel
+    assert any("edited sprocket body" in s for s in out["apropos"])
+    assert out["versions"] == 2  # prior versions: before the append, before the edit
+    assert "sprocket torque spec" in out["restored"]
+    assert out["reindex"] >= 1
+    assert out["import"] == ["imported/spec-sheet.md"]
+    assert out["distill"][0] is True and "COMPRESSED" in out["distill"][1]
+    # the facet's ONE section, not the same-named note's
+    assert out["enrich"] == [1, 1, 1, 1]
+    assert out["move"] == {"project": "q", "relpath": "moved.md"}
+    assert out["gone"] is True
+    assert out["note_intact"] is True  # nothing done to the widget touched the note
+
+
+def test_a_declared_facet_is_its_own_tool_set(tmp_path):
+    out = _run(
+        tmp_path,
+        WIDGET,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import READ_ONLY_TOOLS, TOOL_SET_NAMES, build_server, tool_set_of
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+
+        def names(tools):
+            return sorted(t.name for t in asyncio.run(build_server(crib, tools=tools).list_tools()))
+
+        out["sets"] = list(TOOL_SET_NAMES)
+        out["set_of"] = tool_set_of("widget_add")
+        out["ro"] = sorted(READ_ONLY_TOOLS["widgets"])
+        out["notes_only"] = [n for n in names(["notes"]) if n.startswith("widget_")]
+        out["widgets_ro"] = [n for n in names(["widgets:ro"]) if n.startswith("widget_")]
+        out["widgets"] = [n for n in names(["widgets"]) if n.startswith("widget_")]
+        out["no_notes"] = [n for n in names(["widgets"]) if n.startswith("note_")]
+    """,
+    )
+    assert out["sets"][-1] == "widgets"
+    assert out["set_of"] == "widgets"
+    ro = [
+        "widget_apropos",
+        "widget_locate",
+        "widget_lookup",
+        "widget_read",
+        "widget_versions",
+    ]
+    assert out["ro"] == ro
+    assert (
+        out["notes_only"] == []
+    )  # a declared facet never rides along with another set
+    assert out["widgets_ro"] == ro
+    assert len(out["widgets"]) == 16
+    assert out["no_notes"] == []
