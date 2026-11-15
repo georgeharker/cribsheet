@@ -856,7 +856,10 @@ def verbs_of(spec: FacetSpec) -> list[Verb]:
         out = [t for t in TEMPLATES if t.aspect == "anchored"]
     else:
         out = [t for t in TEMPLATES if t.aspect != "anchored" and spec.has(t.aspect)]
-    return [t for t in out if t.when is None or t.when(spec)]
+    return [
+        t for t in out
+        if (t.when is None or t.when(spec)) and t.verb not in spec.disabled
+    ]
 
 
 def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list[str]:

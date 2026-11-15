@@ -759,3 +759,41 @@ def test_field_queries_on_the_duckdb_store(tmp_path):
     assert out["both"] == [m["Gasket leak"]]
     assert out["lookup"] == sorted([m["Gasket leak"], m["Valve sticks"]])
     assert out["col"] == [["BIGINT"]]
+
+
+def test_a_declared_facets_disabled_verbs_are_absent_everywhere(tmp_path):
+    out = _run(
+        tmp_path,
+        """
+[memo]
+plural = "memos"
+aspects = ["enriched"]
+disable = ["import", "move", "distill"]
+""",
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.cli import VERBS, build_parser
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import READ_ONLY_TOOLS, build_server
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        out["tools"] = sorted(t.name for t in asyncio.run(build_server(crib).list_tools())
+                              if t.name.startswith("memo_"))
+        out["rows"] = sorted(k for k in VERBS if k.startswith("memo "))
+        try:
+            build_parser().parse_args(["memo", "move", "x.md"])
+            out["cli_move"] = True
+        except SystemExit:
+            out["cli_move"] = False
+        out["ro"] = sorted(READ_ONLY_TOOLS["memos"])
+    """,
+    )
+    gone = {"memo_import", "memo_move", "memo_distill"}
+    assert not gone & set(out["tools"])
+    assert "memo_add" in out["tools"] and "memo_summarize" in out["tools"]
+    assert len(out["tools"]) == 13  # 16 core + enriched, less 3
+    assert not {"memo import", "memo move", "memo distill"} & set(out["rows"])
+    assert out["cli_move"] is False
+    assert "memo_lookup" in out["ro"]

@@ -68,6 +68,36 @@ RESERVED_FIELDS = frozenset(
 
 # The fields an aspect brings: every facet with the aspect has them, first and
 # in this order, before its own. Anchoring writes the symbol an item is about.
+# The verbs each aspect brings (crib.verbs holds their templates; a test keeps
+# the two in step). An anchored facet's items are named by symbol, so its
+# family REPLACES the relpath-addressed core and enriched verbs. `list` comes
+# with declared fields, whatever the aspects.
+ASPECT_VERBS: Mapping[str, tuple[str, ...]] = MappingProxyType(
+    {
+        "core": (
+            "lookup", "apropos", "read", "locate", "add", "append", "edit", "forget",
+            "reindex", "versions", "restore", "import", "move",
+        ),
+        "enriched": ("distill", "elaborate", "summarize"),
+        "anchored": (
+            "add", "edit", "forget", "read", "reaffirm", "migrate", "report", "rehome",
+        ),
+    }
+)
+
+
+def verbs_for(aspects: Iterable[str], has_fields: bool) -> tuple[str, ...]:
+    """The canonical verbs a facet with these aspects (and declared fields, or
+    not) gets, before any it disables."""
+    have = set(aspects)
+    if "anchored" in have:
+        out = list(ASPECT_VERBS["anchored"])
+    else:
+        out = [v for a in ("core", "enriched") if a in have | {"core"}
+               for v in ASPECT_VERBS[a]]
+    return (*out, "list") if has_fields else tuple(out)
+
+
 ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
     {
         "anchored": MappingProxyType(
@@ -108,7 +138,9 @@ RESERVED_NAMES = frozenset(
 # store directory as a relpath prefix.
 HOME = "note"
 
-_KEYS = frozenset({"plural", "store", "aspects", "fields", "legacy_stores", "verbs"})
+_KEYS = frozenset(
+    {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable"}
+)
 
 
 class FacetSpecError(ValueError):
@@ -131,6 +163,9 @@ class FacetSpec:
     # A declared facet's own fields by their declared type (int | str | date):
     # each is a typed parameter on add/edit and a filter on lookup/list.
     params: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    # Canonical verbs a declared facet turned off: never registered, no CLI
+    # subcommand, in no tool set.
+    disabled: frozenset[str] = frozenset()
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -216,6 +251,17 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     for verb, name in verbs.items():
         _ident(verb, f"facet {noun!r}: verb")
         _ident(name, f"facet {noun!r}: name for verb {verb!r}")
+    disable = raw.get("disable", [])
+    if disable and builtin:
+        raise FacetSpecError(f"facet {noun!r}: a built-in facet's verbs can't be disabled")
+    if not isinstance(disable, list) or not all(isinstance(v, str) for v in disable):
+        raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
+    available = verbs_for(have, bool(params))
+    if bad := sorted(set(disable) - set(available)):
+        raise FacetSpecError(
+            f"facet {noun!r}: can't disable {bad}: its verbs are {list(available)}")
+    if not set(available) - set(disable):
+        raise FacetSpecError(f"facet {noun!r}: disables every one of its verbs")
     return FacetSpec(
         noun=noun,
         plural=plural,
@@ -225,6 +271,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         legacy_stores=tuple(legacy),
         verb_names=MappingProxyType(dict(verbs)),
         params=MappingProxyType(params),
+        disabled=frozenset(disable),
         builtin=builtin,
     )
 

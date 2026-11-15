@@ -179,3 +179,52 @@ def test_only_builtins_may_rename_verbs():
     s = parse("thing", {"plural": "things", "verbs": {"add": "store"}}, builtin=True)
     assert dict(s.verb_names) == {"add": "store"}
     assert dict(facets.by_noun("note").verb_names) == {"add": "store"}
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        {"plural": "as"},
+        {"plural": "bs", "aspects": ["enriched"]},
+        {"plural": "cs", "aspects": ["anchored"]},
+        {"plural": "ds", "fields": {"n": "int"}},
+        {"plural": "es", "aspects": ["anchored"], "fields": {"n": "str"}},
+        {"plural": "fs", "fields": {"n": "int"}, "disable": ["move", "list"]},
+    ],
+)
+def test_aspect_verbs_name_exactly_the_templates_a_facet_gets(raw):
+    from crib import verbs
+
+    s = parse("thing", raw)
+    want = set(facets.verbs_for(s.aspects, bool(s.params))) - s.disabled
+    assert {t.verb for t in verbs.verbs_of(s)} == want
+
+
+def test_aspect_verbs_match_the_builtins_generated_families():
+    from crib import verbs
+
+    for s in facets.FACETS:
+        if verbs.generated(s):
+            assert {t.verb for t in verbs.verbs_of(s)} == set(
+                facets.verbs_for(s.aspects, bool(s.params))
+            )
+
+
+def test_disable():
+    s = parse(
+        "t",
+        {
+            "plural": "ts",
+            "aspects": ["enriched"],
+            "disable": ["import", "move", "distill"],
+        },
+    )
+    assert s.disabled == {"import", "move", "distill"}
+    with pytest.raises(FacetSpecError, match="can't disable \\['reaffirm'\\]"):
+        parse("t", {"plural": "ts", "disable": ["reaffirm"]})  # not a core verb
+    with pytest.raises(FacetSpecError, match="can't disable \\['list'\\]"):
+        parse("t", {"plural": "ts", "disable": ["list"]})  # no fields, no list
+    with pytest.raises(FacetSpecError, match="built-in"):
+        parse("t", {"plural": "ts", "disable": ["move"]}, builtin=True)
+    with pytest.raises(FacetSpecError, match="disables every one"):
+        parse("t", {"plural": "ts", "disable": list(facets.verbs_for({"core"}, False))})
