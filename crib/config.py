@@ -497,13 +497,27 @@ class FacetMapping:
     indexed and searched but its verbs refuse to write; `ids` is how its items
     are identified: `stamp` writes an id into each file's frontmatter on first
     index (history survives renames), `derived` takes it from the relpath and
-    writes nothing."""
+    writes nothing.
+
+    A mapping with a `prefix` is ADDITIVE, not the facet's home: its files sit
+    beside the facet's own items under that relpath namespace. That is what a
+    repo's docs are: the notes facet mapped read-only, derived, under
+    `sources/<repo>/`, with `globs` repo-root-relative (`docs:` is shorthand
+    for exactly that mapping)."""
 
     noun: str
     dir: str
     glob: str = "**/*.md"
     read_only: bool = False
     ids: str = "stamp"
+    prefix: str | None = None
+    globs: tuple[str, ...] = ()
+
+    @property
+    def patterns(self) -> list[str]:
+        """Its globs relative to the repo root."""
+        rel = self.dir.strip("/")
+        return [g if rel in ("", ".") else f"{rel}/{g}" for g in (self.globs or (self.glob,))]
 
 
 @dataclass
@@ -534,7 +548,7 @@ class CribLink:
         m = self.facets.get(noun)
         if m is None or self.root is None:
             return None
-        return confine(self.root, m.dir)
+        return confine(self.root, m.dir) if m.dir not in ("", ".") else self.root
 
     @property
     def store_dir(self) -> Path | None:
@@ -562,7 +576,10 @@ class CribLink:
         Same treatment `.git`/`.versions` get, just declared rather than hardcoded.
         """
         try:
-            owned = [self.store_dir, *(self.facet_dir(n) for n in self.facets)]
+            # an exclusive mapping's dir is owned; a prefixed one (docs) sits
+            # beside the facet's own items and owns nothing
+            owned = [self.store_dir, *(self.facet_dir(n) for n, m in self.facets.items()
+                                       if m.prefix is None)]
             p = Path(path).resolve()
             # a mapped facet's dir is crib-owned the same way (its files are
             # that facet's items, never docs or code too)
@@ -572,9 +589,10 @@ class CribLink:
 
     @property
     def doc_patterns(self) -> list[str]:
-        """Globs for docs indexed IN-SITU. `docs:` is canonical; legacy `import:`
-        is honoured as a fallback (it used to drive the copy-in import)."""
-        return self.docs or self.imports
+        """Globs for docs indexed IN-SITU: the notes facet's prefixed mapping
+        (`docs:`, or `facets: {note: ...}`; legacy `import:` as a fallback)."""
+        m = self.facets.get("note")
+        return m.patterns if m is not None and m.prefix is not None else []
 
     @classmethod
     def find(cls, start: Path) -> "CribLink | None":
@@ -624,6 +642,11 @@ class CribLink:
             ),
         )
         link.facets = _facet_mappings(f, d, data.get("facets"))
+        if (globs := link.docs or link.imports) and "note" not in link.facets:
+            # `docs:` is shorthand for the notes facet's prefixed mapping
+            link.facets["note"] = _docs_mapping(d, tuple(globs))
+        elif globs:
+            _warn(f"{f}: `docs:` ignored — `facets.note` maps the docs")
         try:
             link.store_dir  # validate now, while we can name the file
         except ValueError as e:
@@ -654,6 +677,24 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
         if facet is None:
             _warn(f"{what} — no such facet ({', '.join(_facets.nouns())})")
             continue
+        if facet.noun == _facets.HOME and isinstance(spec, dict):
+            # notes take the docs form (read-only, derived, under sources/<repo>/)
+            if spec.get("read_only", True) is not True or spec.get("ids", "derived") != "derived":
+                _warn(f"{what} — notes are mapped read-only with derived ids (docs)")
+                continue
+            if bad := set(spec) - {"dir", "glob", "globs", "read_only", "ids"}:
+                _warn(f"{what} — unknown keys {sorted(bad)}")
+                continue
+            globs = spec.get("globs") or ([spec["glob"]] if spec.get("glob") else [])
+            m = _docs_mapping(root, tuple(_as_list(globs)) or ("**/*.md",),
+                              str(spec.get("dir") or "."))
+            try:
+                confine(root, m.dir) if m.dir not in ("", ".") else root
+            except ValueError as e:
+                _warn(f"{what} — {e}")
+                continue
+            out[m.noun] = m
+            continue
         if facet.builtin:
             _warn(f"{what} — a built-in facet can't be mapped yet")
             continue
@@ -676,6 +717,16 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
             continue
         out[m.noun] = m
     return out
+
+
+def _docs_mapping(root: Path, globs: tuple[str, ...], dir: str = ".") -> FacetMapping:
+    """A repo's docs as the notes facet's mapping: read-only, ids derived from
+    the relpath, under `sources/<repo>/` (the sources registry's prefix)."""
+    from . import facets as _facets
+    from .sources import SRC_PREFIX
+
+    return FacetMapping(_facets.HOME, dir, read_only=True, ids="derived",
+                        prefix=f"{SRC_PREFIX}{root.name}/", globs=globs)
 
 
 def _as_list(v: Any) -> list[str]:

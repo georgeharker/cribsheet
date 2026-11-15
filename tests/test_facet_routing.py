@@ -69,3 +69,71 @@ def test_import_and_reindex_use_the_facets_store(crib, tmp_path):
 def test_unknown_facet_is_refused(crib):
     with pytest.raises(KeyError, match="no facet"):
         crib.read_note("x.md", "p", facet="routine")
+
+
+# ── locations phase 2: `docs:` is the notes facet's prefixed mapping ──────────
+
+from crib.config import CribLink  # noqa: E402
+
+
+def _crib_file(tmp_path, text) -> CribLink:
+    (tmp_path / ".crib").write_text(text)
+    (tmp_path / "docs").mkdir(exist_ok=True)
+    (tmp_path / "docs" / "guide.md").write_text("# Guide\n")
+    (tmp_path / "src").mkdir(exist_ok=True)
+    (tmp_path / "src" / "main.py").write_text("x = 1\n")
+    link = CribLink.find(tmp_path)
+    assert link is not None
+    return link
+
+
+def test_docs_is_the_notes_prefixed_mapping(tmp_path):
+    link = _crib_file(
+        tmp_path, 'project: p\ndocs:\n  - "README.md"\n  - "docs/**/*.md"\n'
+    )
+    m = link.facets["note"]
+    assert (m.read_only, m.ids, m.prefix) == (
+        True,
+        "derived",
+        f"sources/{tmp_path.name}/",
+    )
+    assert link.doc_patterns == ["README.md", "docs/**/*.md"]
+
+
+def test_the_explicit_note_mapping_means_the_same_as_docs(tmp_path):
+    link = _crib_file(
+        tmp_path, "project: p\nfacets:\n  note: {dir: docs, glob: '**/*.md'}\n"
+    )
+    m = link.facets["note"]
+    assert (m.read_only, m.ids, m.prefix) == (
+        True,
+        "derived",
+        f"sources/{tmp_path.name}/",
+    )
+    assert link.doc_patterns == [
+        "docs/**/*.md"
+    ]  # repo-root-relative, as docs: globs are
+
+
+def test_a_docs_mapping_owns_nothing(tmp_path):
+    # its dir is the repo itself: owning it would hide every code file
+    link = _crib_file(tmp_path, 'project: p\ndocs: ["**/*.md"]\n')
+    assert not link.in_store(tmp_path / "src" / "main.py")
+    assert not link.in_store(tmp_path / "docs" / "guide.md")
+
+
+@pytest.mark.parametrize(
+    "spec", ["{dir: docs, read_only: false}", "{dir: docs, ids: stamp}"]
+)
+def test_notes_map_only_in_the_docs_form(tmp_path, spec, capsys):
+    link = _crib_file(tmp_path, f"project: p\nfacets:\n  note: {spec}\n")
+    assert "note" not in link.facets
+    assert "read-only with derived ids" in capsys.readouterr().err
+
+
+def test_docs_and_an_explicit_note_mapping_together_warn(tmp_path, capsys):
+    link = _crib_file(
+        tmp_path, 'project: p\ndocs: ["README.md"]\nfacets:\n  note: {dir: docs}\n'
+    )
+    assert link.doc_patterns == ["docs/**/*.md"]  # the explicit one wins
+    assert "`docs:` ignored" in capsys.readouterr().err

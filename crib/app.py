@@ -407,8 +407,8 @@ class Crib:
         want: dict[str, dict[str, Any]] = {}
         for noun, m in link.facets.items():
             root = link.facet_dir(noun)
-            if root is None:
-                continue
+            if root is None or m.prefix is not None:
+                continue  # a prefixed mapping (docs) is registered by its sweep
             want[noun] = {"root": portable_path(root, self.config.locations),
                           "glob": m.glob, "read_only": m.read_only, "ids": m.ids}
         pp = self.project_paths(proj)

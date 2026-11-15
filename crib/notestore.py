@@ -89,6 +89,23 @@ class NoteStore:
         in the stub), or None when its items live under the data root."""
         return self.project_paths(project).mappings.get(self.spec.segment)
 
+    def prefixed(self, project: str) -> list[FacetLocation]:
+        """This facet's ADDITIVE mapped locations in `project`, longest prefix
+        first: the notes facet's docs (`sources/<repo>/`, read-only, ids derived
+        from the relpath), from the sources registry the doc sweep keeps."""
+        from .paths import FacetLocation
+
+        if self.spec.name != "notes":
+            return []
+        roots = self.source_roots(project).all()
+        return [FacetLocation(root=Path(roots[p]), token=roots[p], read_only=True,
+                              ids="derived", prefix=p)
+                for p in sorted(roots, key=len, reverse=True)]
+
+    def _prefixed_at(self, project: str, relpath: str) -> FacetLocation | None:
+        return next((loc for loc in self.prefixed(project)
+                     if loc.prefix and relpath.startswith(loc.prefix)), None)
+
     def _policy(self, project: str) -> dict[str, Any]:
         """The index policy of this facet's location in `project` (see
         IndexEngine.index_file): a mapping's ids and read-only flag."""
@@ -178,10 +195,9 @@ class NoteStore:
         writers get the directory from `save_atomic`/`dir()`."""
         check_relpath(relpath, self.root(project))
         self._refuse_reserved(relpath)
-        if self.spec.name == "notes" and relpath.startswith(SRC_PREFIX):
-            src = self.source_roots(project).resolve(relpath)
-            if src is not None:
-                return src
+        if (loc := self._prefixed_at(project, relpath)) is not None:
+            assert loc.prefix is not None
+            return loc.root / relpath[len(loc.prefix):]
         return confine(self.root(project), relpath)
 
     def _refuse_reserved(self, relpath: str) -> None:
@@ -206,6 +222,8 @@ class NoteStore:
         repo, not to crib. Without this the note write verbs would stamp crib
         frontmatter into someone's README (`edit`) or delete it from their
         checkout (`forget`)."""
+        # the whole `sources/` namespace, registered or not: no relpath under it
+        # is ever crib's to write (a prefixed location is read-only by nature)
         if self.spec.name == "notes" and relpath.startswith(SRC_PREFIX):
             raise CribUserError(
                 f"cannot {verb} {relpath}: source files are indexed in place and "

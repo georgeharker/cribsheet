@@ -183,6 +183,9 @@ class FacetLocation:
     glob: str = "**/*.md"
     read_only: bool = False
     ids: str = "stamp"
+    # An ADDITIVE location (docs: `sources/<repo>/`): its files sit beside the
+    # facet's own items under this relpath namespace. None: the facet's home.
+    prefix: str | None = None
 
     @property
     def available(self) -> bool:
