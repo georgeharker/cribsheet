@@ -828,8 +828,31 @@ def _gd(verb: str, generic: Callable[[FacetSpec], str]):
     return describe
 
 
+# Which engine style a verb runs in, for a declared graph facet (a built-in
+# runs its own): the decision style (taint reported, check/tree, un-gating) or
+# the plan style (progress: status, next, review, ordering, pause, drop).
+_DESIGN_STYLE = frozenset({"check", "tree", "supersede", "promote"})
+_PLAN_STYLE = frozenset({"status", "next", "review", "review_apply", "move", "park",
+                         "decline"})
+
+
+def _style(f: FacetSpec, verb: str) -> str:
+    if f.builtin:
+        return f.noun
+    if verb in _DESIGN_STYLE:
+        return "design"
+    if verb in _PLAN_STYLE:
+        return "plan"
+    if verb == "add":
+        return "plan" if f.has("ordered") else "design"
+    return "design" if f.report_taint else "plan"
+
+
 def _call(crib: Crib, f: FacetSpec, verb: str):
-    return getattr(crib, f"{f.noun}_{verb}")
+    """The engine method for `verb` on facet `f`, bound to that facet."""
+    import functools
+
+    return functools.partial(getattr(crib, f"{_style(f, verb)}_{verb}"), facet=f.noun)
 
 
 def _g_read(crib, f):
@@ -1016,6 +1039,25 @@ def _g_add(crib, f):
 
         return ordered
 
+    if not f.with_role("gated"):  # nothing to propose: no import tier
+        async def plain(
+            title: str,
+            content: str,
+            deps: list[str] | None = None,
+            project: str | None = None,
+            sources: list[str] | None = None,
+            project_path: str | None = None,
+            follows: list[str] | None = None,
+            rests_on: list[str] | None = None,
+            informed_by: list[str] | None = None,
+        ) -> dict[str, Any]:
+            return await _call(crib, f, "add")(
+                title, content, deps, project, sources, False,
+                follows=follows, rests_on=rests_on, informed_by=informed_by,
+            )
+
+        return plain
+
     async def body(
         title: str,
         content: str,
@@ -1115,7 +1157,7 @@ def _t_ungate(verb: str):
         async def body(
             ref: str, project: str | None = None, project_path: str | None = None
         ) -> dict[str, Any]:
-            return await _call(crib, f, verb)(ref, project)
+            return await _call(crib, f, "promote")(ref, project, to=f.transitions[verb])
 
         return body
 
@@ -1131,7 +1173,8 @@ def _t_pause(verb: str):
             project: str | None = None,
             project_path: str | None = None,
         ) -> dict[str, Any]:
-            return await _call(crib, f, verb)(ref, project, triggers, why)
+            return await _call(crib, f, "park")(ref, project, triggers, why,
+                                                to=f.transitions[verb])
 
         return body
 
@@ -1147,7 +1190,8 @@ def _t_drop(verb: str):
             project: str | None = None,
             project_path: str | None = None,
         ) -> dict[str, Any]:
-            return await _call(crib, f, verb)(ref, why, project, triggers)
+            return await _call(crib, f, "decline")(ref, why, project, triggers,
+                                                   to=f.transitions[verb])
 
         return body
 
@@ -1244,7 +1288,7 @@ TEMPLATES: tuple[Verb, ...] = (
 def generated(spec: FacetSpec) -> bool:
     """Whether this facet's verbs come from the templates here. A declared
     graph facet gets none until its bodies are generic (registry step 7)."""
-    return not spec.has("links") or spec.builtin
+    return not spec.has("links") or spec.builtin or _graph(spec)
 
 
 def verbs_of(spec: FacetSpec) -> list[Verb]:

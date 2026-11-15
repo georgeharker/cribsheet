@@ -515,7 +515,7 @@ class Crib:
         # keeps its own items and stamps, refreshed here rather than at the
         # next graph read
         kind = kind_of(pillar.spec.name)
-        if kind in ("design", "plan"):
+        if kind in self.designs._stores:  # a graph facet keeps its own items
             await asyncio.to_thread(self.designs.refresh_files, project, kind, [relpath])
 
     async def _on_record_change(
@@ -990,7 +990,7 @@ class Crib:
         # doesn't depend on probably builds on it
         my_deps = {e.dst for e in me.edges
                    if e.kind == "dep" or e.kind in ("follows", "rests_on", "informed_by")}
-        noun = {"design": "design", "plan": "plan"}.get(kind)
+        noun = kind if kind in self.designs._stores else None
         rows: list[dict[str, Any]] = []
         for k in self._SIMILAR_KINDS:
             for it in self.store.items({"project": proj, "kind": k}).values():
@@ -4999,7 +4999,7 @@ class Crib:
         out: list[dict[str, Any]] = []
         for h in self._hits_from(proj, pool, len(pool), "section", 0.0):
             row = {"kind": kind_of_store.get(h.store, h.store), **dataclasses.asdict(h)}
-            if row["kind"] in ("design", "plan"):
+            if row["kind"] in self.designs._stores:
                 graph = graph or self.designs._load_graph(proj)
                 node = next((n for n in graph.of_kind(row["kind"])
                              if n.relpath == h.relpath), None)
@@ -5117,8 +5117,8 @@ class Crib:
         """Rewrite a decision through the facet; result names what it tainted.
         `sources`, when given, replaces its citations."""
         return await self.designs.design_edit(
-            self.resolve_project(project, cwd), ref, new_content, sources
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, new_content, sources, facet=facet
+        )
 
     async def design_append(
         self,
@@ -5130,8 +5130,8 @@ class Crib:
         """Extend a decision through the facet; result names what it tainted.
         `sources` ADDS citations (post-hoc doc wiring), never replaces."""
         return await self.designs.design_append(
-            self.resolve_project(project, cwd), ref, content, sources
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, content, sources, facet=facet
+        )
 
     def design_list(
         self, tainted: bool = False, project: str | None = None, cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
@@ -5202,8 +5202,8 @@ class Crib:
         kind: str | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Declare that a decision builds on another (cycle-checked)."""
         return await self.designs.design_dep_add(
-            self.resolve_project(project, cwd), ref, dep_ref, kind
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, dep_ref, kind, facet=facet
+        )
 
     async def design_dep_remove(
         self,
@@ -5213,8 +5213,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Drop a dependency edge between two decisions."""
         return await self.designs.design_dep_remove(
-            self.resolve_project(project, cwd), ref, dep_ref
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, dep_ref, facet=facet
+        )
 
     async def design_forget(
         self,
@@ -5224,8 +5224,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Delete a decision; blocks on dependents unless forced."""
         return await self.designs.design_forget(
-            self.resolve_project(project, cwd), ref, force
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, force, facet=facet
+        )
 
     def design_check(
         self,
@@ -5240,8 +5240,8 @@ class Crib:
         """Re-record a decision's dep hashes after re-reading it (the cheap,
         normal outcome of a taint — not error recovery)."""
         return await self.designs.design_reaffirm(
-            self.resolve_project(project, cwd), ref
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, facet=facet
+        )
 
     async def plan_reaffirm(
         self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
@@ -5251,11 +5251,11 @@ class Crib:
         return await self.designs.plan_reaffirm(self.resolve_project(project, cwd), ref, facet=facet)
 
     async def design_promote(
-        self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
+        self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "design", to: str | None = None) -> dict[str, Any]:
         """Promote an extracted decision: proposed → active, hashes seeded fresh."""
         return await self.designs.design_promote(
-            self.resolve_project(project, cwd), ref
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, facet=facet, to=to
+        )
 
     def design_import(
         self, relpath: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
@@ -5307,7 +5307,7 @@ class Crib:
                                    [text_by_source[s["source"]] for s in rows]),
                        dtype=np.float32)
         S = Q @ M.T
-        noun = "design" if kind == "design" else "plan"
+        noun = kind
         for row, sims in zip(rows, S):
             best = [j for j in np.argsort(-sims)[:3] if sims[j] >= self.SIMILAR_RELATED]
             row["closest"] = [{
@@ -5330,8 +5330,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
         """The dependency tree around a decision, taint-flagged."""
         return self.designs.design_tree(
-            self.resolve_project(project, cwd), ref, direction, depth
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, direction, depth, facet=facet
+        )
 
     def design_graph(
         self, project: str | None = None, cwd: Path | None = None, sources: bool = False, *, facet: str = "design") -> dict[str, Any]:
@@ -5358,8 +5358,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Soft-delete a decision and taint its dependents."""
         return await self.designs.design_supersede(
-            self.resolve_project(project, cwd), ref, by_ref
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, by_ref, facet=facet
+        )
 
     async def plan_add(
         self,
@@ -5400,8 +5400,8 @@ class Crib:
         self, ref: str, status: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Set a plan item's status (todo/in-progress/parked/done/verified)."""
         return await self.designs.plan_status(
-            self.resolve_project(project, cwd), ref, status
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, status, facet=facet
+        )
 
     async def plan_park(
         self,
@@ -5409,12 +5409,12 @@ class Crib:
         project: str | None = None,
         triggers: list[str] | None = None,
         why: str | None = None,
-        cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        cwd: Path | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
         """Park an item — not now, with a stated reason; optionally watching refs
         whose change SURFACES it (never auto-wakes it)."""
         return await self.designs.plan_park(
-            self.resolve_project(project, cwd), ref, triggers, why
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, triggers, why, facet=facet, to=to
+        )
 
     async def plan_decline(
         self,
@@ -5422,12 +5422,12 @@ class Crib:
         why: str | None = None,
         project: str | None = None,
         triggers: list[str] | None = None,
-        cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        cwd: Path | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
         """Decline an item — never scheduled, remembered with the why-not (a
         decline without the why-not is refused: the rationale IS the payload)."""
         return await self.designs.plan_decline(
-            self.resolve_project(project, cwd), ref, why, triggers
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, why, triggers, facet=facet, to=to
+        )
 
     async def plan_review(
         self, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
@@ -5448,8 +5448,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Apply a judged review batch, edge-aware, stamped `reviewed`."""
         return await self.designs.plan_review_apply(
-            self.resolve_project(project, cwd), batch or []
-        , facet=facet)
+            self.resolve_project(project, cwd), batch or [], facet=facet
+        )
 
     def plan_read(
         self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
@@ -5480,8 +5480,8 @@ class Crib:
         """Rewrite a plan item's body through the facet; result names what it
         tainted. `sources`, when given, replaces its citations."""
         return await self.designs.plan_edit(
-            self.resolve_project(project, cwd), ref, new_content, sources
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, new_content, sources, facet=facet
+        )
 
     async def plan_append(
         self,
@@ -5493,8 +5493,8 @@ class Crib:
         """Extend a plan item's body through the facet; result names what it
         tainted. `sources` ADDS citations, never replaces."""
         return await self.designs.plan_append(
-            self.resolve_project(project, cwd), ref, content, sources
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, content, sources, facet=facet
+        )
 
     async def plan_dep_add(
         self,
@@ -5505,8 +5505,8 @@ class Crib:
         kind: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Declare that a plan item depends on another (cycle-checked)."""
         return await self.designs.plan_dep_add(
-            self.resolve_project(project, cwd), ref, dep_ref, kind
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, dep_ref, kind, facet=facet
+        )
 
     async def plan_dep_remove(
         self,
@@ -5516,8 +5516,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Drop a must-precede edge between plan items."""
         return await self.designs.plan_dep_remove(
-            self.resolve_project(project, cwd), ref, dep_ref
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, dep_ref, facet=facet
+        )
 
     async def plan_forget(
         self,
@@ -5527,8 +5527,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Delete a plan item; blocks on dependents unless forced."""
         return await self.designs.plan_forget(
-            self.resolve_project(project, cwd), ref, force
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, force, facet=facet
+        )
 
     async def plan_move(
         self,
@@ -5539,8 +5539,8 @@ class Crib:
         cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Re-rank a plan item (deps untouched)."""
         return await self.designs.plan_move(
-            self.resolve_project(project, cwd), ref, after, before
-        , facet=facet)
+            self.resolve_project(project, cwd), ref, after, before, facet=facet
+        )
 
     def plan_list(
         self, all: bool = False, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:

@@ -1208,3 +1208,166 @@ def test_crib_facets_init_and_show_toml(tmp_path):
     assert out["again"][0] == 1 and "already exists" in out["again"][1]
     assert out["force"] == 0
     assert "[note]" in out["toml"] and '[note.verbs]\nadd = "store"' in out["toml"]
+
+
+# ── graph step 7: a declared graph facet with its own statuses ─────────────
+
+INCIDENT = """
+[incident]
+plural = "incidents"
+aspects = ["links", "status", "progress", "ordered"]
+
+[incident.status]
+values = { open = "open", mitigated = "claimed", resolved = "done", shelved = "paused", wontfix = "dropped" }
+initial = "open"
+transitions = { shelve = "shelved", wontfix = "wontfix" }
+
+[incident.edges]
+incident = "follows"
+"*" = "informed_by"
+"""
+
+
+def test_a_declared_graph_facet_runs_on_its_own_statuses(tmp_path):
+    out = _run(
+        tmp_path,
+        INCIDENT,
+        """
+        import asyncio
+        from fastmcp import Client
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+
+        async def main():
+            async with Client(mcp) as c:
+                out["tools"] = sorted(t.name for t in await c.list_tools()
+                                      if t.name.startswith("incident_"))
+
+                async def call(name, **args):
+                    return (await c.call_tool(name, args)).data
+
+                a = await call("incident_add", title="Database failover",
+                               content="the primary failed over to the replica", project="p")
+                b = await call("incident_add", title="Write the postmortem",
+                               content="after the failover is resolved", deps=[a["relpath"]],
+                               project="p")
+                c3 = await call("incident_add", title="Flaky alert",
+                                content="pages at 3am for nothing", project="p")
+                out["first"] = (await call("incident_read", ref=a["relpath"], project="p"))["status"]
+                out["dep_kind"] = b.get("dep_kinds")
+                nxt = await call("incident_next", project="p")
+                out["next_before"] = sorted(i["title"] for i in nxt["items"])
+                await call("incident_status", ref=a["relpath"], status="mitigated", project="p")
+                out["claimed"] = (await call("incident_next", project="p"))["claimed"]
+                done = await call("incident_status", ref=a["relpath"], status="resolved",
+                                  project="p")
+                out["unblocked"] = [u["title"] for u in done.get("unblocked", [])]
+                nxt = await call("incident_next", project="p")
+                out["next_after"] = sorted(i["title"] for i in nxt["items"])
+                s = await call("incident_shelve", ref=b["relpath"], why="after the quarter",
+                               project="p")
+                out["shelved"] = s["status"]
+                w = await call("incident_wontfix", ref=c3["relpath"], why="the alert is retired",
+                               project="p")
+                out["wontfix"] = w["status"]
+                try:
+                    await call("incident_status", ref=a["relpath"], status="closed", project="p")
+                    out["bad_status"] = None
+                except Exception as e:
+                    out["bad_status"] = str(e)
+                hits = await call("incident_lookup", query="failover replica", project="p")
+                out["lookup"] = [h["relpath"] for h in hits][:1]
+                lst = await call("incident_list", project="p", all=True)
+                out["list"] = sorted(lst) if isinstance(lst, dict) else str(type(lst))
+                out["a"] = a["relpath"]
+        asyncio.run(main())
+    """,
+    )
+    want = {
+        f"incident_{v}"
+        for v in (
+            "add",
+            "read",
+            "edit",
+            "append",
+            "lookup",
+            "list",
+            "forget",
+            "dep_add",
+            "dep_remove",
+            "reaffirm",
+            "graph",
+            "status",
+            "review",
+            "review_apply",
+            "next",
+            "move",
+            "shelve",
+            "wontfix",
+        )
+    }
+    assert (
+        set(out["tools"]) == want
+    )  # no check/tree/supersede/promote/extract: no such traits
+    assert out["first"] == "open"  # its own initial status
+    assert list((out["dep_kind"] or {}).values()) == ["follows"]  # its own edges table
+    assert out["next_before"] == [
+        "Database failover",
+        "Flaky alert",
+    ]  # the postmortem waits
+    assert out["claimed"] == 1  # mitigated plays `claimed`
+    assert out["unblocked"] == ["Write the postmortem"]  # resolved plays `done`
+    assert "Write the postmortem" in out["next_after"]
+    assert (
+        out["shelved"] == "shelved" and out["wontfix"] == "wontfix"
+    )  # free transition names
+    assert "use one of open, mitigated, resolved, shelved, wontfix" in out["bad_status"]
+    assert out["lookup"] == [out["a"]]
+
+
+def test_a_declared_graph_facet_conforms_and_has_a_cli(tmp_path):
+    """Its store table comes with its aspects (status, rank, dates, body hash,
+    trigger/review), it waits for `crib facets sync` like any declared facet,
+    and its CLI subcommands come from the same templates."""
+    pytest.importorskip("duckdb")
+    out = _run(
+        tmp_path,
+        INCIDENT,
+        _CONFORM_PRELUDE
+        + """
+        from crib.cli import VERBS, build_parser
+        from crib.items import FACETS
+        out["fields"] = list(FACETS["incident"])
+        crib = Crib.open()
+        out["pending"] = sorted(crib.pending_facets)
+        crib.close()
+        out["apply"] = cli("facets", "sync", "--apply")[0]
+        crib = Crib.open()
+        out["rows"] = sorted(k for k in VERBS if k.startswith("incident "))
+        p = build_parser()
+        out["parsed"] = p.parse_args(["incident", "shelve", "x.md", "--why", "later"]).why
+        r = asyncio.run(crib.plan_add("Database failover", "the primary failed", project="p",
+                                      facet="incident"))
+        out["status"] = crib.plan_read(r["relpath"], "p", facet="incident")["status"]
+    """,
+    )
+    assert out["fields"] == [
+        "status",
+        "rank",
+        "trigger",
+        "reviewed",
+        "created",
+        "updated",
+        "body_hash",
+    ]
+    assert out["pending"] == ["incident"] and out["apply"] == 0
+    assert "incident shelve" in out["rows"] and "incident next" in out["rows"]
+    assert "incident check" not in out["rows"]  # it doesn't report taint
+    assert out["parsed"] == "later"
+    assert out["status"] == "open"

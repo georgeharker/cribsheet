@@ -116,14 +116,16 @@ def format_docref(store: str, relpath: str) -> str:
 # docstring). It is a first-class status rather than a tag because it changes
 # behaviour — a proposed entry taints nothing until `design_promote`.
 DESIGN_STATUSES = tuple(_facets.by_noun("design").statuses)
-def deps_frontmatter(kinds: dict[str, str], graph: "Graph") -> dict[str, Any]:
+def deps_frontmatter(
+    kinds: dict[str, str], graph: "Graph", source: str | None = None
+) -> dict[str, Any]:
     """The frontmatter keys for `{dep id: kind}` (insertion order kept): default
     kinds under `deps:`, the rest under their kind's key. A kind key with no
     entries is None, which `_save` removes from the file."""
     out: dict[str, Any] = {"deps": [], **{k: [] for k in DEP_KINDS}}
     for dep_id, kind in kinds.items():
         target = graph.nodes.get(dep_id)
-        default = dep_kind_default(target.kind if target else None)
+        default = dep_kind_default(target.kind if target else None, source)
         out["deps" if kind == default else kind].append(dep_id)
     return {k: (v if v or k == "deps" else None) for k, v in out.items()}
 # `blocked` is DERIVED (any dep not done/verified), never stored — decision 6.
@@ -604,7 +606,7 @@ class Designs:
                 if dep not in node.dep_kinds:
                     target = graph.target(dep)
                     node.dep_kinds[dep] = dep_kind_default(
-                        target.kind if target else None)
+                        target.kind if target else None, node.kind)
         return graph
 
     def _resolve_dep(self, proj: str, graph: Graph, ref: str) -> Node:
@@ -1098,7 +1100,8 @@ class Designs:
             # found live when plan_park's triggers were first given in that
             # spelling and the pasteable ref failed to resolve).
             w = want
-            for legacy in (f"{_DIRS[n.kind]}/", f"{_DIRS[n.kind]}:"):
+            seg = _DIRS.get(n.kind) or _spec(n.kind).store  # its store's name
+            for legacy in (f"{seg}/", f"{seg}:"):
                 if w.startswith(legacy):
                     w = w[len(legacy) :]
             return n.relpath.lower() in (w, f"{w}.md")
@@ -1433,7 +1436,7 @@ class Designs:
                 n = self._resolve_dep(proj, graph, r)
                 if n.id not in dep_kinds:
                     dep_nodes.append(n)
-                dep_kinds[n.id] = how or dep_kind_default(n.kind)
+                dep_kinds[n.id] = how or dep_kind_default(n.kind, kind)
         relpath = self._unique_relpath(proj, kind, _slug(title))
         # A new note is born VERIFIED, decision OR plan item: it was written
         # against the deps as they read right now, so seeding `checked` says
@@ -1451,7 +1454,7 @@ class Designs:
             "title": title.strip(),
             "type": kind,
             "status": extra.pop("status", _spec(kind).initial),
-            **{k: v for k, v in deps_frontmatter(dep_kinds, graph).items()
+            **{k: v for k, v in deps_frontmatter(dep_kinds, graph, kind).items()
                if v is not None},
             **checked,
             **({"sources": _source_rows(cited)} if cited else {}),
@@ -1489,11 +1492,11 @@ class Designs:
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, kind)
         dep = self._resolve_dep(proj, graph, dep_ref)
-        how = how or dep_kind_default(dep.kind)
+        how = how or dep_kind_default(dep.kind, node.kind)
         if dep.id == node.id:
             raise CribUserError(f"{node.title!r} cannot depend on itself")
         if dep.id in node.deps:
-            current = node.dep_kinds.get(dep.id) or dep_kind_default(dep.kind)
+            current = node.dep_kinds.get(dep.id) or dep_kind_default(dep.kind, node.kind)
             if how == current:
                 return {
                     "project": proj,
@@ -1508,7 +1511,7 @@ class Designs:
             # Re-kinding an existing dep: what the edge MEANS changed, not what
             # it was checked against, so its `checked` record stays (`_save`
             # merges into the file's frontmatter) and nothing new is unverified.
-            fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph)
+            fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph, node.kind)
             out = await self._save(proj, node, fm)
             return {**out, "dep": dep.id, "dep_title": dep.title, "dep_kind": how,
                     "was_kind": current, "deps": list(node.deps)}
@@ -1528,7 +1531,7 @@ class Designs:
         # Deliberately does NOT seed `checked`: a newly declared dep starts
         # UNVERIFIED, so the node shows up in `check` — the nudge to actually
         # reconsider it against what it now depends on.
-        fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph)
+        fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph, node.kind)
         out = await self._save(proj, node, fm)
         return {**out, "dep": dep.id, "dep_title": dep.title, "dep_kind": how,
                 "deps": deps}
@@ -1550,7 +1553,7 @@ class Designs:
         recorded = self._note(proj, node).frontmatter.get("checked") or {}
         checked = {str(k): str(v) for k, v in recorded.items() if str(k) != dep_id}
         fm: dict[str, Any] = deps_frontmatter(
-            {d: k for d, k in node.dep_kinds.items() if d != dep_id}, graph)
+            {d: k for d, k in node.dep_kinds.items() if d != dep_id}, graph, node.kind)
         # NB: only a taint-reporting facet's `checked` is rewritten here (as it
         # always was); a plan item keeps a removed dep's record.
         if _spec(node.kind).report_taint:
@@ -2078,7 +2081,9 @@ class Designs:
             "missing_sources": missing_sources,
         }
 
-    async def design_promote(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
+    async def design_promote(
+        self, proj: str, ref: str, *, facet: str = "design", to: str | None = None
+    ) -> dict[str, Any]:
         """proposed → active: the human act that turns an EXTRACTED decision into
         settled ground others may build on.
 
@@ -2098,14 +2103,15 @@ class Designs:
             )
         checked, missing = self._recheck(graph, node)
         sources, missing_sources = self._recapture(proj, node)
-        fm: dict[str, Any] = {"status": "active", "checked": checked}
+        active = to or _spec(facet).transitions.get("promote") or _status_for(facet, "open")
+        fm: dict[str, Any] = {"status": active, "checked": checked}
         if node.sources:
             fm["sources"] = sources
         out = await self._save(proj, node, fm)
         dependents = [graph.nodes[d].brief() for d in graph.dependents.get(node.id, [])]
         return {
             **out,
-            "status": "active",
+            "status": active,
             "verified": sorted(checked),
             "missing": missing,
             "sources": [source_label(s) for s in sources],
@@ -2478,15 +2484,16 @@ class Designs:
         the passages it was done against. That is what clears a `revisit` flag —
         re-running `plan_status <ref> done` after re-reading a changed source is
         the plan-side `design_reaffirm`, and it needs no verb of its own."""
-        if status not in PLAN_STATUSES:
+        statuses = tuple(_spec(facet).statuses)
+        if status not in statuses:
             raise CribUserError(
-                f"unknown status {status!r}: use one of {', '.join(PLAN_STATUSES)} "
+                f"unknown status {status!r}: use one of {', '.join(statuses)} "
                 f"('blocked' is derived from deps, never set)"
             )
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
         warnings = []
-        if status in DONE_STATUSES:
+        if _spec(facet).role(status) == "done":
             open_deps = [
                 graph.nodes[d].title
                 for d in node.deps
@@ -2523,13 +2530,13 @@ class Designs:
             fm["sources"], missing_sources = self._recapture(proj, node)
         out = await self._save(proj, node, fm)
         unblocked = []
-        if status in DONE_STATUSES:
+        if _spec(facet).role(status) == "done":
             after = self._load_graph(proj)
             for row in self._rows(proj, after, after.of_kind(facet)):
                 if (
                     row["id"] in was_blocked
                     and not row["blocked"]
-                    and row["status"] not in DONE_STATUSES
+                    and _spec(facet).role(row["status"]) != "done"
                 ):
                     unblocked.append(
                         {
@@ -2587,7 +2594,7 @@ class Designs:
         proj: str,
         ref: str,
         triggers: list[str] | None = None,
-        why: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        why: str | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
         """Park an item — not now, with a stated reason; optionally watching refs
         whose CHANGE surfaces it for re-evaluation.
 
@@ -2604,8 +2611,8 @@ class Designs:
         deferral semantically searchable (`plan_lookup` hits carry it)."""
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
-        parked = _spec(node.kind).transitions["park"]  # the status `park` moves to
-        if node.status in DONE_STATUSES:
+        parked = to or _spec(node.kind).transitions["park"]  # the status it moves to
+        if _is(node, "done"):
             raise CribUserError(
                 f"{node.title!r} is {node.status} — that is not a deferral; "
                 "parking is for work not scheduled NOW"
@@ -2661,7 +2668,7 @@ class Designs:
         proj: str,
         ref: str,
         why: str | None = None,
-        triggers: list[str] | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        triggers: list[str] | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
         """Decline an item — never scheduled, REMEMBERED with the why-not.
 
         Terminal-with-rationale, the plan-facet sibling of `design_supersede`:
@@ -2682,8 +2689,8 @@ class Designs:
             )
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
-        declined = _spec(node.kind).transitions["decline"]  # the status `decline` moves to
-        if node.status in DONE_STATUSES:
+        declined = to or _spec(node.kind).transitions["decline"]  # the status it moves to
+        if _is(node, "done"):
             raise CribUserError(
                 f"{node.title!r} is {node.status} — the work happened; declining "
                 "is for ideas never scheduled, not for finished work"
@@ -3064,7 +3071,7 @@ class Designs:
         for dep_id in node.deps:
             dep = graph.target(dep_id)
             how = node.dep_kinds.get(dep_id) or dep_kind_default(
-                dep.kind if dep else None)
+                dep.kind if dep else None, node.kind)
             if dep is None:
                 (note_deps if dep_id in note_ids else missing).append(dep_id)
             elif dep.kind == "note":

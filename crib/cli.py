@@ -2694,13 +2694,14 @@ def _gb_add(f: Any) -> Callable[[Any], dict[str, Any]]:
             "sources": a.sources,
             **{k: getattr(a, k) for k in links},
         }
+    gated = bool(f.with_role("gated"))
     return lambda a: {
         "title": a.title,
         "content": _body(a.content, a.file, what="the decision + rationale"),
         "deps": a.deps,
         "project": a.project,
         "sources": a.sources,
-        "proposed": getattr(a, "proposed", False),
+        **({"proposed": getattr(a, "proposed", False)} if gated else {}),
         **{k: getattr(a, k) for k in links},
     }
 
@@ -2710,7 +2711,8 @@ def _gm_add(f: Any) -> str:
         return (f"title=None content='' {_PROJ} deps=None after=None "
                 "before=None items=None sources=None follows=None rests_on=None "
                 "informed_by=None")
-    return (f"title content deps=None {_PROJ} sources=None proposed=False "
+    proposed = " proposed=False" if f.with_role("gated") else ""
+    return (f"title content deps=None {_PROJ} sources=None{proposed} "
             "follows=None rests_on=None informed_by=None")
 
 
