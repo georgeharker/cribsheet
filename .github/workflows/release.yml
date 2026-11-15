@@ -29,6 +29,8 @@ jobs:
     # push-triggered CI covers, so this is its only full run.
     tests:
         uses: ./.github/workflows/ci.yml
+        permissions:
+            contents: read  # the suite only reads the repo
 
     build:
         needs: tests

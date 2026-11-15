@@ -28,6 +28,8 @@ jobs:
   # tag publishes everything or nothing.
   tests:
     uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read  # the suite only reads the repo
 
   publish:
     needs: tests
