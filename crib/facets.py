@@ -310,8 +310,8 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         # tools are `<noun>_<verb>`, and verbs have underscores (dep_add): a
         # noun with one would make a tool's facet ambiguous
         raise FacetSpecError(f"a facet name can't contain '_', got {noun!r}")
-    if bad := set(raw) - _KEYS:
-        raise FacetSpecError(f"facet {noun!r}: unknown keys {sorted(bad)}")
+    if stray_keys := set(raw) - _KEYS:
+        raise FacetSpecError(f"facet {noun!r}: unknown keys {sorted(stray_keys)}")
     plural = _ident(raw.get("plural"), f"facet {noun!r}: plural")
     store = raw.get("store", plural)
     if not isinstance(store, str) or not store or "/" in store or store.startswith("."):
@@ -392,9 +392,9 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     available = available_verbs(have, fields=bool(params),
                                 taint=bool(graph.get("report_taint")),
                                 transitions=graph.get("transitions", {}))
-    if bad := sorted(set(disable) - set(available)):
+    if not_its_own := sorted(set(disable) - set(available)):
         raise FacetSpecError(
-            f"facet {noun!r}: can't disable {bad}: its verbs are {list(available)}")
+            f"facet {noun!r}: can't disable {not_its_own}: its verbs are {list(available)}")
     if not set(available) - set(disable):
         raise FacetSpecError(f"facet {noun!r}: disables every one of its verbs")
     about, when = _wording(noun, raw, [v for v in available if v not in disable])
