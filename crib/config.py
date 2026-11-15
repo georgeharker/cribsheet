@@ -441,6 +441,10 @@ class ProjectConfig:
     # implicitly on first write", which is true.
     created: str | None = None
     host: str | None = None
+    # Per-facet locations recorded from the repo's `.crib` `facets:` (the facet
+    # registry's one location mechanism): noun -> {root: `$LOCATION/...` token,
+    # glob, read_only, ids}. Machine-local for the same reason as store_root.
+    mappings: dict[str, dict[str, Any]] | None = None
 
     @classmethod
     def load(cls, path: Path, fallback_name: str) -> "ProjectConfig":
@@ -460,6 +464,7 @@ class ProjectConfig:
             store_root=data.get("store_root"),
             created=data.get("created"),
             host=data.get("host"),
+            mappings=m if isinstance(m := data.get("mappings"), dict) and m else None,
         )
 
     def save(self, path: Path) -> None:
@@ -475,11 +480,30 @@ class ProjectConfig:
             "store_root",
             "created",
             "host",
+            "mappings",
         ):
             if (value := getattr(self, key)) is not None:
                 data[key] = value
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(yaml.safe_dump(data, sort_keys=False))
+
+
+@dataclass(frozen=True)
+class FacetMapping:
+    """One `.crib` `facets:` entry: where a facet's items live in this repo.
+
+    `dir` is repo-relative (confined to the repo, like `store:`); `glob` picks
+    the facet's files under it (relative to `dir`); a `read_only` mapping is
+    indexed and searched but its verbs refuse to write; `ids` is how its items
+    are identified: `stamp` writes an id into each file's frontmatter on first
+    index (history survives renames), `derived` takes it from the relpath and
+    writes nothing."""
+
+    noun: str
+    dir: str
+    glob: str = "**/*.md"
+    read_only: bool = False
+    ids: str = "stamp"
 
 
 @dataclass
@@ -502,6 +526,15 @@ class CribLink:
     # local checkout via that project's `.source_root`, so the committed `.crib`
     # stays portable across differently-located clones.
     refs: list[str] = field(default_factory=list)
+    # Per-facet locations (`facets:`), by noun — declared facets only, for now.
+    facets: dict[str, FacetMapping] = field(default_factory=dict)
+
+    def facet_dir(self, noun: str) -> Path | None:
+        """A mapped facet's absolute directory in this repo (confined to it)."""
+        m = self.facets.get(noun)
+        if m is None or self.root is None:
+            return None
+        return confine(self.root, m.dir)
 
     @property
     def store_dir(self) -> Path | None:
@@ -529,10 +562,11 @@ class CribLink:
         Same treatment `.git`/`.versions` get, just declared rather than hardcoded.
         """
         try:
-            store = self.store_dir
-            return store is not None and Path(path).resolve().is_relative_to(
-                store.resolve()
-            )
+            owned = [self.store_dir, *(self.facet_dir(n) for n in self.facets)]
+            p = Path(path).resolve()
+            # a mapped facet's dir is crib-owned the same way (its files are
+            # that facet's items, never docs or code too)
+            return any(d is not None and p.is_relative_to(d.resolve()) for d in owned)
         except (ValueError, OSError):  # a `store:` that escapes the repo owns
             return False  # nothing; an unresolvable path is not ours
 
@@ -589,6 +623,7 @@ class CribLink:
                 else None
             ),
         )
+        link.facets = _facet_mappings(f, d, data.get("facets"))
         try:
             link.store_dir  # validate now, while we can name the file
         except ValueError as e:
@@ -600,6 +635,47 @@ class CribLink:
             _warn(f"{f}: ignoring `store:` — {e}")
             link.store = None
         return link
+
+
+def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
+    """`.crib` `facets:` → mappings. Same contract as the rest of `.crib`: a bad
+    entry is warned about and dropped, never fatal."""
+    from . import facets as _facets
+
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        _warn(f"{f}: ignoring `facets:` — expected a mapping of facet: {{dir, ...}}")
+        return {}
+    out: dict[str, FacetMapping] = {}
+    for noun, spec in raw.items():
+        what = f"{f}: ignoring `facets.{noun}`"
+        facet = _facets.get(str(noun))
+        if facet is None:
+            _warn(f"{what} — no such facet ({', '.join(_facets.nouns())})")
+            continue
+        if facet.builtin:
+            _warn(f"{what} — a built-in facet can't be mapped yet")
+            continue
+        if not isinstance(spec, dict) or not isinstance(spec.get("dir"), str):
+            _warn(f"{what} — expected {{dir: <repo-relative dir>, glob?, read_only?, ids?}}")
+            continue
+        if bad := set(spec) - {"dir", "glob", "read_only", "ids"}:
+            _warn(f"{what} — unknown keys {sorted(bad)}")
+            continue
+        ids = spec.get("ids", "stamp")
+        if ids not in ("stamp", "derived"):
+            _warn(f"{what} — ids is stamp or derived, not {ids!r}")
+            continue
+        m = FacetMapping(str(noun), spec["dir"].strip(), str(spec.get("glob") or "**/*.md"),
+                         bool(spec.get("read_only", False)), ids)
+        try:
+            confine(root, m.dir)
+        except ValueError as e:
+            _warn(f"{what} — {e}")
+            continue
+        out[m.noun] = m
+    return out
 
 
 def _as_list(v: Any) -> list[str]:

@@ -132,6 +132,28 @@ def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str, str]
     return best[1], parts[0], str(Path(*parts[1:]))
 
 
+def decode_mapped(
+    mapped: dict[tuple[str, str], Path], raw_path: str
+) -> tuple[str, str, str] | None:
+    """Same, for a mapped facet (`.crib` `facets:`): `mapped` maps (project,
+    store) -> the mapping's root, which IS the facet's directory, so the path
+    under it is the relpath. Longest matching root wins (one mapping nested in
+    another's tree decodes to the inner one)."""
+    p = Path(raw_path)
+    if _ignored(p):
+        return None
+    rp = p.resolve()
+    best: tuple[int, str, str, str] | None = None
+    for (project, store), root in mapped.items():
+        try:
+            rel = rp.relative_to(root.resolve())
+        except ValueError:
+            continue
+        if best is None or len(str(root)) > best[0]:
+            best = (len(str(root)), project, store, rel.as_posix())
+    return None if best is None else (best[1], best[2], best[3])
+
+
 class _FSWatcher:
     """Shared watchdog plumbing for both watchers: observer lifecycle, a filesystem
     event handler, and per-key debounce. Subclasses provide `_watch_dirs()` (dirs to
@@ -315,11 +337,14 @@ class Watcher(_FSWatcher):
         loop: asyncio.AbstractEventLoop,
         stores: dict[str, Path] | None = None,
         on_records: Callable[[str, str, list[str] | None], Awaitable[None]] | None = None,
+        mapped: dict[tuple[str, str], Path] | None = None,
     ) -> None:
         super().__init__(loop)
         self.projects_dir = projects_dir
         self._on_change = on_change
         self.stores = dict(stores or {})
+        # Mapped facets' roots: (project, store) -> the facet's own directory.
+        self.mapped = dict(mapped or {})
         # Record files (RECORD_TIERS) coalesce per (project, facet) into ONE
         # refresh: an index sweep writes thousands. `on_records(project, facet,
         # names)`, names None for "diff the whole directory" (a big batch).
@@ -358,7 +383,8 @@ class Watcher(_FSWatcher):
         self.projects_dir.mkdir(parents=True, exist_ok=True)
         # A store dir that doesn't exist yet is reported once by `_schedule_dir`
         # rather than skipped silently.
-        return [str(self.projects_dir), *(str(d) for d in self.stores.values())]
+        return [str(self.projects_dir), *(str(d) for d in self.stores.values()),
+                *(str(d) for d in self.mapped.values())]
 
     def _decode(self, raw_path: str, deleted: bool) -> tuple[str, ...] | None:
         # index_file drops chunks once it sees the path is gone, so deletes flow too
@@ -369,6 +395,9 @@ class Watcher(_FSWatcher):
             rec := decode_record(self.projects_dir, raw_path)
         ) is not None:
             return ("\x00record", *rec)
+        # a mapped facet's dir may sit inside an in-repo store's tree: it wins
+        if (key := decode_mapped(self.mapped, raw_path)) is not None:
+            return key
         return decode_store(self.stores, raw_path)
 
     def _schedule(self, key: tuple[Any, ...]) -> None:

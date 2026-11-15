@@ -41,6 +41,9 @@ class IndexResult:
     upserted: int
     deleted: int
     note_id: str | None = None
+    # A read-only, id-stamped location's file with no id yet: not indexed (a
+    # temporary id would flip under its links once a writable checkout stamps it).
+    unstamped: bool = False
 
 
 @dataclass
@@ -109,18 +112,25 @@ class IndexEngine:
 
     async def index_file(self, project: str, notes_dir: Path, relpath: str,
                          content_path: Path | None = None, *,
-                         store: str = "notes") -> IndexResult:
+                         store: str = "notes", ids: str = "stamp",
+                         read_only: bool = False) -> IndexResult:
         """Reindex one note. Idempotent + hash-gated under a per-path lock.
 
         `content_path` decouples where the bytes are READ from how the note is
         KEYED: source-anchored docs are read from the repo (`content_path`) but
         keyed by their `sources/<repo>/…` relpath. Default reads `notes_dir/relpath`.
         `store` is the pillar the note belongs to — it reaches chunk identity and
-        metadata, and scopes the per-path lock."""
+        metadata, and scopes the per-path lock.
+
+        `ids`/`read_only` are a mapped facet's location policy (paths.FacetLocation):
+        only a writable, id-stamped location has its files healed or given an id;
+        a `derived` one takes ids from the relpath, and a read-only stamped one
+        skips a file with no id yet (`unstamped`)."""
         async with self._locks[self._key(project, store, relpath)]:
             if content_path is not None:  # a repo-owned doc: no stamp to keep
                 return await self._index_locked(project, notes_dir, relpath,
-                                                content_path, store=store)
+                                                content_path, store=store,
+                                                ids=ids, read_only=read_only)
             # Stamped BEFORE the read: an edit landing mid-index leaves a stamp
             # older than the file, so the next sweep looks again (never the
             # reverse, a stamp claiming content that was not indexed). When the
@@ -129,7 +139,8 @@ class IndexEngine:
             before = filesync.stamp(notes_dir / relpath)
             wrote: list[filesync.Stamp] = []
             res = await self._index_locked(project, notes_dir, relpath,
-                                           content_path, store=store, wrote=wrote)
+                                           content_path, store=store, wrote=wrote,
+                                           ids=ids, read_only=read_only)
             await asyncio.to_thread(self._stamp, project, store, relpath,
                                     wrote[-1] if wrote else before)
             return res
@@ -168,12 +179,14 @@ class IndexEngine:
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                             content_path: Path | None = None, *,
                             store: str = "notes",
-                            wrote: list[filesync.Stamp] | None = None) -> IndexResult:
+                            wrote: list[filesync.Stamp] | None = None,
+                            ids: str = "stamp", read_only: bool = False) -> IndexResult:
         """The locked body: read+diff, embed, write — each stage offloaded, the
         lock held across them (see the module docstring). `wrote` receives the
         stamp of the file as the plan rewrote it, if it did."""
         plan = await asyncio.to_thread(
-            self._plan, project, notes_dir, relpath, content_path, store)
+            self._plan, project, notes_dir, relpath, content_path, store,
+            ids, read_only)
         if wrote is not None and plan.wrote is not None:
             wrote.append(plan.wrote)
         if plan.result is not None:
@@ -285,7 +298,8 @@ class IndexEngine:
         return out
 
     def _plan(self, project: str, notes_dir: Path, relpath: str,
-              content_path: Path | None = None, store: str = "notes") -> _Plan:
+              content_path: Path | None = None, store: str = "notes",
+              ids: str = "stamp", read_only: bool = False) -> _Plan:
         """Read the file, chunk it, diff against the index — all blocking, so this
         runs in a worker thread. Decides what (if anything) needs embedding."""
         path = content_path if content_path is not None else notes_dir / relpath
@@ -304,13 +318,25 @@ class IndexEngine:
         # A source-anchored doc (content_path given) is READ-ONLY: the repo owns
         # it, so never heal/rewrite it or stamp an id into it — derive a stable id
         # from its relpath instead.
-        read_only = content_path is not None
+        doc = content_path is not None
+        read_only = read_only or doc
+        # Only a writable, id-stamped location's files are ever rewritten.
+        writes = not read_only and ids == "stamp"
         rewrote = False
-        if not read_only:
+        if writes:
             rewrote = notes.heal_file(path)  # self-heal merge-duplicated frontmatter (§14)
         note = notes.load(path)
-        if read_only:
+        if doc:
             note_id = note.id or _derive_id(relpath)
+        elif ids == "derived":
+            note_id = note.id or _derive_id(project, relpath)
+        elif read_only and not note.id:
+            # read-only and id-stamped, but no id yet: wait for a writable
+            # checkout to stamp it, rather than give it an id that would flip
+            return _Plan(result=IndexResult(relpath, changed=False, upserted=0,
+                                            deleted=0, unstamped=True))
+        elif read_only:
+            note_id = note.id or ""
         else:
             if notes.ensure_id(note):       # assign + persist a stable id
                 notes.save_atomic(note)

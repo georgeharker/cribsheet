@@ -30,7 +30,7 @@ from .util import derived_ulid
 
 if TYPE_CHECKING:
     from .indexer import IndexEngine, IndexResult
-    from .paths import Paths, ProjectPathResolver, ProjectPaths
+    from .paths import FacetLocation, Paths, ProjectPathResolver, ProjectPaths
     from .store import Store
     from .versions import VersionRing
 
@@ -84,6 +84,28 @@ class NoteStore:
         self.project_paths = project_paths
         self._rings: dict[Path, VersionRing] = {}
 
+    def location(self, project: str) -> FacetLocation | None:
+        """This facet's mapped location in `project` (`.crib` `facets:`, recorded
+        in the stub), or None when its items live under the data root."""
+        return self.project_paths(project).mappings.get(self.spec.segment)
+
+    def _policy(self, project: str) -> dict[str, Any]:
+        """The index policy of this facet's location in `project` (see
+        IndexEngine.index_file): a mapping's ids and read-only flag."""
+        loc = self.location(project)
+        return {} if loc is None else {"ids": loc.ids, "read_only": loc.read_only}
+
+    def _refuse_read_only(self, project: str, verb: str) -> None:
+        """A read-only mapped location is indexed and searched, never written."""
+        loc = self.location(project)
+        if loc is not None and loc.read_only:
+            noun = self.spec.facet or "note"
+            raise CribUserError(
+                f"{verb} refused: project {project!r} maps its {noun} items from "
+                f"a read-only location ({loc.token}); change them in that repo "
+                "(a writable checkout), and crib picks the edit up"
+            )
+
     def resolved(self, project: str) -> ProjectPaths:
         """This project's storage locations, REQUIRING them to be reachable — an
         adopted store whose repo isn't on this machine errors here (naming the
@@ -121,6 +143,13 @@ class NoteStore:
         store (`<store>/.versions`) so history travels with the notes — and is
         gitignored there, since the repo owns the notes but not the ring."""
         vd = self.project_paths(project).versions_dir
+        if (loc := self.location(project)) is not None:
+            # a mapped facet's history lives beside its files, ignored by that
+            # repo's git: the repo owns the files, crib owns their history
+            vd = loc.versions_dir
+            if not (ignore := vd / ".gitignore").exists() and loc.available:
+                vd.mkdir(parents=True, exist_ok=True)
+                ignore.write_text("*\n")
         if vd == self.versions.dir:
             return self.versions
         ring = self._rings.get(vd)
@@ -217,18 +246,22 @@ class NoteStore:
     async def write(self, project: str, relpath: str, note: Note) -> IndexResult:
         """Stash prior content (ring), write atomically, then index."""
         self._refuse_source(relpath, "write")
+        self._refuse_read_only(project, "write")
         path = self.abspath(project, relpath)
+        policy = self._policy(project)
         # id FIRST, then stash: the incoming note's id is what the prior bytes should
         # be filed under, so overwriting a note that had no `id:` still leaves its
         # history where `note_versions`/`note_restore` will look for it. (ensure_id
         # only touches the in-memory frontmatter; `save_atomic` below persists it.)
-        notes.ensure_id(note)
+        # A `derived`-id location never has an id written: its id is its relpath's.
+        if policy.get("ids") != "derived":
+            notes.ensure_id(note)
         if path.exists():
             self._stash_existing(project, relpath, path, note.id)
         note.path = path
         notes.save_atomic(note)
         return await self.index.index_file(project, self.dir(project), relpath,
-                                           store=self.spec.name)
+                                           store=self.spec.name, **policy)
 
     def read(self, project: str, relpath: str) -> str:
         return self.abspath(project, relpath).read_text()
@@ -238,13 +271,14 @@ class NoteStore:
         it's recoverable), unlink, and drop its chunks via index_file's missing-path
         path."""
         self._refuse_source(relpath, "delete")
+        self._refuse_read_only(project, "delete")
         path = self.abspath(project, relpath)
         note_id: str | None = None
         if path.exists():
             note_id = self._stash_existing(project, relpath, path)
             path.unlink()
         res = await self.index.index_file(project, self.dir(project), relpath,
-                                          store=self.spec.name)
+                                          store=self.spec.name, **self._policy(project))
         return {"project": project, "relpath": relpath, "removed": res.deleted,
                 "recoverable_id": note_id}
 
@@ -260,6 +294,8 @@ class NoteStore:
         visible rather than silent."""
         self._refuse_source(relpath, "move")            # would unlink the repo's file
         self._refuse_source(dst_relpath, "move into")   # would write into the repo
+        self._refuse_read_only(project, "move")
+        self._refuse_read_only(dst_proj, "move into")
         src = self.abspath(project, relpath)
         if not src.exists():
             raise CribUserError(f"no such note: {relpath} in project {project!r}")
@@ -299,10 +335,14 @@ class NoteStore:
         from .indexer import index_facet
 
         nd = self.dir(project)
+        loc = self.location(project)
+        policy = self._policy(project)
         if relpath:
             targets = [relpath]
         else:
             now = scan(nd, ".md", recursive=True)
+            if loc is not None:  # a mapping: only the files its glob picks
+                now = {r: st for r, st in now.items() if loc.owns(r)}
             disk = set(now)
             # The indexed side is scoped to THIS pillar (absence rule: a chunk
             # indexed before the split has no `store` key and counts as notes) —
@@ -322,6 +362,7 @@ class NoteStore:
                            if r not in disk or known.get(r) != now[r]]
         changed = removed = 0
         skipped: list[dict[str, str]] = []
+        unstamped: list[str] = []
         by_id: dict[str, list[str]] = {}
         for rp in targets:
             # One unreadable note (bad frontmatter from a hand edit or conflict
@@ -330,9 +371,12 @@ class NoteStore:
             # Skip it, name it in the result, keep going.
             try:
                 res = await self.index.index_file(project, nd, rp,
-                                                  store=self.spec.name)
+                                                  store=self.spec.name, **policy)
             except (NoteParseError, UnicodeDecodeError, OSError) as e:
                 skipped.append({"relpath": rp, "error": str(e)})
+                continue
+            if res.unstamped:
+                unstamped.append(rp)
                 continue
             if res.note_id:
                 by_id.setdefault(res.note_id, []).append(rp)
@@ -341,6 +385,10 @@ class NoteStore:
         out: dict[str, Any] = {"project": project, "files": len(targets),
                                "changed": changed, "removed": removed,
                                "skipped": skipped}
+        if unstamped:
+            # read-only and id-stamped: these wait for a writable checkout to
+            # stamp them (and commit), so their identity never flips
+            out["unstamped"] = unstamped
         # A `move` interrupted between writing the destination and unlinking the
         # source leaves two notes sharing one id — and a shared id means a shared
         # version ring, so the two histories interleave silently. The sweep already

@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import os
 import re
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .errors import CribUserError
 
@@ -172,6 +173,34 @@ class Paths:
 
 
 @dataclass(frozen=True)
+class FacetLocation:
+    """Where one facet's items live for a project when its repo maps it (`.crib`
+    `facets:`, recorded in the stub): the mapping's root, the glob picking its
+    files, whether it is writable, and how ids work (see config.FacetMapping)."""
+
+    root: Path
+    token: str  # the root's portable `$LOCATION/...` spelling
+    glob: str = "**/*.md"
+    read_only: bool = False
+    ids: str = "stamp"
+
+    @property
+    def available(self) -> bool:
+        return self.root.is_dir()
+
+    def owns(self, relpath: str) -> bool:
+        """Is `relpath` (relative to the root) one of this facet's files?"""
+        from pathlib import PurePosixPath
+
+        return PurePosixPath(relpath).full_match(self.glob)
+
+    @property
+    def versions_dir(self) -> Path:
+        """The mapped facet's version ring: beside its files, gitignored there."""
+        return self.root / ".versions"
+
+
+@dataclass(frozen=True)
 class ProjectPaths:
     """One project's resolved storage locations."""
 
@@ -185,6 +214,9 @@ class ProjectPaths:
     store_root: Path | None = None  # the in-repo store dir, when adopted
     store_token: str | None = None  # its portable `$LOCATION/...` spelling
     available: bool = True  # False ⇒ store_root isn't on this machine
+    # Mapped facets, by STORE segment (`routines`): their items live at the
+    # mapping, not under the data root.
+    mappings: Mapping[str, FacetLocation] = field(default_factory=dict)
 
     @property
     def in_repo(self) -> bool:
@@ -193,7 +225,9 @@ class ProjectPaths:
     def pillar_dir(self, segment: str) -> Path:
         """A pillar store's directory: `data_root/<segment>`. Every pillar —
         notes included (`pillar_dir("notes") == notes_dir`) — is a sibling under
-        the data root, in both layouts."""
+        the data root, in both layouts; a mapped facet's is its mapping's root."""
+        if (loc := self.mappings.get(segment)) is not None:
+            return loc.root
         return self.data_root / segment
 
     @property
@@ -230,12 +264,15 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
 
     name = check_project_name(project)
     pdir = paths.projects_dir / name
-    token = ProjectConfig.load(pdir / ".cribproject", name).store_root
+    pcfg = ProjectConfig.load(pdir / ".cribproject", name)
+    token = pcfg.store_root
+    mappings = _mappings(pcfg.mappings, cfg)
     if not token:
         # Global layout: the ring is the SHARED `data_dir/.versions`, keyed by
         # note id across every project (DESIGN §8) — unchanged for global projects.
         return ProjectPaths(
-            name, pdir, pdir / "notes", paths.versions_dir, data_root=pdir
+            name, pdir, pdir / "notes", paths.versions_dir, data_root=pdir,
+            mappings=mappings,
         )
     root = expand_location(token, cfg.locations)
     return ProjectPaths(
@@ -247,7 +284,29 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
         store_root=root,
         store_token=token,
         available=root.is_dir(),
+        mappings=mappings,
     )
+
+
+def _mappings(raw: Any, cfg: "Config") -> dict[str, FacetLocation]:
+    """The stub's recorded facet mappings, by store segment (an entry for a facet
+    no longer in the registry is ignored: `crib facets sync` deals with it)."""
+    from . import facets
+    from .config import expand_location
+
+    out: dict[str, FacetLocation] = {}
+    for noun, m in (raw or {}).items():
+        spec = facets.get(noun)
+        if spec is None or not isinstance(m, dict) or not m.get("root"):
+            continue
+        out[spec.store] = FacetLocation(
+            root=expand_location(str(m["root"]), cfg.locations),
+            token=str(m["root"]),
+            glob=str(m.get("glob") or "**/*.md"),
+            read_only=bool(m.get("read_only", False)),
+            ids=str(m.get("ids") or "stamp"),
+        )
+    return out
 
 
 class ProjectPathResolver:

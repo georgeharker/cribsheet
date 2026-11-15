@@ -34,7 +34,7 @@ def _repo(tmp_path: Path) -> tuple[Path, SimpleNamespace]:
     (root / ".crib").write_text("project: p\n")
     (root / "a.py").write_text("def a(): pass\n")
     (root / "b.py").write_text("def b(): pass\n")
-    link = SimpleNamespace(root=root, project="p", doc_patterns=[], paths=[])
+    link = SimpleNamespace(root=root, project="p", doc_patterns=[], paths=[], facets={})
     return root, link
 
 

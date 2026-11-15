@@ -985,3 +985,187 @@ def test_the_watcher_does_not_index_a_pending_facets_files(tmp_path):
     """,
     )
     assert out["items"] == []  # not indexed as a note (or anything)
+
+
+# ── locations phase 1: a declared facet mapped from a repo (`.crib` facets:) ──
+
+ROUTINE = """
+[routine]
+plural = "routines"
+"""
+
+
+def _repo(tmp_path: Path, mapping: str, files: dict[str, str]) -> Path:
+    repo = tmp_path / "toucan"
+    for rel, text in files.items():
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_text(text)
+    (repo / ".crib").write_text(f"project: p\nfacets:\n  routine: {mapping}\n")
+    return repo
+
+
+_MAPPED = """
+        import asyncio
+        from pathlib import Path
+        from crib.app import Crib
+        from crib.config import Config, CribLink
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        link = CribLink.find(Path(REPO))
+        synced = asyncio.run(crib._sync_mappings("p", link))
+        def refused(fn):
+            try:
+                fn()
+            except Exception as e:
+                return str(e)
+            return None
+"""
+
+
+def test_a_writable_mapped_facet_lives_in_the_repo(tmp_path):
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md'}",
+        {
+            "workflows/morning-briefing.md": "---\nname: morning\nschedule: 7am\n---\nbrief me\n",
+            "workflows/sub/nested.md": "not picked: the glob is top-level\n",
+            "workflows/notes.txt": "not markdown\n",
+        },
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        out["synced"] = synced
+        items = crib.store.items({"project": "p", "kind": "routine"})
+        out["rels"] = sorted(i.relpath for i in items.values())
+        out["stub"] = Path(crib.project_paths("p").config_file).read_text()
+        out["root"] = str(crib.pillars["routines"].root("p"))
+        r = asyncio.run(crib.store_note("check the weather", "Weather check", "p",
+                                        facet="routine"))
+        out["added"] = r["relpath"]
+        asyncio.run(crib.edit_note(r["relpath"], "check the weather twice", "p",
+                                   facet="routine"))
+        out["ring"] = sorted(p.name for p in (Path(out["root"]) / ".versions").iterdir())
+        out["hits"] = [h.relpath for h in crib.lookup("weather", "p", store="routines")]
+    """,
+    )
+    assert out["synced"]["routine"]["files"] == 1
+    assert out["rels"] == ["morning-briefing.md"]  # the glob picks the facet's files
+    assert "mappings:" in out["stub"] and "routine:" in out["stub"]
+    assert out["root"] == str(repo / "workflows")
+    assert (repo / "workflows" / out["added"]).exists()  # written into the repo
+    assert "id:" in (repo / "workflows" / "morning-briefing.md").read_text()  # stamped
+    assert ".gitignore" in out["ring"]  # the ring lives beside the files, ignored
+    assert out["hits"] == [out["added"]]
+
+
+def test_a_read_only_derived_mapping_is_indexed_and_never_written(tmp_path):
+    body = "---\nname: morning\n---\nbrief me about the weather\n"
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+        {"workflows/morning.md": body},
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        out["hits"] = [h.relpath for h in crib.lookup("weather", "p", store="routines")]
+        out["add"] = refused(lambda: asyncio.run(
+            crib.store_note("x", "X", "p", facet="routine")))
+        out["edit"] = refused(lambda: asyncio.run(
+            crib.edit_note("morning.md", "changed", "p", facet="routine")))
+        out["forget"] = refused(lambda: asyncio.run(
+            crib.forget("morning.md", "p", facet="routine")))
+    """,
+    )
+    assert out["hits"] == ["morning.md"]
+    assert (repo / "workflows" / "morning.md").read_text() == body  # not a byte changed
+    for verb in ("add", "edit", "forget"):
+        assert "read-only location" in out[verb], verb
+
+
+def test_a_read_only_stamped_mapping_skips_unstamped_files(tmp_path):
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, read_only: true}",
+        {
+            "workflows/stamped.md": "---\nid: 01M7EZZZZZZZZZZZZZZZZZZZZZ\n---\nhas an id\n",
+            "workflows/fresh.md": "no id yet\n",
+        },
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        out["synced"] = synced
+        out["rels"] = sorted(i.relpath for i in
+                             crib.store.items({"project": "p", "kind": "routine"}).values())
+    """,
+    )
+    assert out["rels"] == ["stamped.md"]
+    assert out["synced"]["routine"]["unstamped"] == ["fresh.md"]
+    assert "id:" not in (repo / "workflows" / "fresh.md").read_text()  # never stamped
+
+
+def test_a_mapped_dir_is_crib_owned_and_watched(tmp_path):
+    from crib.config import CribLink
+    from crib.watch import decode_mapped
+
+    repo = _repo(
+        tmp_path, "{dir: workflows}", {"workflows/a.md": "x\n", "docs/b.md": "y\n"}
+    )
+    link = CribLink.find(repo)
+    assert link is not None and set(link.facets) == set()  # routine isn't declared HERE
+    # (this process serves the built-ins only: the facet is declared in the
+    # subprocess's facets file; the ownership rule is checked there too)
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        f"""
+        from pathlib import Path
+        from crib.config import CribLink
+        link = CribLink.find(Path({str(repo)!r}))
+        out["owned"] = link.in_store(Path({str(repo / "workflows" / "a.md")!r}))
+        out["doc"] = link.in_store(Path({str(repo / "docs" / "b.md")!r}))
+    """,
+    )
+    assert out["owned"] is True and out["doc"] is False
+    roots = {("p", "routines"): repo / "workflows"}
+    assert decode_mapped(roots, str(repo / "workflows" / "deep" / "c.md")) == (
+        "p",
+        "routines",
+        "deep/c.md",
+    )
+    assert decode_mapped(roots, str(repo / "workflows" / ".versions" / "c.md")) is None
+    assert decode_mapped(roots, str(repo / "docs" / "b.md")) is None
+
+
+def test_a_moved_mapping_rereads_the_new_dir_and_drops_the_old(tmp_path):
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows}",
+        {"workflows/a.md": "alpha\n", "routines2/b.md": "beta\n"},
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        out["before"] = sorted(i.relpath for i in
+                               crib.store.items({"project": "p", "kind": "routine"}).values())
+        Path(REPO, ".crib").write_text("project: p\\nfacets:\\n  routine: {dir: routines2}\\n")
+        again = asyncio.run(crib._sync_mappings("p", CribLink.find(Path(REPO))))
+        out["after"] = sorted(i.relpath for i in
+                              crib.store.items({"project": "p", "kind": "routine"}).values())
+        out["unchanged"] = asyncio.run(crib._sync_mappings("p", CribLink.find(Path(REPO))))
+    """.replace("REPO", repr(str(repo))),
+    )
+    assert out["before"] == ["a.md"]
+    assert out["after"] == ["b.md"]
+    assert out["unchanged"] == {}  # nothing changed: nothing written

@@ -358,6 +358,7 @@ class Crib:
             loop,
             self._in_repo_store_roots(),
             on_records=self._on_record_change,
+            mapped=self._mapped_facet_roots(),
         )
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
@@ -398,6 +399,53 @@ class Crib:
         d = self.config.daemon
         self._watcher.start_probe(d.watch_probe_s, d.watch_catchup_s,
                                   self._catch_up_while_degraded)
+
+    async def _sync_mappings(self, proj: str, link: CribLink) -> dict[str, Any]:
+        """Record the repo's `.crib` `facets:` mappings in the project's stub (the
+        daemon, watcher and reconcile find them with no cwd), and reindex every
+        facet whose mapping changed. Nothing changed: nothing written."""
+        want: dict[str, dict[str, Any]] = {}
+        for noun, m in link.facets.items():
+            root = link.facet_dir(noun)
+            if root is None:
+                continue
+            want[noun] = {"root": portable_path(root, self.config.locations),
+                          "glob": m.glob, "read_only": m.read_only, "ids": m.ids}
+        pp = self.project_paths(proj)
+        pcfg = ProjectConfig.load(pp.config_file, proj)
+        had = pcfg.mappings or {}
+        if had == want:
+            return {}
+        pcfg.mappings = want or None
+        pcfg.save(pp.config_file)
+        self.project_paths.invalidate(proj)
+        out: dict[str, Any] = {}
+        for noun in sorted(set(had) | set(want)):
+            if had.get(noun) == want.get(noun) or noun in self.pending_facets:
+                continue
+            spec = facets.get(noun)
+            if spec is None or spec.store not in self.pillars:
+                continue
+            # moved, added or dropped: the sweep re-reads the new home and drops
+            # what was indexed from the old one
+            res = await self.pillars[spec.store].reindex(proj)
+            out[noun] = {"root": (want.get(noun) or {}).get("root"),
+                         "files": res["files"], **({"unstamped": res["unstamped"]}
+                                                   if res.get("unstamped") else {})}
+        return out
+
+    def _mapped_facet_roots(self) -> dict[tuple[str, str], Path]:
+        """`{(project, store): root}` for every mapped facet (`.crib` `facets:`)
+        whose directory is on this machine — the watcher's mapped roots. A
+        pending facet (`crib facets sync`) isn't watched."""
+        roots: dict[tuple[str, str], Path] = {}
+        for name in self.projects():
+            for store, loc in self.project_paths(name).mappings.items():
+                spec = facets.by_store(store)
+                if spec is None or spec.noun in self.pending_facets or not loc.available:
+                    continue
+                roots[(name, store)] = loc.root
+        return roots
 
     def _in_repo_store_roots(self) -> dict[str, Path]:
         """`{project: data root}` for every project adopted into a repo whose
@@ -451,8 +499,12 @@ class Crib:
         if (spec := facets.by_store(store)) is not None and spec.noun in self.pending_facets:
             return  # not conformed yet (`crib facets sync`): nothing to index into
         pillar = self.pillars.get(store, self.notestore)
+        loc = pillar.location(project)
+        if loc is not None and not loc.owns(relpath):
+            return  # under the mapped dir, but not one of the facet's files
         await self.index.index_file(
-            project, pillar.dir(project), relpath, store=pillar.spec.name
+            project, pillar.dir(project), relpath, store=pillar.spec.name,
+            **pillar._policy(project),
         )
         # index_file keeps the chunks (and their stamp); the design/plan graph
         # keeps its own items and stamps, refreshed here rather than at the
@@ -2318,6 +2370,7 @@ class Crib:
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
         new_project = proj not in self.projects()  # before indexing creates its dirs
+        mapped = await self._sync_mappings(proj, link)
         docs = (
             await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         )
@@ -2329,6 +2382,7 @@ class Crib:
             "crib_created": created,
             "created": new_project,
             "docs_indexed": docs.get("docs", 0),
+            **({"facets_mapped": mapped} if mapped else {}),
             **code,
         }
 
@@ -2360,6 +2414,7 @@ class Crib:
         re-skip via the content-hash gate)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
+        await self._sync_mappings(proj, link)
         crib_file = link.root / ".crib"
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
         running = self.code_jobs.get(proj)
