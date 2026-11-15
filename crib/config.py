@@ -706,6 +706,12 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
         if ids not in ("stamp", "derived"):
             _warn(f"{what} — ids is stamp or derived, not {ids!r}")
             continue
+        glob = str(spec.get("glob") or "**/*.md")
+        if not spec.get("read_only") and not writable_glob(glob):
+            _warn(f"{what} — a writable mapping's glob is `*<suffix>` or "
+                  f"`**/*<suffix>` ending in .md (crib names new items to match), "
+                  f"not {glob!r}")
+            continue
         if facet.builtin and (ids != "stamp" or spec.get("read_only")):
             # decisions, plans and learnings are written by their own verbs
             _warn(f"{what} — a built-in pillar maps writable, with stamped ids")
@@ -719,6 +725,14 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
             continue
         out[m.noun] = m
     return out
+
+
+def writable_glob(glob: str) -> bool:
+    """A glob crib can name new items under: `*<suffix>` or `**/*<suffix>`,
+    the suffix ending in `.md` with no wildcards (`*.md`, `**/*.dec.md`)."""
+    import re
+
+    return re.fullmatch(r"(\*\*/)?\*[^/*?\[\]]*\.md", glob) is not None
 
 
 def _check_exclusive(f: Path, link: CribLink) -> None:
@@ -752,7 +766,10 @@ def _mapping_conflict(m: FacetMapping, d: Path, root: Path, store: Path | None,
     stamped, and moved by `release`), anything under `.git`, overlapping the
     `store:` dir, or nested in / containing / equal to another mapping's."""
     rel = d.relative_to(root) if d.is_relative_to(root) else None
-    if rel is None or rel == Path("."):
+    if rel is None:
+        return (f"dir {m.dir!r} resolves outside the repo ({d}: a symlink?); "
+                "map the facet to a directory inside it")
+    if rel == Path("."):
         return (f"dir {m.dir!r} is the whole repo; map the facet to a directory "
                 "of its own (e.g. `dir: workflows`)")
     if rel.parts[0] == ".git":

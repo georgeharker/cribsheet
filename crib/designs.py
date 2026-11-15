@@ -620,11 +620,18 @@ class Designs:
         graph = Graph(proj=proj)
         docs: dict[str, dict[str, str]] = {}
         for kind, store in self._stores.items():
-            # a mapped pillar whose items still wait for `crib project adopt` is
-            # not served (it would read as empty, not as waiting): it is left
-            # out, and only verbs on its own items refuse (Graph.of_kind)
+            # a mapped pillar whose items still wait for `crib project adopt`:
+            # its own verbs refuse (Graph.of_kind, _resolve_ref), but its items
+            # are still in crib's data dir and still part of the graph, read
+            # from there: other facets' edges into them, their taint and their
+            # gating must not vanish while the move waits
             if (why := store.pending_move(proj)) is not None:
                 graph.pending[kind] = why
+                home = store.project_paths(proj).home_dir(store.spec.segment)
+                for node in self._nodes_from_files(kind, home):
+                    for src in node.sources:
+                        src["current"] = self._section_hash(proj, src, docs)
+                    graph.nodes[node.id] = node
                 continue
             try:
                 d = store.root(proj)
@@ -1427,13 +1434,14 @@ class Designs:
     def _unique_relpath(self, proj: str, kind: str, slug: str) -> str:
         """`<slug>.md` in the kind's pillar store, numeric suffix only on
         collision (DESIGN §15.1)."""
-        base = self._store(kind).root(proj)
-        if not (base / f"{slug}.md").exists():
-            return f"{slug}.md"
+        store = self._store(kind)
+        base, ext = store.root(proj), store.suffix(proj)
+        if not (base / f"{slug}{ext}").exists():
+            return f"{slug}{ext}"
         i = 2
-        while (base / f"{slug}-{i}.md").exists():
+        while (base / f"{slug}-{i}{ext}").exists():
             i += 1
-        return f"{slug}-{i}.md"
+        return f"{slug}-{i}{ext}"
 
     async def _save(
         self, proj: str, node: Node, fm: dict[str, Any], body: str | None = None
@@ -2155,7 +2163,7 @@ class Designs:
         spec = _spec(facet)
         to = spec.transitions[verb]
         node = self._resolve_ref(self._load_graph(proj), ref, facet)
-        if _is(node, "gated"):
+        if _is(node, "gated") and spec.role(to) != "gated":
             return await self.design_promote(proj, ref, facet=facet, to=to)
         if _is(node, "retired"):
             raise CribUserError(

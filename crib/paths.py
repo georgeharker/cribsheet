@@ -214,6 +214,14 @@ class FacetLocation:
         """The mapped facet's version ring: beside its files, gitignored there."""
         return self.root / ".versions"
 
+    @property
+    def suffix(self) -> str:
+        """What a new item's filename ends with, so the glob takes it: the
+        glob's `*<suffix>` (`**/*.dec.md` -> `.dec.md`). A writable mapping's
+        glob always has that shape (config.writable_glob)."""
+        last = self.glob.rsplit("/", 1)[-1]
+        return last[1:] if last.startswith("*") and last.endswith(".md") else ".md"
+
 
 @dataclass(frozen=True)
 class ProjectPaths:

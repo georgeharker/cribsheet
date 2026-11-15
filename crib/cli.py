@@ -3678,7 +3678,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         try:
             data = client.call(entry.tool, call, progress_handler=handler)
         except Exception as e:  # noqa: BLE001 — only the unknown-tool case is ours
-            if "Unknown tool" not in str(e):
+            if f"Unknown tool: {entry.tool!r}" not in str(e) and \
+                    f"Unknown tool: {entry.tool}" not in str(e):
                 raise
             # This process and the daemon resolve the facet registry each for
             # themselves: a facet declared (or synced) after the daemon started,
@@ -3978,7 +3979,17 @@ def _facets_cmd(args: Any) -> int:
         print("refusing: a shared store changes for every machine; re-run with "
               "--apply --shared once their facets files agree")
         return 1
-    crib.store.facet_sync(drop=args.drop)
+    crib.store.facet_sync(drop=args.drop, shared=args.shared)
+    # M3: a facet whose store moved leaves its files in the old directories
+    for p in todo:
+        old = p.get("was_store")
+        spec = facets.get(p["facet"])
+        if old and spec is not None and old != spec.store:
+            left = sorted(d for d in crib.paths.projects_dir.glob(f"*/{old}")
+                          if d.is_dir() and any(d.rglob("*.md")))
+            for d in left:
+                print(f"  note: {p['facet']} items are still in {d}: move them to "
+                      f"{d.parent / spec.store} (the store is now {spec.store!r})")
     rebuilt = [p["facet"] for p in todo if p["status"] in ("new", "changed")]
     crib = Crib.open()  # now serving them
     files = 0

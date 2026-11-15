@@ -834,7 +834,7 @@ class DuckDBStore:
         return {p["facet"]: f"{p['status']}: {p['detail']}" for p in self.facet_plan()
                 if p["status"] in ("new", "changed")}
 
-    def facet_sync(self, drop: bool = False) -> list[dict[str, Any]]:
+    def facet_sync(self, drop: bool = False, shared: bool = False) -> list[dict[str, Any]]:
         """Conform the store to the declared facets, under the migration lock, in
         one transaction (the plan it carried out). A facet gone from the facets
         file is dropped only with `drop`. Refuses while the facets file failed to
@@ -847,6 +847,12 @@ class DuckDBStore:
         with _migration_lock(self._migration_lock_path()):
             plan = [p for p in self.facet_plan() if p["status"] != "current"
                     and (drop or p["status"] != "removed")]
+            if self.SHARED and not shared and plan:
+                raise CribUserError(
+                    "this store is shared (the crib DuckDB server): a facet sync "
+                    "changes it for every machine using it. Make their facets files "
+                    "agree, then sync with shared=True (`crib facets sync --apply "
+                    "--shared`)")
             if not plan:
                 return []
 

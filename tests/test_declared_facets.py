@@ -1019,6 +1019,7 @@ def test_a_shared_store_needs_shared_to_change_a_facet(tmp_path):
         out["dry"] = cli("facets", "sync")
         out["plain"] = cli("facets", "sync", "--apply")
         crib = Crib.open()
+        out["store_gate"] = refused(lambda: crib.store.facet_sync())
         out["pending"] = sorted(crib.store.facet_pending())
         crib.close()
         out["shared"] = cli("facets", "sync", "--apply", "--shared")
@@ -1028,6 +1029,7 @@ def test_a_shared_store_needs_shared_to_change_a_facet(tmp_path):
     )
     assert "SHARED" in out["dry"][1] and "--shared" in out["dry"][1]
     assert out["plain"][0] == 1 and "refusing" in out["plain"][1]
+    assert "shared" in out["store_gate"]  # the store itself refuses, too
     assert out["pending"] == ["ticket"]
     assert out["shared"][0] == 0 and "every machine" in out["shared"][1]
     assert out["after"] == []
@@ -1289,6 +1291,11 @@ def test_a_moved_mapping_rereads_the_new_dir_and_drops_the_old(tmp_path):
         out["before"] = sorted(i.relpath for i in
                                crib.store.items({"project": "p", "kind": "routine"}).values())
         Path(REPO, ".crib").write_text("project: p\\nfacets:\\n  routine: {dir: routines2}\\n")
+        # its stamped items are still in workflows/: repointing would strand them
+        asyncio.run(crib._sync_mappings("p", CribLink.find(Path(REPO))))
+        out["held"] = sorted(i.relpath for i in
+                             crib.store.items({"project": "p", "kind": "routine"}).values())
+        Path(REPO, "workflows", "a.md").unlink()  # meant to start afresh there
         again = asyncio.run(crib._sync_mappings("p", CribLink.find(Path(REPO))))
         out["after"] = sorted(i.relpath for i in
                               crib.store.items({"project": "p", "kind": "routine"}).values())
@@ -1296,6 +1303,8 @@ def test_a_moved_mapping_rereads_the_new_dir_and_drops_the_old(tmp_path):
     """.replace("REPO", repr(str(repo))),
     )
     assert out["before"] == ["a.md"]
+    assert out["held"] == ["a.md"]  # the move is held while a.md would be stranded
+    assert "was moved" in out["_stderr"]
     assert out["after"] == ["b.md"]
     assert out["unchanged"] == {}  # nothing changed: nothing written
 

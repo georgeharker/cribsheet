@@ -148,6 +148,12 @@ class NoteStore:
                 "(a writable checkout), and crib picks the edit up"
             )
 
+    def suffix(self, project: str) -> str:
+        """What a new item's filename ends with here: its mapping's glob suffix
+        (FacetLocation.suffix), else `.md`."""
+        loc = self.location(project)
+        return loc.suffix if loc is not None and loc.prefix is None else ".md"
+
     def _refuse_unowned(self, project: str, relpath: str, verb: str) -> None:
         """A mapped location's items are the files its glob picks: a write to
         any other relpath there would make a file the facet never indexes or

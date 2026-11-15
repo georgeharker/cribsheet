@@ -114,7 +114,8 @@ class Learnings:
             for cand in (f"{ref_slug(b)}.md", f"{legacy_ref_slug(b)}.md"):
                 if self.store.abspath(proj, cand).exists():
                     return cand
-        return f"{ref_slug(symbol_key(entry))}.md"
+        # a new note's name ends as its location's glob wants (a mapped facet)
+        return f"{ref_slug(symbol_key(entry))}{self.store.suffix(proj)}"
 
     def attach(self, proj: str, entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich symbol entries in place with any attached learning (※) + a staleness

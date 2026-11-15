@@ -307,3 +307,107 @@ def test_the_cli_names_the_fix_when_the_daemon_lacks_a_tool(monkeypatch):
     args = cli.build_parser().parse_args(["note", "lookup", "q", "-p", "p"])
     with pytest.raises(CribUserError, match="running crib daemon has no `note_lookup`"):
         cli._run_daemon(args, Config())
+
+
+
+# ── review 2 ─────────────────────────────────────────────────────────────────
+
+
+def test_adopt_refuses_items_the_glob_cannot_see_and_overwrites_nothing(crib, tmp_path):
+    """S1: under glob **/*.dec.md the data dir's slug.md decisions would land
+    unindexed (and once replaced a repo file of the same name): refused, with
+    nothing moved and the repo file untouched."""
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions, glob: '**/*.dec.md'}\n")
+    (repo / "decisions").mkdir()
+    victim = repo / "decisions" / a["relpath"]
+    victim.write_text("REPO'S OWN FILE\n")
+    with pytest.raises(Exception, match="don't match the mapping's glob"):
+        run(crib.project_adopt(cwd=repo))
+    assert victim.read_text() == "REPO'S OWN FILE\n"
+    assert (crib.project_paths("p").home_dir("design") / a["relpath"]).exists()
+
+
+def test_move_files_never_overwrites(tmp_path):
+    from crib.app import Crib as _C
+
+    (tmp_path / "a").write_text("a")
+    (tmp_path / "b").write_text("b")
+    (tmp_path / "x").mkdir()
+    (tmp_path / "x" / "b").write_text("theirs")
+    with pytest.raises(Exception, match="would overwrite"):
+        _C._move_files([(tmp_path / "a", tmp_path / "x" / "a"),
+                        (tmp_path / "b", tmp_path / "x" / "b")], "things")
+    assert (tmp_path / "a").exists() and (tmp_path / "x" / "b").read_text() == "theirs"
+
+
+def test_a_new_item_is_named_for_its_mappings_glob(crib, tmp_path):
+    """S4: adds under glob **/*.dec.md produce <slug>.dec.md, which it takes."""
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions, glob: '**/*.dec.md'}\n")
+    (repo / "decisions").mkdir()
+    run(crib.project_adopt(cwd=repo))
+    a = run(crib.design_add("Keys are serials", "Widgets keyed by serial.", project="p"))
+    assert a["relpath"] == "keys-are-serials.dec.md"
+    assert (repo / "decisions" / "keys-are-serials.dec.md").exists()
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+
+
+def test_moving_a_mapping_onto_unrelated_markdown_keeps_it_and_stamps_nothing(
+        crib, tmp_path, capsys):
+    """S2: the new dir's README isn't the facet's items: the move is held,
+    and the README is never given an id."""
+    from crib.config import CribLink
+
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    run(crib.project_adopt(cwd=repo))
+    (repo / "guide").mkdir()
+    readme = repo / "guide" / "README.md"
+    readme.write_text("# Guide\n")
+    (repo / ".crib").write_text("project: p\nfacets:\n  design: {dir: guide}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    assert "was moved" in capsys.readouterr().err
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+    assert readme.read_text() == "# Guide\n"
+    # moving the files there (git mv) is what lets the change through
+    (repo / "decisions" / a["relpath"]).rename(repo / "guide" / a["relpath"])
+    run(crib._sync_mappings("p", link))
+    assert crib.project_paths("p").mappings["design"].root == repo / "guide"
+
+
+def test_a_pending_facets_items_still_gate_and_hold_edges(crib, tmp_path):
+    """S3: with decisions waiting to be moved, a plan item resting on a
+    proposed decision stays blocked, and the decision's dependents are still
+    known (forgetting it isn't silently clean)."""
+    from crib.config import CribLink
+
+    d = run(crib.design_add("Keys are serials", "Widgets keyed by serial.",
+                            project="p", proposed=True))
+    item = run(crib.plan_add("Build keys", rests_on=[d["relpath"]], project="p"))
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    assert crib.designstore.pending_move("p") is not None
+    assert crib.plan_next(project="p")["items"] == []  # gated by the proposal
+    rd = crib.plan_read(item["items"][0]["relpath"], "p")
+    assert rd["blocked"] and not rd["missing_deps"]
+    with pytest.raises(PendingMove):
+        run(crib.design_forget(d["relpath"], project="p"))
+
+
+def test_a_store_adopt_moves_all_or_nothing(crib, tmp_path):
+    """M1: a non-markdown file already at the store destination refuses the
+    store move before anything moves."""
+    note = run(crib.store_note("travels", "Note", "p"))
+    home = crib.project_paths("p").home_dir("notes")
+    (home / "pic.png").write_bytes(b"ours")
+    repo = _repo(tmp_path, "project: p\nstore: crib-store\n")
+    (repo / "crib-store" / "notes").mkdir(parents=True)
+    (repo / "crib-store" / "notes" / "pic.png").write_bytes(b"theirs")
+    with pytest.raises(Exception, match="would overwrite"):
+        run(crib.project_adopt(cwd=repo))
+    assert (home / note["relpath"]).exists()
+    assert (repo / "crib-store" / "notes" / "pic.png").read_bytes() == b"theirs"

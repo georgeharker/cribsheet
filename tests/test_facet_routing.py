@@ -187,3 +187,26 @@ def test_sibling_mappings_and_a_store_coexist(tmp_path, capsys):
     )
     assert set(link.facets) == {"design", "plan"}
     assert "ignoring" not in capsys.readouterr().err
+
+
+
+@pytest.mark.parametrize("glob, ok", [("**/*.md", True), ("*.dec.md", True),
+                                      ("**/*.adr.md", True), ("adr/*.md", False),
+                                      ("*.txt", False), ("**/0*.md", False)])
+def test_a_writable_mapping_needs_a_glob_crib_can_name_items_under(tmp_path, glob, ok, capsys):
+    link = _crib_file(tmp_path, f"project: p\nfacets:\n  design: {{dir: d, glob: '{glob}'}}\n")
+    assert ("design" in link.facets) is ok
+    if not ok:
+        assert "writable mapping's glob" in capsys.readouterr().err
+
+
+def test_a_mapping_dir_resolving_outside_the_repo_says_so(tmp_path, capsys):
+    outside = tmp_path / "elsewhere"
+    outside.mkdir()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "link").symlink_to(outside)
+    link = _crib_file(repo, "project: p\nfacets:\n  design: {dir: link}\n")
+    assert "design" not in link.facets
+    err = capsys.readouterr().err
+    assert "outside the repo" in err or "escapes" in err

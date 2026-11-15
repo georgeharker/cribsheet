@@ -387,18 +387,19 @@ class Watcher(_FSWatcher):
         `index` / `adopt` is live at once rather than at the next restart."""
         want = {(project, store): d for store, d in roots.items()}
         old = {k: d for k, d in self.mapped.items() if k[0] == project}
+        # A NEW dict, rebound once: the watchdog thread reads `self.mapped`
+        # (_decode) while this runs on the event loop.
+        mapped = {k: d for k, d in self.mapped.items()
+                  if k[0] != project or want.get(k) == d}
+        added = {k: d for k, d in want.items() if old.get(k) != d and d.is_dir()}
+        mapped.update(added)
+        self.mapped = mapped
+        still = {str(d) for d in (*mapped.values(), *self.stores.values())}
         for k, d in old.items():
-            if want.get(k) != d:
-                del self.mapped[k]
-        still = {str(d) for d in (*self.mapped.values(), *self.stores.values())}
-        for k, d in old.items():
-            if want.get(k) != d and str(d) not in still and str(d) not in {
-                    str(x) for x in want.values()}:
+            if want.get(k) != d and str(d) not in still:
                 self.forget_dir(d)
-        for k, d in want.items():
-            if old.get(k) != d and d.is_dir():
-                self.mapped[k] = d
-                self._schedule_dir(str(d))
+        for d in added.values():
+            self._schedule_dir(str(d))
 
     def _watch_dirs(self) -> list[str]:
         self.projects_dir.mkdir(parents=True, exist_ok=True)

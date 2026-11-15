@@ -470,29 +470,47 @@ class Crib:
             loc = pp.mappings.get(spec.store)
             if loc is None or not loc.available:
                 continue
-            n = sum(1 for r in scan(loc.root, ".md", recursive=True) if loc.owns(r))
+            # the items, by the ids stamped in them: the new home "holds them"
+            # only if files there carry those ids (what moving them looks like;
+            # an unrelated README there doesn't count)
+            ids = self._stamped_ids(loc.root, [r for r in scan(loc.root, ".md", recursive=True)
+                                               if loc.owns(r)])
+            n = len(ids)
             if not n:
                 continue
             if new is None:
                 home = pp.home_dir(spec.store)
-                holds = home.is_dir() and any(home.rglob("*.md"))
+                found = self._stamped_ids(home, [str(f.relative_to(home))
+                                                 for f in home.rglob("*.md")]) if home.is_dir() else set()
             else:
                 root = link.facet_dir(noun)
                 m = link.facets[noun]
-                holds = root is not None and root.is_dir() and any(
-                    FacetLocation(root, "", m.glob).owns(r)
-                    for r in scan(root, ".md", recursive=True))
-            if holds:
+                nloc = FacetLocation(root, "", m.glob) if root is not None else None
+                found = self._stamped_ids(root, [r for r in scan(root, ".md", recursive=True)
+                                                 if nloc.owns(r)]) \
+                    if root is not None and nloc is not None and root.is_dir() else set()
+            if found & ids:
                 continue
             what = "removed" if new is None else "moved"
             where = link.root / ".crib" if link.root is not None else ".crib"
             print(f"[crib] {where}: facets.{noun} was {what}, but its "
                   f"{n} item(s) are still in {loc.root} and the new home is empty — "
                   f"keeping the mapping until they move: `crib project release` "
-                  f"(back to crib's data dir) or move the files"
-                  f"{'' if new is None else ' to the new dir'}, then re-run",
+                  f"(back to crib's data dir), move the files"
+                  f"{'' if new is None else ' to the new dir'}, or remove them if the "
+                  f"facet is meant to start afresh, then re-run",
                   file=sys.stderr)
             out.append(noun)
+        return out
+
+    @staticmethod
+    def _stamped_ids(root: Path, rels: list[str]) -> set[str]:
+        """The ids stamped in these files under `root` (unreadable ones skipped)."""
+        out: set[str] = set()
+        for r in rels:
+            with contextlib.suppress(OSError, UnicodeDecodeError):
+                if nid := notes.scan_id((root / r).read_text()):
+                    out.add(nid)
         return out
 
     def _rewatch(self, proj: str) -> None:
@@ -1007,13 +1025,14 @@ class Crib:
     def _unique_relpath(self, proj: str, slug: str, facet: str = facets.HOME) -> str:
         """`<slug>.md`, with a numeric suffix only on collision — predictable and
         hand-referenceable. Stable identity is the frontmatter `id`, not the path."""
-        base = self._facet_store(facet).dir(proj)
-        if not (base / f"{slug}.md").exists():
-            return f"{slug}.md"
+        store = self._facet_store(facet)
+        base, ext = store.dir(proj), store.suffix(proj)
+        if not (base / f"{slug}{ext}").exists():
+            return f"{slug}{ext}"
         i = 2
-        while (base / f"{slug}-{i}.md").exists():
+        while (base / f"{slug}-{i}{ext}").exists():
             i += 1
-        return f"{slug}-{i}.md"
+        return f"{slug}-{i}{ext}"
 
     # Write-time warnings (`similar`, Stage E4), measured on the live corpus
     # (1,141 items, 2026-11-13): an item's nearest same-project neighbour sits at
@@ -2724,22 +2743,25 @@ class Crib:
         return ids
 
     @staticmethod
+    def _tree_pairs(src: Path, dst: Path) -> list[tuple[Path, Path]]:
+        """`(file, its place under dst)` for every file under `src`."""
+        if not src.is_dir():
+            return []
+        return [(p, dst / p.relative_to(src)) for p in sorted(src.rglob("*")) if p.is_file()]
+
+    @staticmethod
     def _move_tree(src: Path, dst: Path) -> int:
         """Move every file under `src` to the same relpath under `dst`, returning
-        the count. Per-file (not one `shutil.move` of the dir) so a partially
-        populated destination is still a merge of trees rather than a refusal —
-        the "no merge" rule is enforced by the CALLERS, which refuse before any
-        file moves."""
+        the count: a version-ring entry's stashes (_move_ring). Per-file, and a
+        stash already at the destination is kept, never overwritten (items move
+        through `_move_files`, all or nothing)."""
 
         import shutil
 
         moved = 0
-        if not src.is_dir():
-            return 0
-        for p in sorted(src.rglob("*")):
-            if not p.is_file():
+        for p, target in Crib._tree_pairs(src, dst):
+            if target.exists():
                 continue
-            target = dst / p.relative_to(src)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(p), str(target))
             moved += 1
@@ -2764,6 +2786,11 @@ class Crib:
         two homes."""
         import shutil
 
+        if taken := [str(d) for _, d in pairs if d.exists()]:
+            raise CribUserError(
+                f"moving {what} would overwrite {len(taken)} existing file(s) "
+                f"({', '.join(taken[:3])}{', ...' if len(taken) > 3 else ''}): "
+                "nothing was moved. Move those aside and re-run")
         done: list[tuple[Path, Path]] = []
         try:
             for src, dst in pairs:
@@ -2800,8 +2827,6 @@ class Crib:
         its mapping (the explicit move a pending facet asks for), with their
         version-ring entries. Refuses to merge into a mapping that already
         holds that facet's items."""
-        from .filesync import scan
-
         pp = self.project_paths(proj)
         moved: dict[str, Any] = {}
         # Every refusal before any file moves: one facet's problem must not
@@ -2818,15 +2843,21 @@ class Crib:
                     f"{noun} items under crib's data dir ({pp.home_dir(seg)}) can't "
                     "move there: move them into that repo yourself, or forget them "
                     f"(`crib {noun} forget`) before mapping the facet")
-            if not loc.available and repo is not None and repo.is_dir() \
-                    and loc.root.resolve().is_relative_to(repo.resolve()):
-                loc.root.mkdir(parents=True)  # a first adopt makes the mapping's dir
-            if not loc.available:
+            makeable = (not loc.available and repo is not None and repo.is_dir()
+                        and loc.root.resolve().is_relative_to(repo.resolve()))
+            if not loc.available and not makeable:
                 raise CribUserError(
                     f"{proj}'s {noun} mapping {loc.token} isn't on this machine")
             src = pp.home_dir(seg)
-            there = [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]
+            there = [str(f.relative_to(loc.root)) for f in loc.root.rglob("*") if f.is_file()]
             here = [str(f.relative_to(src)) for f in sorted(src.rglob("*.md"))]
+            if stray := [r for r in here if not loc.owns(r)]:
+                raise CribUserError(
+                    f"{len(stray)} of {proj}'s {noun} items under crib's data dir "
+                    f"don't match the mapping's glob `{loc.glob}` "
+                    f"({', '.join(stray[:5])}{', ...' if len(stray) > 5 else ''}): "
+                    "moved there, the facet couldn't see them. Rename them to match, "
+                    "or widen the glob, then re-run")
             if clash := self._merge_clashes(here, there):
                 raise CribUserError(
                     f"{loc.root} already holds {noun} items that clash with the ones "
@@ -2835,6 +2866,7 @@ class Crib:
                     "Rename or remove one side's, then re-run")
             plan.append((seg, noun, loc, src))
         for _seg, noun, loc, src in plan:
+            loc.root.mkdir(parents=True, exist_ok=True)  # a first adopt makes it
             ring_ids = self._note_ring_ids(proj, src)
             n = self._move_files(
                 [(f, loc.root / f.relative_to(src)) for f in sorted(src.rglob("*.md"))],
@@ -3061,12 +3093,14 @@ class Crib:
             for nid in self._note_ring_ids(proj, src)
         ]
         store.mkdir(parents=True, exist_ok=True)
-        notes_moved = 0
-        for seg in segments:  # every unmapped pillar sibling travels together
-            src = pp.home_dir(seg)
-            notes_moved += self._move_tree(src, store / seg)
+        # every unmapped pillar sibling travels together, all or nothing
+        notes_moved = self._move_files(
+            [pair for seg in segments
+             for pair in self._tree_pairs(pp.home_dir(seg), store / seg)],
+            f"{proj}'s items into {store}")
+        for seg in segments:
             with contextlib.suppress(OSError):
-                src.rmdir()  # only if the move emptied it
+                pp.home_dir(seg).rmdir()  # only if the move emptied it
         versions_moved = self._move_ring(
             ring_ids, self.paths.versions_dir, store / ".versions"
         )
@@ -3139,9 +3173,10 @@ class Crib:
             if (src := pp.home_dir(seg)).is_dir()
             for nid in self._note_ring_ids(proj, src)
         ]
-        notes_moved = 0
-        for seg in PILLAR_SEGMENTS:
-            notes_moved += self._move_tree(pp.home_dir(seg), gdir / seg)
+        notes_moved = self._move_files(
+            [pair for seg in PILLAR_SEGMENTS
+             for pair in self._tree_pairs(pp.home_dir(seg), gdir / seg)],
+            f"{proj}'s items back to {gdir}")
         versions_moved = self._move_ring(
             ring_ids, pp.versions_dir, self.paths.versions_dir
         )
