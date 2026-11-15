@@ -5297,6 +5297,13 @@ class Crib:
         dep_remove/dep_add dance, and without pretending the work moved)."""
         return await self.designs.plan_reaffirm(self.resolve_project(project, cwd), ref, facet=facet)
 
+    async def graph_transition(
+        self, ref: str, verb: str, project: str | None = None, cwd: Path | None = None,
+        *, facet: str) -> dict[str, Any]:
+        """A declared graph facet's named transition (Designs.graph_transition)."""
+        return await self.designs.graph_transition(
+            self.resolve_project(project, cwd), ref, verb, facet=facet)
+
     async def design_promote(
         self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "design", to: str | None = None) -> dict[str, Any]:
         """Promote an extracted decision: proposed → active, hashes seeded fresh."""

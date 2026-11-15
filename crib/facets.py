@@ -380,6 +380,10 @@ def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, 
             if to not in values:
                 raise FacetSpecError(
                     f"facet {noun!r}: transition {verb!r} goes to {to!r}, not one of its statuses")
+            if values[to] == "retired":
+                raise FacetSpecError(
+                    f"facet {noun!r}: transition {verb!r} goes to {to!r} (role retired): "
+                    "an item is retired by being replaced (the supersede aspect)")
         if "progress" in have and "done" not in values.values():
             raise FacetSpecError(f"facet {noun!r}: the progress aspect needs a status with role done")
         if "supersede" in have and "retired" not in values.values():

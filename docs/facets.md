@@ -163,7 +163,12 @@ incident = "follows"
 
 - **Transitions** become verbs (`incident_shelve`, `crib incident shelve`),
   shaped by the role they move to: to `paused` or `dropped` they take a `why`
-  and revisit `triggers`; out of `gated`, just the item.
+  and revisit `triggers`; to any other role, just the item. A transition
+  moves an item from wherever it is: out of a `gated` status it ungates it
+  (re-recording what it rests on as of now), into a `done` one it answers
+  with what that unblocked, and an item already there is refused. A facet
+  without `progress` has no `status` verb, so its transitions are how its
+  items move. `retired` is reached only by `supersede`, never a transition.
 - **Links** have three kinds: `follows` (ordering: waits until the target is
   done), `rests_on` (grounding: blocked while the target is gated or stale),
   `informed_by` (context: never blocks). `edges` sets the default per target

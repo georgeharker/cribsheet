@@ -1348,6 +1348,79 @@ incident = "follows"
 """
 
 
+RFC = """
+[rfc]
+plural = "rfcs"
+aspects = ["links", "status"]
+
+[rfc.status]
+values = { draft = "gated", accepted = "open", building = "claimed", shipped = "done", rejected = "dropped" }
+initial = "draft"
+transitions = { accept = "accepted", build = "building", ship = "shipped", redraft = "draft", reject = "rejected" }
+"""
+
+
+def test_transitions_into_every_role_work(tmp_path):
+    """A transition moves an item from wherever it is, by role: ungating a
+    draft, into claimed and done (answering with what that unblocked), back
+    to gated; already-there refuses. Only pausing and dropping were covered
+    before, and the rest always failed (review fix 3). This facet has no
+    progress aspect, so transitions are its only way to move."""
+    out = _run(
+        tmp_path,
+        RFC,
+        """
+        import asyncio
+        from fastmcp import Client
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+
+        async def main():
+            async with Client(mcp) as c:
+                out["tools"] = sorted(t.name for t in await c.list_tools()
+                                      if t.name.startswith("rfc_"))
+
+                async def call(name, **args):
+                    try:
+                        return (await c.call_tool(name, args)).data
+                    except Exception as e:
+                        return {"error": str(e)}
+
+                a = await call("rfc_add", title="Async API",
+                               content="Make the client async.", project="p")
+                r = a["relpath"]
+                out["initial"] = (await call("rfc_read", ref=r, project="p"))["status"]
+                out["accept"] = (await call("rfc_accept", ref=r, project="p"))["status"]
+                out["again"] = (await call("rfc_accept", ref=r, project="p")).get("error")
+                out["build"] = (await call("rfc_build", ref=r, project="p"))["status"]
+                ship = await call("rfc_ship", ref=r, project="p")
+                out["ship"] = (ship["status"], "unblocked" in ship)
+                out["redraft"] = (await call("rfc_redraft", ref=r, project="p"))["status"]
+                out["reaccept"] = (await call("rfc_accept", ref=r, project="p"))["status"]
+                rej = await call("rfc_reject", ref=r, why="superseded by sync", project="p")
+                out["reject"] = rej.get("status")
+        asyncio.run(main())
+    """,
+    )
+    assert {"rfc_accept", "rfc_build", "rfc_ship", "rfc_redraft",
+            "rfc_reject"} <= set(out["tools"])
+    assert "rfc_status" not in out["tools"]  # no progress aspect
+    assert out["initial"] == "draft"
+    assert out["accept"] == "accepted"  # ungated
+    assert "already accepted" in out["again"]
+    assert out["build"] == "building"  # claimed
+    assert out["ship"] == ["shipped", True]  # done, answering with what it unblocked
+    assert out["redraft"] == "draft"  # back to gated
+    assert out["reaccept"] == "accepted"
+    assert out["reject"] == "rejected"
+
+
 def test_a_declared_graph_facet_runs_on_its_own_statuses(tmp_path):
     out = _run(
         tmp_path,

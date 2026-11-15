@@ -2081,6 +2081,30 @@ class Designs:
             "missing_sources": missing_sources,
         }
 
+    async def graph_transition(
+        self, proj: str, ref: str, verb: str, *, facet: str
+    ) -> dict[str, Any]:
+        """A declared graph facet's named transition (`[noun.status]
+        transitions`), into a status of any role but paused/dropped (those take
+        a why and triggers: `plan_park` / `plan_decline`). By where the item IS:
+        a gated item is ungated (`design_promote`: its hashes seeded fresh, as
+        of the confirmation); a retired one doesn't move (it was replaced:
+        supersede owns that); one already there is refused; anything else is
+        a status move (`plan_status`: a move to a done role answers with what
+        it unblocked)."""
+        spec = _spec(facet)
+        to = spec.transitions[verb]
+        node = self._resolve_ref(self._load_graph(proj), ref, facet)
+        if _is(node, "gated"):
+            return await self.design_promote(proj, ref, facet=facet, to=to)
+        if _is(node, "retired"):
+            raise CribUserError(
+                f"{node.title!r} is {node.status}: it was replaced, so it doesn't "
+                f"move (read what replaced it)")
+        if node.status == to:
+            raise CribUserError(f"{node.title!r} is already {to}")
+        return await self.plan_status(proj, ref, to, facet=facet)
+
     async def design_promote(
         self, proj: str, ref: str, *, facet: str = "design", to: str | None = None
     ) -> dict[str, Any]:

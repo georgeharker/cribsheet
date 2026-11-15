@@ -127,6 +127,13 @@ def test_parse_defaults_store_to_plural_and_always_has_core():
         ("routine", {"plural": "routines", "fields": {"n": "INT128"}}, "has type"),
         ("routine", {"plural": "routines", "store": "a/b"}, "directory name"),
         ("routine", {"plural": "routines", "legacy_stores": "old"}, "legacy_stores"),
+        (
+            "rfc",
+            {"plural": "rfcs", "aspects": ["links", "status", "supersede"],
+             "status": {"values": {"open": "open", "gone": "retired"},
+                        "transitions": {"retire": "gone"}}},
+            "role retired",
+        ),
     ],
 )
 def test_parse_refuses_a_bad_spec(noun, raw, match):

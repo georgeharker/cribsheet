@@ -1152,6 +1152,20 @@ def _g_move(crib, f):
 
 
 # A transition's body, by the role of the status it moves to.
+def _t_move(verb: str):
+    """A declared facet's transition to any role but paused/dropped: the engine
+    decides by where the item is (Designs.graph_transition)."""
+    def make(crib, f):
+        async def body(
+            ref: str, project: str | None = None, project_path: str | None = None
+        ) -> dict[str, Any]:
+            return await crib.graph_transition(ref, verb, project, facet=f.noun)
+
+        return body
+
+    return make
+
+
 def _t_ungate(verb: str):
     def make(crib, f):
         async def body(
@@ -1218,7 +1232,10 @@ def _transition_verbs(f: FacetSpec) -> list[Verb]:
         elif role == "dropped":
             make, policy, text = _t_drop(verb), "write", "Drop a {n} (it moves to %s), saying why, and what would reopen it."
         else:
-            make, policy, text = _t_ungate(verb), "read", "Move a {n} to %s."
+            # crib's own decisions keep promote (proposed -> active, only);
+            # a declared facet's transitions move from wherever the item is
+            make = _t_ungate(verb) if f.builtin else _t_move(verb)
+            policy, text = "read", "Move a {n} to %s."
         out.append(Verb(verb, "status", policy, False, _gd(verb, _gen(text % to)), make))
     return out
 
