@@ -1374,6 +1374,32 @@ class FacetView:
         """Its CLI subcommand word."""
         return self.spec.verb_names.get(verb, verb).replace("_", "-")
 
+    def command(self, verb: str) -> str:
+        """Its full CLI command (`crib plan status`)."""
+        return f"crib {self.spec.noun} {self.cli(verb)}"
+
+    def status_for(self, role: str) -> str | None:
+        """This facet's (first) status playing `role`, or None."""
+        return next(iter(self.spec.with_role(role)), None)
+
+    def describe(self, verb: str) -> str:
+        """`verb`'s tool description: its template's wording, then the facet's
+        own (`about`, and `[<noun>.when]` for this verb), then its fields'
+        parameters or filters."""
+        t = self.verb(verb)
+        if t is None:
+            raise KeyError(f"{self.spec.noun} has no verb {verb!r}")
+        doc = t.describe(self.spec)
+        own = [w for w in (self.spec.about, self.spec.when.get(verb, "")) if w]
+        if own:  # between the template's text and its trailing newlines
+            body = doc.rstrip("\n")
+            doc = body + "\n\n" + "\n\n".join(own) + doc[len(body):]
+        if t.fields and self.spec.params and t.verb != "list":
+            doc += _fields_text(self.spec, t.fields)
+        elif t.verb == "list" and t.fields:  # the field-filtering list
+            doc += _fields_text(self.spec, "filter")
+        return doc
+
     @property
     def tools(self) -> tuple[str, ...]:
         return tuple(self.tool(t.verb) for t in self.verbs)
@@ -1414,12 +1440,7 @@ def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list
             body: Any = t.make(crib, spec)  # a plain function: FastMCP reads these
             body.__name__ = body.__qualname__ = name
             _with_fields(body, spec, t.fields)
-            doc = t.describe(spec)
-            if t.fields and spec.params and t.verb != "list":
-                doc += _fields_text(spec, t.fields)
-            elif t.verb == "list" and t.fields:  # the field-filtering list
-                doc += _fields_text(spec, "filter")
-            body.__doc__ = doc
+            body.__doc__ = v.describe(t.verb)
             crib_tool(t.policy, echo=t.echo, elicit=t.elicit,
                       needs_target=t.needs_target)(body)
             names.append(name)

@@ -38,10 +38,14 @@ Uncomment (or write) a facet:
 [routine]
 plural = "routines"
 aspects = ["core", "enriched"]
+about = "A routine is a job an agent runs on a schedule. Use it for recurring work; a one-off fact is a note."
 
 [routine.fields]
 schedule = "str"
 timeout = "int"
+
+[routine.when]
+add = "Put the schedule in `schedule` (e.g. \"7am weekdays\")."
 ```
 
 Then:
@@ -84,8 +88,12 @@ One table per facet:
 | `aspects` | what it can do (below). `core` is implied. |
 | `[<noun>.fields]` | its own typed fields (below). |
 | `disable` | verbs it doesn't want, e.g. `["import", "move"]`. Checked against the verbs its aspects give it. |
+| `about` | what one of these items is, and when to reach for this family rather than notes. Added to every one of its tool descriptions, after crib's own wording (an agent decides which tool to call from these). |
+| `[<noun>.when]` | `verb = "wording"`: extra wording for one verb's tool, e.g. `add = "Name the schedule in the title."` |
 
 crib's own facets can't be changed from this file yet (only declared ones).
+`about` and `when` change only what agents read: no `crib facets sync` is
+needed, just a daemon restart.
 
 ## Aspects: what a facet can do
 

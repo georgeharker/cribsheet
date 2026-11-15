@@ -234,7 +234,7 @@ HOME = "note"
 _KEYS = frozenset(
     {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
      "status", "edges", "label", "requires_body", "extract", "report_taint",
-     "export_with_deps"}
+     "export_with_deps", "about", "when"}
 )
 
 
@@ -285,6 +285,12 @@ class FacetSpec:
     def with_role(self, *roles: str) -> tuple[str, ...]:
         """This facet's statuses playing any of `roles`, in declared order."""
         return tuple(s for s, r in self.statuses.items() if r in roles)
+
+    # Wording an agent reads in every one of this facet's tool descriptions,
+    # after the template's: what one of these items is, and when to reach for
+    # this family (rather than notes). `when` adds wording to one verb's tool.
+    about: str = ""
+    when: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -391,6 +397,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
             f"facet {noun!r}: can't disable {bad}: its verbs are {list(available)}")
     if not set(available) - set(disable):
         raise FacetSpecError(f"facet {noun!r}: disables every one of its verbs")
+    about, when = _wording(noun, raw, [v for v in available if v not in disable])
     return FacetSpec(
         noun=noun,
         plural=plural,
@@ -401,9 +408,28 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         verb_names=MappingProxyType(dict(verbs)),
         params=MappingProxyType(params),
         disabled=frozenset(str(v) for v in disable),
+        about=about,
+        when=MappingProxyType(when),
         **graph,
         builtin=builtin,
     )
+
+
+def _wording(noun: str, raw: Mapping[str, Any],
+             verbs: list[str]) -> tuple[str, dict[str, str]]:
+    """A spec's `about` (str) and `[<noun>.when]` (verb = wording, one of its
+    own verbs)."""
+    about = raw.get("about", "")
+    if not isinstance(about, str):
+        raise FacetSpecError(f"facet {noun!r}: about must be a string")
+    when = raw.get("when", {})
+    if not isinstance(when, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in when.items()):
+        raise FacetSpecError(f"facet {noun!r}: when must be a table of verb = wording")
+    if bad := sorted(set(when) - set(verbs)):
+        raise FacetSpecError(
+            f"facet {noun!r}: [{noun}.when] names {bad}, not among its verbs {verbs}")
+    return about.strip(), {k: v.strip() for k, v in when.items()}
 
 
 def _check_shape(noun: str, have: set[str], raw: Mapping[str, Any]) -> None:
@@ -622,7 +648,7 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
     the aspects' own fields left out (they come with the aspect)."""
 
     def q(v: str) -> str:
-        return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
+        return '"' + v.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n") + '"'
 
     def arr(vs: Iterable[str]) -> str:
         return "[" + ", ".join(q(v) for v in vs) + "]"
@@ -643,6 +669,8 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"disable = {arr(sorted(s.disabled))}")
         if s.label:
             out.append(f"label = {q(s.label)}")
+        if s.about:
+            out.append(f"about = {q(s.about)}")
         if s.requires_body:
             out.append("requires_body = true")
         if s.extract:
@@ -655,6 +683,9 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
         if own:
             out.append(f"\n[{s.noun}.fields]")
             out += [f"{n} = {q(t)}" for n, t in own.items()]
+        if s.when:
+            out.append(f"\n[{s.noun}.when]")
+            out += [f"{v} = {q(w)}" for v, w in s.when.items()]
         if s.verb_names:
             out.append(f"\n[{s.noun}.verbs]")
             out += [f"{v} = {q(n)}" for v, n in s.verb_names.items()]
@@ -695,6 +726,9 @@ STARTER = '''# crib's system facets file: declare your own kinds of item (facets
 #            == != re for str). Note-like and anchored facets; not yet on a
 #            graph facet
 #   disable: verbs this facet doesn't want
+#   about:   what one of these items is and when to use this family (rather
+#            than notes): added to every one of its tool descriptions
+#   [<noun>.when]: verb = extra wording for that one tool
 #
 # After an edit here: `crib facets sync` shows what the store needs,
 # `crib facets sync --apply` does it, then restart the daemon. A repo maps a
@@ -707,6 +741,7 @@ STARTER = '''# crib's system facets file: declare your own kinds of item (facets
 # [routine]
 # plural = "routines"
 # aspects = ["core", "enriched"]
+# about = "A routine is a job an agent runs on a schedule. Use it for recurring work; a one-off fact is a note."
 # disable = ["import"]
 #
 # [routine.fields]

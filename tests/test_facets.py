@@ -500,3 +500,56 @@ def test_every_graph_verb_has_an_engine_operation():
     for op in verbs.GRAPH_OPS.values():
         for name in (op[1:] if isinstance(op, tuple) else (op,)):
             assert callable(getattr(Crib, name)), name
+
+
+
+def test_a_facets_own_wording_joins_every_tool_description():
+    """`about` follows the template's wording in every tool's description;
+    `[<noun>.when]` adds to one verb's; fields' text comes last (factory F2)."""
+    from crib import verbs
+
+    s = parse("routine", {
+        "plural": "routines", "fields": {"schedule": "str"},
+        "about": "A routine is a scheduled job an agent runs.",
+        "when": {"add": "Name the schedule in the title."},
+    })
+    v = verbs.view(s)
+    add, read = v.describe("add"), v.describe("read")
+    assert "A routine is a scheduled job" in add and "A routine is a scheduled job" in read
+    assert "Name the schedule" in add and "Name the schedule" not in read
+    assert add.index("scheduled job") < add.index("Name the schedule") < add.index("Fields:")
+    plain = verbs.view(parse("routine", {"plural": "routines"})).describe("read")
+    assert v.describe("read").startswith(plain.rstrip("\n"))  # the template first
+
+
+@pytest.mark.parametrize(
+    ("raw", "match"),
+    [
+        ({"about": 3}, "about must be a string"),
+        ({"when": {"add": 1}}, "table of verb = wording"),
+        ({"when": {"dep_add": "x"}}, "not among its verbs"),
+        ({"when": {"move": "x"}, "disable": ["move"]}, "not among its verbs"),
+    ],
+)
+def test_bad_wording_is_refused(raw, match):
+    with pytest.raises(FacetSpecError, match=match):
+        parse("routine", {"plural": "routines", **raw})
+
+
+def test_wording_round_trips_through_toml():
+    s = parse("routine", {"plural": "routines", "about": 'Two lines,\nwith "quotes".',
+                          "when": {"add": "Say when."}})
+    again = load(facets.to_toml([s]))[0]
+    assert (again.about, dict(again.when)) == (s.about, dict(s.when))
+
+
+def test_the_view_names_a_facets_tools_commands_and_statuses():
+    from crib import verbs
+
+    plan = verbs.view(facets.by_noun("plan"))
+    assert plan.tool("status") == "plan_status"
+    assert plan.command("review_apply") == "crib plan review-apply"
+    assert plan.status_for("claimed") == "in-progress"
+    assert plan.status_for("gated") is None
+    note = verbs.view(facets.by_noun("note"))
+    assert note.tool("add") == "note_store" and note.command("add") == "crib note store"

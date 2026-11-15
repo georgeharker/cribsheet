@@ -3042,7 +3042,8 @@ def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
                 print(f"[crib] facet {spec.noun!r} has no CLI commands: {why}",
                       file=sys.stderr)
                 continue
-            what = "symbol-anchored" if spec.has("anchored") else "search, read, write"
+            what = ("symbol-anchored" if spec.has("anchored") else "search, read, write")
+            what = spec.about.splitlines()[0] if spec.about else what
             n = sub.add_parser(spec.noun, help=f"{spec.plural}: {what}")
             fsub = n.add_subparsers(dest=f"{spec.noun}_verb", required=True)
         _facet_verb_parsers(fsub, spec, proj)

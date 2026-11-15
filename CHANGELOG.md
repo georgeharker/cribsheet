@@ -18,7 +18,10 @@ version has no heading here.
   starter). A facet is a spec: a noun, a plural, the aspects it has, and its
   own typed fields. It gets the verbs of its aspects as MCP tools and CLI
   commands (`routine_add`, `crib routine lookup`, ...), its own store, search
-  scope and tool set (`--tools routines:ro`). See `docs/facets.md`.
+  scope and tool set (`--tools routines:ro`). Its `about` (what an item is,
+  when to use the family) and `[<noun>.when]` wording join crib's own in its
+  tool descriptions, so agents know when to reach for it. See
+  `docs/facets.md`.
 - **Three kinds of facet.** Note-like (core, optionally enriched with
   summaries and keywords), anchored to code like learnings (for example a
   review agent's findings, shown on `code_dossier` beside learnings), and
