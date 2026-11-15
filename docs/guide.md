@@ -329,4 +329,6 @@ install; see the [README](../README.md#quickstart).
   including the full design/plan verb tables and how the two edge families check.
 - [storage.md](storage.md) — where each kind of content lives, who owns the bytes,
   and which verbs may write them.
+- [facets.md](facets.md) — declare your own kinds of item (facets): fields,
+  statuses, repo mappings, and how agents learn about them.
 - [resume-on-new-machine.md](resume-on-new-machine.md) — standing memory up on a new box.

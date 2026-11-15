@@ -56,11 +56,14 @@ version has no heading here.
 
 ### Changed
 
+- **Python 3.14 or newer** (was 3.13).
 - crib's own pillars (notes, decisions, plans, learnings) are now specs in
   the same registry, and their tools and commands are generated from the
   same templates. Their names, parameters, descriptions and `--help` are
   unchanged (held to the byte by a snapshot test).
 - `crib note -h` lists `import-memory` first.
+- `crib design -h` and `crib plan -h` list their subcommands in the order the
+  registry declares them.
 
 ### Upgrading
 

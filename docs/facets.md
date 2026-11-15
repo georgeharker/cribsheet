@@ -217,7 +217,7 @@ facets:
 | key | meaning |
 |---|---|
 | `dir` | repo-relative; confined to the repo. A directory of the facet's own: not the repo root, not inside `.git`, not overlapping another mapping or the `store:` dir (such an entry is warned about and ignored). |
-| `glob` | which files under `dir` are the facet's (default `**/*.md`). |
+| `glob` | which files under `dir` are the facet's (default `**/*.md`). A writable mapping's glob is `*<suffix>` or `**/*<suffix>` ending in `.md` (`**/*.dec.md`), and new items are named to match (`<slug>.dec.md`); a read-only one can be any glob. |
 | `read_only` | indexed and searched, never written: write verbs refuse with the reason (edit the files in the repo; the watcher picks it up). |
 | `ids` | `stamp` (default): crib writes an `id:` into each file's frontmatter on first index, so history and links survive renames. `derived`: the id comes from the file's path and crib writes nothing; a rename is a new item. |
 
@@ -268,9 +268,13 @@ naming the fix, and `crib project doctor` reports "waiting to be moved").
 - Files under the pillar's directory that aren't markdown stay where they
   are, and adopt lists them.
 - Removing (or moving) a mapping in `.crib` while its items are still in the
-  mapped directory, and the new home is empty, would strand them: crib keeps
-  the recorded mapping and says so, until `crib project release` moves them
-  back (or you move the files yourself).
+  mapped directory would strand them: crib keeps the recorded mapping and
+  says so, until the items are where the new mapping points (`crib project
+  release` moves them back to crib's data dir; `git mv` moves them to a new
+  dir), or you remove them to start afresh. Other markdown already in the new
+  dir (a README) doesn't count as the items, and isn't stamped.
+- Adopt refuses items under crib's data dir that the mapping's glob wouldn't
+  take (moved, the facet couldn't see them), and never overwrites a file.
 - While one facet waits to be moved, only its own verbs refuse: the rest of
   the graph keeps working (a dependency on a waiting item just doesn't
   resolve until it moves).

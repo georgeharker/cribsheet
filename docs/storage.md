@@ -112,7 +112,11 @@ facets:
 - **A built-in pillar** (decisions, plans, learnings) maps writable with
   stamped ids. Its existing items are moved by `crib project adopt` and back
   by `crib project release`; until then it is *pending* (its verbs refuse,
-  naming the fix; `crib project doctor` reports it). Notes still move with
+  naming the fix; `crib project doctor` reports it), while the rest of the
+  graph keeps using its items. Adopt merges into a directory that already
+  holds items when no file would be overwritten, refuses before moving
+  anything, and is safe to re-run after an interruption (details in
+  [facets.md](facets.md#keeping-a-pillar-in-the-repo)). Notes still move with
   `store:`.
 - **A declared facet** may also map read-only (indexed, never written) and/or
   with `ids: derived` (the id comes from the path; crib writes nothing).

@@ -57,6 +57,8 @@ with the heavy deps isolated:
 uv pip install cribsheet     # or: uv tool install cribsheet  ·  pipx install cribsheet
 ```
 
+crib needs Python 3.14 or newer (`uv tool install` and `uvx` fetch one for you).
+
 That's the complete product — store, ONNX embedder (no torch), MCP server + warm
 daemon, watcher, and generation (polyllmkit, pulled from PyPI). The one genuine
 extra is `[st]`, the torch embedder (host-specific wheels). No submodule dance —
@@ -254,6 +256,12 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   crib memory sync                               # thereafter: commit + pull + push
   ```
   Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
+- **Your own kinds of item** — declare facets of your own (workflows, review
+  findings, tickets, incidents) in `~/.config/crib/facets.toml`: each gets its
+  own store, search, typed fields and tools (`routine_add`, `crib routine
+  lookup`), and a repo can map one onto a directory of its own. `crib facets
+  init` writes a commented starter; [docs/facets.md](docs/facets.md) has the
+  rest.
 - **Mirror Claude's own memory** — `crib note import-memory` (MCP: `note_import_memory`,
   so an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
   (host-namespaced) and live-syncs it, so it's searchable alongside everything else.
@@ -331,6 +339,8 @@ The deep dives live in the docs — see **[Documentation](#documentation)** belo
   noun, every verb, one line each.
 - **[docs/storage.md](docs/storage.md)** — where each kind of content lives, who owns
   the bytes, and which verbs may write them.
+- **[docs/facets.md](docs/facets.md)** — custom facets: declare your own kinds of
+  item, their fields, statuses and repo mappings.
 - **[docs/vector-store.md](docs/vector-store.md)** — the DuckDB index: embedded vs
   shared mode, configuration, the per-machine caches, and recovery.
 - **[docs/migrating-to-duckdb.md](docs/migrating-to-duckdb.md)** — upgrading from
