@@ -1518,7 +1518,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Every generated facet's subcommands (notes' and learnings' under their
     # nouns, a declared facet's under its own): the CLI half of crib.verbs'
     # templates (_FACET_CLI, _ANCHORED_CLI).
-    _facet_parsers(sub, {"note": notesub, "learning": learnsub}, proj)
+
     s = notesub.add_parser(
         "import-memory", help="mirror Claude Code's harness memory into a crib project"
     )
@@ -1628,372 +1628,11 @@ def build_parser() -> argparse.ArgumentParser:
     designsub = n_design.add_subparsers(dest="design_verb")
     n_plan = sub.add_parser("plan", help="persistent, resumable plan items")
     plansub = n_plan.add_subparsers(dest="plan_verb")
-
-    # the three ways to give a body: positional, `-` for stdin, `--file`; omitted
-    # at a terminal opens $EDITOR (shell-quoting prose is the worst friction here)
-    def body_args(sp, what: str) -> None:
-        sp.add_argument(
-            "content",
-            nargs="?",
-            help=f"{what} ('-' reads stdin; omitted opens $EDITOR)",
-        )
-        sp.add_argument("--file", dest="file", help=f"read the {what} from a file")
-
-    # `--source doc#heading` — where a decision/item came FROM. Attribution edges
-    # check (a changed section taints) but never gate, so they hang off the same
-    # authoring verbs rather than getting a facet of their own. A source names a
-    # SECTION: a bare doc is refused (unless the doc has no headings at all).
-    def source_arg(sp) -> None:
-        sp.add_argument(
-            "--source",
-            action="append",
-            dest="sources",
-            metavar="DOC#HEADING",
-            help="doc SECTION this was drawn from (repeatable)",
-        )
-
-    s = designsub.add_parser(
-        "add", help="record a design decision (body: arg, '-', --file or $EDITOR)"
-    )
-    s.add_argument("title")
-    body_args(s, "the decision, why, what was rejected")
-    proj(s)
-    s.add_argument(
-        "--dep",
-        action="append",
-        dest="deps",
-        help="a dependency of the default kind for its target (repeatable): a "
-        "decision is rests_on, a plan item follows, a note informed_by",
-    )
-    _dep_kind_flags(s)
-    source_arg(s)
-    s.add_argument(
-        "--proposed",
-        action="store_true",
-        help="land it in the import tier (taints nothing until promoted)",
-    )
-
-    s = designsub.add_parser(
-        "read", help="a decision's dossier: body + annotated edges + taint"
-    )
-    s.add_argument("ref")
-    proj(s)
-
-    s = designsub.add_parser(
-        "export",
-        help="the whole decision graph as ONE markdown doc (dep-topological, "
-        "deterministic) — --out to write a file, else stdout",
-    )
-    proj(s)
-    s.add_argument(
-        "--out",
-        type=Path,
-        default=None,
-        help="write the markdown here (e.g. docs/STATE-designs.md) instead of stdout",
-    )
-
-    s = designsub.add_parser(
-        "edit", help="rewrite a decision; lists what the change tainted"
-    )
-    s.add_argument("ref")
-    body_args(s, "the new body")
-    proj(s)
-    source_arg(s)
-
-    s = designsub.add_parser(
-        "append", help="extend a decision; lists what the change tainted"
-    )
-    s.add_argument("ref")
-    body_args(s, "the text to append")
-    proj(s)
-    s.add_argument(
-        "--source",
-        action="append",
-        default=[],
-        help="ADD a doc-section citation (doc.md#Heading; repeatable; "
-        "existing citations keep their capture-time hashes)",
-    )
-
-    s = designsub.add_parser(
-        "lookup",
-        aliases=["search"],
-        help="semantic search over DECISIONS (hits flag stale ones)",
-    )
-    s.add_argument("query")
-    proj(s)
-    s.add_argument("-k", type=int, default=8)
-    s.add_argument(
-        "--hint",
-        action="append",
-        dest="hints",
-        help="exact strings you already know (decision titles, symbols) — "
-        "each runs as its own exact-term route; repeatable",
-    )
-
-    s = designsub.add_parser(
-        "list", help="every decision as a table (--tainted filters to stale)"
-    )
-    proj(s)
-    s.add_argument(
-        "--tainted", action="store_true", help="only decisions that need re-reading"
-    )
-
-    for _v, _h in (
-        ("dep-add", "declare that a decision depends on another (default kind: by target)"),
-        ("dep-remove", "drop a dependency edge between decisions"),
-    ):
-        _s = designsub.add_parser(_v, help=_h)
-        _s.add_argument("ref")
-        _s.add_argument("dep_ref", metavar="dep")
-        proj(_s)
-        if _v == "dep-add":
-            _dep_kind_arg(_s)
-
-    s = designsub.add_parser(
-        "forget", help="delete a decision (refuses while dependents exist)"
-    )
-    s.add_argument("ref")
-    proj(s)
-    s.add_argument(
-        "--force", action="store_true", help="delete anyway, leaving dependents tainted"
-    )
-
-    s = designsub.add_parser(
-        "check", help="which decisions are stale w.r.t. what they build on"
-    )
-    s.add_argument("ref", nargs="?")
-    proj(s)
-
-    s = designsub.add_parser(
-        "reaffirm", help="re-record a decision's dep hashes (you re-read it)"
-    )
-    s.add_argument("ref")
-    proj(s)
-
-    s = designsub.add_parser(
-        "tree", help="dependency tree around a decision (taint-flagged)"
-    )
-    s.add_argument("ref", nargs="?")
-    proj(s)
-    s.add_argument(
-        "--dependents",
-        action="store_true",
-        help="what builds ON this (default: what this builds on)",
-    )
-    s.add_argument("--depth", type=int, default=6)
-    s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
-
-    s = designsub.add_parser(
-        "graph",
-        help="the decision map as {nodes, edges} (taint-flagged; "
-        "same shape as `code graph --edges`)",
-    )
-    proj(s)
-    s.add_argument(
-        "--sources",
-        action="store_true",
-        help="add doc-section attribution nodes + `source` edges",
-    )
-
-    s = designsub.add_parser(
-        "supersede", help="mark a decision superseded + taint its dependents"
-    )
-    s.add_argument("ref")
-    s.add_argument("by", nargs="?")
-    proj(s)
-
-    s = designsub.add_parser(
-        "promote", help="proposed → active (an extracted decision, confirmed)"
-    )
-    s.add_argument("ref")
-    proj(s)
-
-    for _sub, _what in ((designsub, "decisions"), (plansub, "actionable work")):
-        _s = _sub.add_parser(
-            "import", help=f"prepare a doc for extraction into {_what} (writes nothing)"
-        )
-        _s.add_argument("doc", help="note relpath, or a repo path indexed in situ")
-        proj(_s)
-
-    s = plansub.add_parser(
-        "graph",
-        help="the plan as {nodes, edges}, including the decisions items rest on",
-    )
-    proj(s)
-    s.add_argument(
-        "--sources",
-        action="store_true",
-        help="add doc-section attribution nodes + `source` edges",
-    )
-
-    s = plansub.add_parser(
-        "add", help="add plan item(s) — body optional, `--item` adds more"
-    )
-    s.add_argument("title")
-    body_args(s, "the item's detail (optional)")
-    proj(s)
-    s.add_argument(
-        "--dep",
-        action="append",
-        dest="deps",
-        help="a dependency of the default kind for its target (repeatable): a "
-        "plan item is follows, a decision rests_on, a note informed_by",
-    )
-    _dep_kind_flags(s)
-    source_arg(s)
-    s.add_argument(
-        "--item",
-        action="append",
-        dest="extra_items",
-        metavar="TITLE",
-        help="another title-only item, added after this one (repeatable)",
-    )
-    s.add_argument("--after")
-    s.add_argument("--before")
-
-    s = plansub.add_parser(
-        "lookup", aliases=["search"], help="semantic search over PLAN ITEMS"
-    )
-    s.add_argument("query")
-    proj(s)
-    s.add_argument("-k", type=int, default=8)
-    s.add_argument(
-        "--hint",
-        action="append",
-        dest="hints",
-        help="exact strings you already know (item titles, refs) — "
-        "each runs as its own exact-term route; repeatable",
-    )
-
-    s = plansub.add_parser(
-        "reaffirm",
-        help="re-record an item's dep/source hashes — its ground "
-        "moved, you re-read it, it still stands",
-    )
-    s.add_argument("ref")
-    proj(s)
-
-    s = plansub.add_parser(
-        "status", help="set an item's status (todo/in-progress/parked/done/verified)"
-    )
-    s.add_argument("ref")
-    s.add_argument("status")
-    proj(s)
-
-    s = plansub.add_parser(
-        "park",
-        help="park an item — not now, with a reason; optional trigger refs whose "
-        "change SURFACE it (never auto-wake)",
-    )
-    s.add_argument("ref")
-    s.add_argument(
-        "--trigger",
-        action="append",
-        dest="triggers",
-        help="pillar-qualified ref to watch (design/plan); repeatable — "
-        "each records its own body-hash baseline",
-    )
-    s.add_argument(
-        "--why",
-        help="why it is parked — rides the record and a dated body line "
-        "(this is what makes the deferral searchable)",
-    )
-    proj(s)
-
-    s = plansub.add_parser(
-        "decline",
-        help="decline an item — never scheduled, remembered with the why-not "
-        "(the rationale is REQUIRED)",
-    )
-    s.add_argument("ref")
-    s.add_argument(
-        "--why",
-        required=True,
-        help="the why-not — the payload a future re-proposal comes back for",
-    )
-    s.add_argument(
-        "--trigger",
-        action="append",
-        dest="triggers",
-        help="pillar-qualified ref to watch — fires on the watched ref's STATUS "
-        "transitions (promoted/superseded), not prose rewording; repeatable",
-    )
-    proj(s)
-
-    s = plansub.add_parser(
-        "read", help="an item's dossier: body + status + what it's blocked on"
-    )
-    s.add_argument("ref")
-    proj(s)
-
-    s = plansub.add_parser(
-        "edit", help="rewrite an item's body; lists what the change tainted"
-    )
-    s.add_argument("ref")
-    body_args(s, "the new body")
-    proj(s)
-    source_arg(s)
-
-    s = plansub.add_parser(
-        "append", help="extend an item's body; lists what the change tainted"
-    )
-    s.add_argument("ref")
-    body_args(s, "the text to append")
-    proj(s)
-    s.add_argument(
-        "--source",
-        action="append",
-        default=[],
-        help="ADD a doc-section citation (doc.md#Heading; repeatable; "
-        "existing citations keep their capture-time hashes)",
-    )
-
-    for _v, _h in (
-        ("dep-add", "declare that an item depends on another (default kind: by target)"),
-        ("dep-remove", "drop a must-precede edge between items"),
-    ):
-        _s = plansub.add_parser(_v, help=_h)
-        _s.add_argument("ref")
-        _s.add_argument("dep_ref", metavar="dep")
-        proj(_s)
-        if _v == "dep-add":
-            _dep_kind_arg(_s)
-
-    s = plansub.add_parser(
-        "forget", help="delete a plan item (refuses while dependents exist)"
-    )
-    s.add_argument("ref")
-    proj(s)
-    s.add_argument(
-        "--force", action="store_true", help="delete anyway, leaving dependents tainted"
-    )
-
-    s = plansub.add_parser("move", help="re-order an item (rank only; deps untouched)")
-    s.add_argument("ref")
-    proj(s)
-    s.add_argument("--after")
-    s.add_argument("--before")
-
-    s = plansub.add_parser("list", help="the plan in execution order (topo + rank)")
-    proj(s)
-    s.add_argument("--all", action="store_true", help="include done/verified items")
-
-    s = plansub.add_parser(
-        "export",
-        help="the whole plan as ONE markdown doc (dep-topological, deterministic; "
-        "includes done) — --out to write a file, else stdout",
-    )
-    proj(s)
-    s.add_argument(
-        "--out",
-        type=Path,
-        default=None,
-        help="write the file (e.g. docs/STATE-plans.md) instead of stdout",
-    )
-
-    s = plansub.add_parser("next", help="actionable items now (todo, deps satisfied)")
-    proj(s)
-    s.add_argument("-k", type=int, default=5)
+    # Every generated facet's subcommands (notes', learnings', decisions' and
+    # plans' under their nouns, a declared facet's under its own): the CLI half
+    # of crib.verbs' templates (_FACET_CLI, _ANCHORED_CLI, _GRAPH_CLI).
+    _facet_parsers(sub, {"note": notesub, "learning": learnsub,
+                         "design": designsub, "plan": plansub}, proj)
 
     # `crib memory <verb>` — the whole memory store's git lifecycle. These act on
     # the entire data tree (every project's notes + learnings), not a note or a
@@ -2914,6 +2553,430 @@ _ANCHORED_CLI_ORDER = (
 )
 
 
+# ── graph facets' CLI (decisions, plans): the CLI half of crib.verbs'
+# GRAPH_TEMPLATES ─────────────────────────────────────────────────────────────
+# Per verb: the subcommand's help and arguments, and the VERBS row's call
+# params, emitter and MCP signature, each a function of the facet's spec (its
+# aspects decide add's and list's options, whether it reports taint decides the
+# emitters). The built-ins read exactly as their hand-written parsers did (the
+# surface snapshot holds every subcommand's --help); their wording is data,
+# keyed (noun, what). A declared graph facet gets the general wording.
+
+_GTEXT: dict[tuple[str, str], str] = {
+    ("design", "add"): "record a design decision (body: arg, '-', --file or $EDITOR)",
+    ("design", "add.body"): "the decision, why, what was rejected",
+    ("design", "add.dep"): "a dependency of the default kind for its target (repeatable): a "
+    "decision is rests_on, a plan item follows, a note informed_by",
+    ("plan", "add"): "add plan item(s) — body optional, `--item` adds more",
+    ("plan", "add.body"): "the item's detail (optional)",
+    ("plan", "add.dep"): "a dependency of the default kind for its target (repeatable): a "
+    "plan item is follows, a decision rests_on, a note informed_by",
+    ("design", "read"): "a decision's dossier: body + annotated edges + taint",
+    ("plan", "read"): "an item's dossier: body + status + what it's blocked on",
+    ("design", "export"): "the whole decision graph as ONE markdown doc (dep-topological, "
+    "deterministic) — --out to write a file, else stdout",
+    ("design", "export.out"): "write the markdown here (e.g. docs/STATE-designs.md) instead "
+    "of stdout",
+    ("plan", "export"): "the whole plan as ONE markdown doc (dep-topological, deterministic; "
+    "includes done) — --out to write a file, else stdout",
+    ("plan", "export.out"): "write the file (e.g. docs/STATE-plans.md) instead of stdout",
+    ("design", "edit"): "rewrite a decision; lists what the change tainted",
+    ("plan", "edit"): "rewrite an item's body; lists what the change tainted",
+    ("design", "append"): "extend a decision; lists what the change tainted",
+    ("plan", "append"): "extend an item's body; lists what the change tainted",
+    ("design", "lookup"): "semantic search over DECISIONS (hits flag stale ones)",
+    ("design", "lookup.hint"): "exact strings you already know (decision titles, symbols) — "
+    "each runs as its own exact-term route; repeatable",
+    ("plan", "lookup"): "semantic search over PLAN ITEMS",
+    ("plan", "lookup.hint"): "exact strings you already know (item titles, refs) — "
+    "each runs as its own exact-term route; repeatable",
+    ("design", "list"): "every decision as a table (--tainted filters to stale)",
+    ("plan", "list"): "the plan in execution order (topo + rank)",
+    ("design", "dep_add"): "declare that a decision depends on another (default kind: by target)",
+    ("design", "dep_remove"): "drop a dependency edge between decisions",
+    ("plan", "dep_add"): "declare that an item depends on another (default kind: by target)",
+    ("plan", "dep_remove"): "drop a must-precede edge between items",
+    ("design", "forget"): "delete a decision (refuses while dependents exist)",
+    ("plan", "forget"): "delete a plan item (refuses while dependents exist)",
+    ("design", "check"): "which decisions are stale w.r.t. what they build on",
+    ("design", "reaffirm"): "re-record a decision's dep hashes (you re-read it)",
+    ("plan", "reaffirm"): "re-record an item's dep/source hashes — its ground "
+    "moved, you re-read it, it still stands",
+    ("design", "tree"): "dependency tree around a decision (taint-flagged)",
+    ("design", "graph"): "the decision map as {nodes, edges} (taint-flagged; "
+    "same shape as `code graph --edges`)",
+    ("plan", "graph"): "the plan as {nodes, edges}, including the decisions items rest on",
+    ("design", "supersede"): "mark a decision superseded + taint its dependents",
+    ("design", "promote"): "proposed → active (an extracted decision, confirmed)",
+    ("design", "extract"): "prepare a doc for extraction into decisions (writes nothing)",
+    ("plan", "extract"): "prepare a doc for extraction into actionable work (writes nothing)",
+    ("plan", "status"): "set an item's status (todo/in-progress/parked/done/verified)",
+    ("plan", "park"): "park an item — not now, with a reason; optional trigger refs whose "
+    "change SURFACE it (never auto-wake)",
+    ("plan", "park.trigger"): "pillar-qualified ref to watch (design/plan); repeatable — "
+    "each records its own body-hash baseline",
+    ("plan", "park.why"): "why it is parked — rides the record and a dated body line "
+    "(this is what makes the deferral searchable)",
+    ("plan", "decline"): "decline an item — never scheduled, remembered with the why-not "
+    "(the rationale is REQUIRED)",
+    ("plan", "decline.why"): "the why-not — the payload a future re-proposal comes back for",
+    ("plan", "decline.trigger"): "pillar-qualified ref to watch — fires on the watched ref's "
+    "STATUS transitions (promoted/superseded), not prose rewording; repeatable",
+    ("plan", "move"): "re-order an item (rank only; deps untouched)",
+    ("plan", "next"): "actionable items now (todo, deps satisfied)",
+}
+
+
+def _gt(spec: Any, key: str, generic: str) -> str:
+    """A built-in's own CLI wording for `key`, else the general one."""
+    if spec.builtin and (spec.noun, key) in _GTEXT:
+        return _GTEXT[(spec.noun, key)]
+    return generic.format(n=spec.noun, p=spec.plural)
+
+
+def _g_body_args(sp: Any, what: str) -> None:
+    """The three ways to give a body: positional, `-` for stdin, `--file`;
+    omitted at a terminal opens $EDITOR."""
+    sp.add_argument("content", nargs="?",
+                    help=f"{what} ('-' reads stdin; omitted opens $EDITOR)")
+    sp.add_argument("--file", dest="file", help=f"read the {what} from a file")
+
+
+def _g_source_arg(sp: Any) -> None:
+    """`--source doc#heading`: the doc SECTION an item was drawn from."""
+    sp.add_argument("--source", action="append", dest="sources", metavar="DOC#HEADING",
+                    help="doc SECTION this was drawn from (repeatable)")
+
+
+@dataclass(frozen=True)
+class _GraphCli:
+    help: Callable[[Any], str]
+    args: Callable[[Any, Any, Any], None]  # (subparser, proj, spec)
+    build: Callable[[Any], Callable[[Any], dict[str, Any]]]  # spec -> build
+    emit: Callable[[Any], Callable[[Any, Any], None]]  # spec -> emitter
+    is_async: bool
+    mcp: Callable[[Any], str]
+    parser: bool = True  # False: an MCP-only row (no subcommand)
+
+
+def _ga_add(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("title")
+    _g_body_args(s, _gt(f, "add.body", "the {n}'s body"))
+    proj(s)
+    s.add_argument("--dep", action="append", dest="deps",
+                   help=_gt(f, "add.dep", "a dependency of the default kind for its "
+                            "target (repeatable)"))
+    _dep_kind_flags(s)
+    _g_source_arg(s)
+    if f.with_role("gated"):
+        s.add_argument("--proposed", action="store_true",
+                       help="land it in the import tier (taints nothing until promoted)")
+    if f.has("ordered"):
+        s.add_argument("--item", action="append", dest="extra_items", metavar="TITLE",
+                       help="another title-only item, added after this one (repeatable)")
+        s.add_argument("--after")
+        s.add_argument("--before")
+
+
+def _gb_add(f: Any) -> Callable[[Any], dict[str, Any]]:
+    links = ("follows", "rests_on", "informed_by")
+    if f.has("ordered"):
+        return lambda a: {
+            "title": a.title,
+            # a body is OPTIONAL here — title-only is a normal whole item,
+            # so an omitted body must not open $EDITOR
+            "content": _body(a.content, a.file, default=""),
+            "deps": a.deps,
+            "after": a.after,
+            "before": a.before,
+            "items": _plan_items(a),
+            "project": a.project,
+            "sources": a.sources,
+            **{k: getattr(a, k) for k in links},
+        }
+    return lambda a: {
+        "title": a.title,
+        "content": _body(a.content, a.file, what="the decision + rationale"),
+        "deps": a.deps,
+        "project": a.project,
+        "sources": a.sources,
+        "proposed": getattr(a, "proposed", False),
+        **{k: getattr(a, k) for k in links},
+    }
+
+
+def _gm_add(f: Any) -> str:
+    if f.has("ordered"):
+        return (f"title=None content='' {_PROJ} deps=None after=None "
+                "before=None items=None sources=None follows=None rests_on=None "
+                "informed_by=None")
+    return (f"title content deps=None {_PROJ} sources=None proposed=False "
+            "follows=None rests_on=None informed_by=None")
+
+
+def _ga_ref(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    proj(s)
+
+
+def _ga_ref_opt(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref", nargs="?")
+    proj(s)
+
+
+def _ga_export(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument("--out", type=Path, default=None,
+                   help=_gt(f, "export.out", "write the markdown here instead of stdout"))
+
+
+def _ga_edit(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    _g_body_args(s, "the new body")
+    proj(s)
+    _g_source_arg(s)
+
+
+def _ga_append(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    _g_body_args(s, "the text to append")
+    proj(s)
+    s.add_argument("--source", action="append", default=[],
+                   help="ADD a doc-section citation (doc.md#Heading; repeatable; "
+                   "existing citations keep their capture-time hashes)")
+
+
+def _ga_lookup(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("query")
+    proj(s)
+    s.add_argument("-k", type=int, default=8)
+    s.add_argument("--hint", action="append", dest="hints",
+                   help=_gt(f, "lookup.hint", "exact strings you already know — each runs "
+                            "as its own exact-term route; repeatable"))
+
+
+def _ga_list(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    if f.report_taint:
+        s.add_argument("--tainted", action="store_true",
+                       help="only decisions that need re-reading")
+    else:
+        s.add_argument("--all", action="store_true", help="include done/verified items")
+
+
+def _ga_dep(with_kind: bool):
+    def args(s: Any, proj: Any, f: Any) -> None:
+        s.add_argument("ref")
+        s.add_argument("dep_ref", metavar="dep")
+        proj(s)
+        if with_kind:
+            _dep_kind_arg(s)
+
+    return args
+
+
+def _ga_forget(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    proj(s)
+    s.add_argument("--force", action="store_true",
+                   help="delete anyway, leaving dependents tainted")
+
+
+def _ga_tree(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref", nargs="?")
+    proj(s)
+    s.add_argument("--dependents", action="store_true",
+                   help="what builds ON this (default: what this builds on)")
+    s.add_argument("--depth", type=int, default=6)
+    s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
+
+
+def _ga_graph(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument("--sources", action="store_true",
+                   help="add doc-section attribution nodes + `source` edges")
+
+
+def _ga_supersede(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    s.add_argument("by", nargs="?")
+    proj(s)
+
+
+def _ga_extract(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("doc", help="note relpath, or a repo path indexed in situ")
+    proj(s)
+
+
+def _ga_status(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    s.add_argument("status")
+    proj(s)
+
+
+def _ga_move(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("ref")
+    proj(s)
+    s.add_argument("--after")
+    s.add_argument("--before")
+
+
+def _ga_next(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument("-k", type=int, default=5)
+
+
+def _const(x: Any) -> Callable[[Any], Any]:
+    return lambda f: x
+
+
+def _ref_build(a: Any) -> dict[str, Any]:
+    return {"ref": a.ref, "project": a.project}
+
+
+_GRAPH_CLI: dict[str, _GraphCli] = {
+    "add": _GraphCli(lambda f: _gt(f, "add", "add a {n}"), _ga_add, _gb_add,
+                     _const(_E_dwrite), True, _gm_add),
+    "read": _GraphCli(lambda f: _gt(f, "read", "a {n}'s dossier"), _ga_ref,
+                      _const(_ref_build),
+                      lambda f: _E_dread if f.report_taint else _E_pread, False,
+                      _const(f"ref {_PROJ}")),
+    "edit": _GraphCli(lambda f: _gt(f, "edit", "rewrite a {n}; lists what the change tainted"),
+                      _ga_edit,
+                      _const(lambda a: {"ref": a.ref,
+                                        "new_content": _body(a.content, a.file,
+                                                             what="the new body"),
+                                        "project": a.project, "sources": a.sources}),
+                      _const(_E_dwrite), True, _const(f"ref new_content {_PROJ} sources=None")),
+    "append": _GraphCli(lambda f: _gt(f, "append", "extend a {n}; lists what the change "
+                                      "tainted"), _ga_append,
+                        _const(lambda a: {"ref": a.ref,
+                                          "content": _body(a.content, a.file,
+                                                           what="the text to append"),
+                                          "project": a.project, "sources": a.source or None}),
+                        _const(_E_dwrite), True, _const(f"ref content {_PROJ} sources=None")),
+    "lookup": _GraphCli(lambda f: _gt(f, "lookup", "semantic search over {p}"), _ga_lookup,
+                        _const(lambda a: {"query": a.query, "k": a.k, "project": a.project,
+                                          "hints": a.hints}),
+                        _const(_E_facet), False, _const(f"query {_PROJ} k=8 hints=None")),
+    "list": _GraphCli(lambda f: _gt(f, "list", "the {p}"), _ga_list,
+                      lambda f: (lambda a: {"tainted": getattr(a, "tainted", False),
+                                            "project": _proj_of(a)})
+                      if f.report_taint else
+                      (lambda a: {"all": getattr(a, "all", False), "project": _proj_of(a)}),
+                      lambda f: _E_dlist if f.report_taint else _E_plans, False,
+                      lambda f: f"{_PROJ} tainted=False" if f.report_taint
+                      else f"{_PROJ} all=False"),
+    "export": _GraphCli(lambda f: _gt(f, "export", "all {p} as one markdown doc"),
+                        _ga_export, _const(lambda a: {"project": _proj_of(a)}),
+                        _const(_E_export), False, _const(f"{_PROJ}")),
+    "dep_add": _GraphCli(lambda f: _gt(f, "dep_add", "make a {n} depend on another"),
+                         _ga_dep(True),
+                         _const(lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
+                                           "project": a.project, "kind": a.kind}),
+                         _const(_E_dwrite), True, _const(f"ref dep_ref {_PROJ} kind=None")),
+    "dep_remove": _GraphCli(lambda f: _gt(f, "dep_remove", "drop one of a {n}'s "
+                                          "dependencies"), _ga_dep(False),
+                            _const(lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
+                                              "project": a.project}),
+                            _const(_E_dwrite), True, _const(f"ref dep_ref {_PROJ}")),
+    "forget": _GraphCli(lambda f: _gt(f, "forget", "delete a {n} (refuses while dependents "
+                                      "exist)"), _ga_forget,
+                        _const(lambda a: {"ref": a.ref, "force": a.force,
+                                          "project": a.project}),
+                        _const(_E_dwrite), True, _const(f"ref {_PROJ} force=False")),
+    "check": _GraphCli(lambda f: _gt(f, "check", "which {p} are stale"), _ga_ref_opt,
+                       _const(_ref_build), _const(_E_dcheck), False,
+                       _const(f"{_PROJ} ref=None")),
+    "reaffirm": _GraphCli(lambda f: _gt(f, "reaffirm", "re-record a {n}'s dep hashes (you "
+                                        "re-read it)"), _ga_ref, _const(_ref_build),
+                          lambda f: _E_dwrite if f.report_taint else _E, True,
+                          _const(f"ref {_PROJ}")),
+    "tree": _GraphCli(lambda f: _gt(f, "tree", "dependency tree around a {n}"), _ga_tree,
+                      _const(lambda a: {"ref": a.ref, "project": a.project,
+                                        "direction": ("dependents" if a.dependents
+                                                      else "deps"),
+                                        "depth": a.depth}),
+                      _const(_E_dtree), False,
+                      _const(f"{_PROJ} ref=None direction='deps' depth=6")),
+    "graph": _GraphCli(lambda f: _gt(f, "graph", "the {p} as {{nodes, edges}}"), _ga_graph,
+                       _const(lambda a: {"project": a.project, "sources": a.sources}),
+                       _const(_E), False, _const(f"{_PROJ} sources=False")),
+    "supersede": _GraphCli(lambda f: _gt(f, "supersede", "mark a {n} superseded"),
+                           _ga_supersede,
+                           _const(lambda a: {"ref": a.ref, "by_ref": a.by,
+                                             "project": a.project}),
+                           _const(_E_dwrite), True, _const(f"ref {_PROJ} by_ref=None")),
+    "extract": _GraphCli(lambda f: _gt(f, "extract", "prepare a doc for extraction into "
+                                       "{p} (writes nothing)"), _ga_extract,
+                         _const(lambda a: {"relpath": a.doc, "project": a.project}),
+                         _const(_E_dimport), False, _const(f"relpath {_PROJ}")),
+    "status": _GraphCli(lambda f: _gt(f, "status", "set a {n}'s status"), _ga_status,
+                        _const(lambda a: {"ref": a.ref, "status": a.status,
+                                          "project": a.project}),
+                        _const(_E_dwrite), True, _const(f"ref status {_PROJ}")),
+    "move": _GraphCli(lambda f: _gt(f, "move", "re-order a {n}"), _ga_move,
+                      _const(lambda a: {"ref": a.ref, "after": a.after,
+                                        "before": a.before, "project": a.project}),
+                      _const(_E_dwrite), True, _const(f"ref {_PROJ} after=None before=None")),
+    "next": _GraphCli(lambda f: _gt(f, "next", "the {p} ready now"), _ga_next,
+                      _const(lambda a: {"k": a.k, "project": a.project}),
+                      _const(_E_plans), False, _const(f"{_PROJ} k=5")),
+    "review": _GraphCli(lambda f: "", _ga_ref, _const(lambda a: {"project": a.project}),
+                        _const(_E), True, _const(f"{_PROJ}"), parser=False),
+    "review_apply": _GraphCli(lambda f: "", _ga_ref,
+                              _const(lambda a: {
+                                  "batch": json.loads(Path(a.batch).read_text()),
+                                  "project": _proj_of(a)}),
+                              _const(_E_dwrite), True, _const(f"batch {_PROJ}"),
+                              parser=False),
+}
+
+
+def _transition_cli(spec: Any, verb: str) -> _GraphCli:
+    """A status transition's CLI, by the role of the status it moves to."""
+    role = spec.role(spec.transitions[verb])
+    if role == "paused":
+        def args(s: Any, proj: Any, f: Any) -> None:
+            s.add_argument("ref")
+            s.add_argument("--trigger", action="append", dest="triggers",
+                           help=_gt(f, f"{verb}.trigger", "ref to watch; repeatable"))
+            s.add_argument("--why", help=_gt(f, f"{verb}.why", "why"))
+            proj(s)
+
+        return _GraphCli(lambda f: _gt(f, verb, "pause a {n}"), args,
+                         _const(lambda a: {"ref": a.ref, "triggers": a.triggers or None,
+                                           "why": a.why, "project": a.project}),
+                         _const(_E_dwrite), True, _const(f"ref {_PROJ} triggers=None why=None"))
+    if role == "dropped":
+        def dargs(s: Any, proj: Any, f: Any) -> None:
+            s.add_argument("ref")
+            s.add_argument("--why", required=True, help=_gt(f, f"{verb}.why", "why"))
+            s.add_argument("--trigger", action="append", dest="triggers",
+                           help=_gt(f, f"{verb}.trigger", "ref to watch; repeatable"))
+            proj(s)
+
+        return _GraphCli(lambda f: _gt(f, verb, "drop a {n}, saying why"), dargs,
+                         _const(lambda a: {"ref": a.ref, "why": a.why, "project": a.project,
+                                           "triggers": a.triggers or None}),
+                         _const(_E_dwrite), True, _const(f"ref why {_PROJ} triggers=None"))
+    return _GraphCli(lambda f: _gt(f, verb, f"move a {{n}} to {spec.transitions[verb]}"),
+                     _ga_ref, _const(_ref_build), _const(_E_dwrite), True,
+                     _const(f"ref {_PROJ}"))
+
+
+# A graph facet's subcommand order (`crib design -h`); transitions follow.
+_GRAPH_CLI_ORDER = (
+    "add", "read", "edit", "append", "lookup", "list", "export", "dep_add",
+    "dep_remove", "forget", "check", "reaffirm", "tree", "graph", "supersede",
+    "extract", "status", "move", "next", "review", "review_apply",
+)
+
+
+def _graph_cli(spec: Any, verb: str) -> _GraphCli:
+    return _transition_cli(spec, verb) if verb in spec.transitions else _GRAPH_CLI[verb]
+
+
 def _cli_word(spec: Any, verb: str) -> str:
     return spec.verb_names.get(verb, verb).replace("_", "-")
 
@@ -2933,9 +2996,9 @@ def _cli_of(t: Any) -> _FacetCli:
 def _facet_cli_verbs(spec: Any) -> list[Any]:
     from . import verbs
 
-    if spec.has("links"):  # a graph facet's CLI is hand-written until its table lands
-        return []
     by = {t.verb: t for t in verbs.verbs_of(spec)}
+    if spec.has("links"):  # a graph facet: its order, then its transitions
+        return [by[v] for v in (*_GRAPH_CLI_ORDER, *spec.transitions) if v in by]
     order = _ANCHORED_CLI_ORDER if spec.has("anchored") else _FACET_CLI_ORDER
     return [by[v] for v in order if v in by]
 
@@ -2947,13 +3010,24 @@ def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
 
     for spec in _facets_mod().FACETS:
         if not verbs.generated(spec) or not _facet_cli_verbs(spec):
-            continue  # (a graph facet's CLI is still hand-written)
+            continue
         fsub = nouns.get(spec.noun)
         if fsub is None:
             what = "symbol-anchored" if spec.has("anchored") else "search, read, write"
             n = sub.add_parser(spec.noun, help=f"{spec.plural}: {what}")
             fsub = n.add_subparsers(dest=f"{spec.noun}_verb", required=True)
         for t in _facet_cli_verbs(spec):
+            if spec.has("links"):
+                g = _graph_cli(spec, t.verb)
+                if not g.parser:
+                    continue  # an MCP-only row
+                sp = fsub.add_parser(
+                    _cli_word(spec, t.verb),
+                    aliases=["search"] if t.verb == "lookup" else [],
+                    help=g.help(spec),
+                )
+                g.args(sp, proj, spec)
+                continue
             c = _cli_of(t)
             sp = fsub.add_parser(
                 _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
@@ -3013,6 +3087,15 @@ def _facet_rows() -> dict[str, Verb]:
         if not verbs.generated(spec):
             continue
         for t in _facet_cli_verbs(spec):
+            if spec.has("links"):
+                g = _graph_cli(spec, t.verb)
+                word = _cli_word(spec, t.verb)
+                rows[f"{spec.noun} {word}"] = Verb(
+                    t.verb, g.build(spec), g.emit(spec),
+                    method=f"{spec.noun}_{spec.verb_names.get(t.verb, t.verb)}",
+                    is_async=g.is_async, policy=t.policy, mcp=g.mcp(spec),
+                )
+                continue
             c = _cli_of(t)
             inproc: tuple[tuple[str, Any], ...] = ()
             if not spec.builtin:
@@ -3371,370 +3454,6 @@ VERBS: dict[str, Verb] = {
         is_async=True,
         policy="write",
         mcp=f"{_PROJ} apply=False",
-    ),
-    # code learnings — `read` policy BY INTENT (a learning is about a symbol in the
-    # project you're in); see the exception block above `_write_project` in server.py
-    # design decisions + plan items (crib/designs.py). The two `add` verbs CREATE a
-    # durable fact → `write` policy (name the project); every other verb is keyed by
-    # a ref that only resolves inside one project → `read`, the learnings exception.
-    # The FACET carries its own read/write/search verbs (`design read/edit/append/
-    # lookup/list`) — the note verbs can't speak edges, so they aren't the way in.
-    "design add": Verb(
-        "design_add",
-        lambda a: {
-            "title": a.title,
-            "content": _body(a.content, a.file, what="the decision + rationale"),
-            "deps": a.deps,
-            "project": a.project,
-            "sources": a.sources,
-            "proposed": a.proposed,
-            "follows": a.follows,
-            "rests_on": a.rests_on,
-            "informed_by": a.informed_by,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="write",
-        mcp=f"title content deps=None {_PROJ} sources=None proposed=False "
-        "follows=None rests_on=None informed_by=None",
-    ),
-    "design read": Verb(
-        "design_read",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E_dread,
-        policy="read",
-        mcp=f"ref {_PROJ}",
-    ),
-    "design edit": Verb(
-        "design_edit",
-        lambda a: {
-            "ref": a.ref,
-            "new_content": _body(a.content, a.file, what="the new body"),
-            "project": a.project,
-            "sources": a.sources,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref new_content {_PROJ} sources=None",
-    ),
-    "design append": Verb(
-        "design_append",
-        lambda a: {
-            "ref": a.ref,
-            "content": _body(a.content, a.file, what="the text to append"),
-            "project": a.project,
-            "sources": a.source or None,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref content {_PROJ} sources=None",
-    ),
-    "design lookup": Verb(
-        "design_lookup",
-        lambda a: {"query": a.query, "k": a.k, "project": a.project, "hints": a.hints},
-        _E_facet,
-        policy="read",
-        mcp=f"query {_PROJ} k=8 hints=None",
-    ),
-    "design list": Verb(
-        "design_list",
-        lambda a: {"tainted": getattr(a, "tainted", False), "project": _proj_of(a)},
-        _E_dlist,
-        policy="read",
-        mcp=f"{_PROJ} tainted=False",
-    ),
-    "design export": Verb(
-        "design_export",
-        lambda a: {"project": _proj_of(a)},
-        _E_export,
-        policy="read",
-        mcp=f"{_PROJ}",
-    ),
-    "design dep-add": Verb(
-        "design_dep_add",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project,
-                   "kind": a.kind},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref dep_ref {_PROJ} kind=None",
-    ),
-    "design dep-remove": Verb(
-        "design_dep_remove",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref dep_ref {_PROJ}",
-    ),
-    "design forget": Verb(
-        "design_forget",
-        lambda a: {"ref": a.ref, "force": a.force, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ} force=False",
-    ),
-    "design check": Verb(
-        "design_check",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E_dcheck,
-        policy="read",
-        mcp=f"{_PROJ} ref=None",
-    ),
-    "design reaffirm": Verb(
-        "design_reaffirm",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ}",
-    ),
-    "design tree": Verb(
-        "design_tree",
-        lambda a: {
-            "ref": a.ref,
-            "project": a.project,
-            "direction": ("dependents" if a.dependents else "deps"),
-            "depth": a.depth,
-        },
-        _E_dtree,
-        policy="read",
-        mcp=f"{_PROJ} ref=None direction='deps' depth=6",
-    ),
-    "design graph": Verb(
-        "design_graph",
-        lambda a: {"project": a.project, "sources": a.sources},
-        _E,
-        policy="read",
-        mcp=f"{_PROJ} sources=False",
-    ),
-    "plan graph": Verb(
-        "plan_graph",
-        lambda a: {"project": a.project, "sources": a.sources},
-        _E,
-        policy="read",
-        mcp=f"{_PROJ} sources=False",
-    ),
-    "design supersede": Verb(
-        "design_supersede",
-        lambda a: {"ref": a.ref, "by_ref": a.by, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ} by_ref=None",
-    ),
-    # source attribution + the import tier: `import` prepares a doc (and writes
-    # nothing), `promote` is the human act that ends the quarantine. Both are
-    # keyed inside one project, so both take the `read` policy like the rest.
-    "design promote": Verb(
-        "design_promote",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ}",
-    ),
-    "design import": Verb(
-        "design_import",
-        lambda a: {"relpath": a.doc, "project": a.project},
-        _E_dimport,
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "plan import": Verb(
-        "plan_import",
-        lambda a: {"relpath": a.doc, "project": a.project},
-        _E_dimport,
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "plan add": Verb(
-        "plan_add",
-        lambda a: {
-            "title": a.title,
-            # a plan item's body is OPTIONAL —
-            # title-only is a normal whole item, so
-            # an omitted body must not open $EDITOR
-            "content": _body(a.content, a.file, default=""),
-            "deps": a.deps,
-            "after": a.after,
-            "before": a.before,
-            "items": _plan_items(a),
-            "project": a.project,
-            "sources": a.sources,
-            "follows": a.follows,
-            "rests_on": a.rests_on,
-            "informed_by": a.informed_by,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="write",
-        mcp=f"title=None content='' {_PROJ} deps=None after=None "
-        "before=None items=None sources=None follows=None rests_on=None "
-        "informed_by=None",
-    ),
-    "plan lookup": Verb(
-        "plan_lookup",
-        lambda a: {"query": a.query, "k": a.k, "project": a.project, "hints": a.hints},
-        _E_facet,
-        policy="read",
-        mcp=f"query {_PROJ} k=8 hints=None",
-    ),
-    "plan reaffirm": Verb(
-        "plan_reaffirm",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ}",
-    ),
-    "plan status": Verb(
-        "plan_status",
-        lambda a: {"ref": a.ref, "status": a.status, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref status {_PROJ}",
-    ),
-    "plan park": Verb(
-        "plan_park",
-        lambda a: {
-            "ref": a.ref,
-            "triggers": a.triggers or None,
-            "why": a.why,
-            "project": a.project,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="write",
-        mcp=f"ref {_PROJ} triggers=None why=None",
-    ),
-    "plan decline": Verb(
-        "plan_decline",
-        lambda a: {
-            "ref": a.ref,
-            "why": a.why,
-            "project": a.project,
-            "triggers": a.triggers or None,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="write",
-        mcp=f"ref why {_PROJ} triggers=None",
-    ),
-    "plan read": Verb(
-        "plan_read",
-        lambda a: {"ref": a.ref, "project": a.project},
-        _E_pread,
-        policy="read",
-        mcp=f"ref {_PROJ}",
-    ),
-    "plan edit": Verb(
-        "plan_edit",
-        lambda a: {
-            "ref": a.ref,
-            "new_content": _body(a.content, a.file, what="the new body"),
-            "project": a.project,
-            "sources": a.sources,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref new_content {_PROJ} sources=None",
-    ),
-    "plan append": Verb(
-        "plan_append",
-        lambda a: {
-            "ref": a.ref,
-            "content": _body(a.content, a.file, what="the text to append"),
-            "project": a.project,
-            "sources": a.source or None,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref content {_PROJ} sources=None",
-    ),
-    "plan dep-add": Verb(
-        "plan_dep_add",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project,
-                   "kind": a.kind},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref dep_ref {_PROJ} kind=None",
-    ),
-    "plan dep-remove": Verb(
-        "plan_dep_remove",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref dep_ref {_PROJ}",
-    ),
-    "plan forget": Verb(
-        "plan_forget",
-        lambda a: {"ref": a.ref, "force": a.force, "project": a.project},
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ} force=False",
-    ),
-    "plan move": Verb(
-        "plan_move",
-        lambda a: {
-            "ref": a.ref,
-            "after": a.after,
-            "before": a.before,
-            "project": a.project,
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="read",
-        mcp=f"ref {_PROJ} after=None before=None",
-    ),
-    "plan list": Verb(
-        "plan_list",
-        lambda a: {"all": getattr(a, "all", False), "project": _proj_of(a)},
-        _E_plans,
-        policy="read",
-        mcp=f"{_PROJ} all=False",
-    ),
-    "plan export": Verb(
-        "plan_export",
-        lambda a: {"project": _proj_of(a)},
-        _E_export,
-        policy="read",
-        mcp=f"{_PROJ}",
-    ),
-    "plan review": Verb(
-        "plan_review",
-        lambda a: {"project": a.project},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"{_PROJ}",
-    ),
-    "plan review-apply": Verb(
-        "plan_review_apply",
-        lambda a: {
-            "batch": json.loads(Path(a.batch).read_text()),
-            "project": _proj_of(a),
-        },
-        _E_dwrite,
-        is_async=True,
-        policy="write",
-        mcp=f"batch {_PROJ}",
-    ),
-    "plan next": Verb(
-        "plan_next",
-        lambda a: {"k": a.k, "project": a.project},
-        _E_plans,
-        policy="read",
-        mcp=f"{_PROJ} k=5",
     ),
 }
 
