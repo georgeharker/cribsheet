@@ -553,3 +553,17 @@ def test_the_view_names_a_facets_tools_commands_and_statuses():
     assert plan.status_for("gated") is None
     note = verbs.view(facets.by_noun("note"))
     assert note.tool("add") == "note_store" and note.command("add") == "crib note store"
+
+
+
+def test_the_facets_file_sits_beside_config_toml(tmp_path, monkeypatch):
+    """$XDG_CONFIG_HOME moves both, the same way (review fix 12)."""
+    from crib.paths import Paths
+
+    monkeypatch.delenv("CRIB_FACETS_FILE", raising=False)
+    monkeypatch.delenv("CRIB_CONFIG_DIR", raising=False)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))
+    assert facets.system_file() == tmp_path / "xdg" / "crib" / "facets.toml"
+    assert facets.system_file().parent == Paths.resolve().config_dir
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "own"))
+    assert facets.system_file() == tmp_path / "own" / "facets.toml"

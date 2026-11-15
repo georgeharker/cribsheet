@@ -579,13 +579,15 @@ BUILTINS = check(
 
 
 def system_file() -> Path:
-    """The system facets file: `$CRIB_FACETS_FILE`, else `facets.toml` in the
-    config dir (`$CRIB_CONFIG_DIR`, else ~/.config/crib). Separate from
-    config.toml: it is read once, at import, before any config is loaded."""
+    """The system facets file: `$CRIB_FACETS_FILE`, else `facets.toml` in
+    crib's config dir (paths.config_dir: `$CRIB_CONFIG_DIR`, else
+    `$XDG_CONFIG_HOME/crib`, else ~/.config/crib), beside config.toml. Separate
+    from it: it is read once, at import, before any config is loaded."""
+    from .paths import config_dir
+
     if f := os.environ.get("CRIB_FACETS_FILE"):
         return Path(f).expanduser()
-    base = os.environ.get("CRIB_CONFIG_DIR") or "~/.config/crib"
-    return Path(base).expanduser() / "facets.toml"
+    return config_dir() / "facets.toml"
 
 
 def declared(text: str) -> tuple[FacetSpec, ...]:

@@ -81,6 +81,13 @@ def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:
     return Path.home() / xdg_default / "crib"
 
 
+def config_dir() -> Path:
+    """crib's config dir: `$CRIB_CONFIG_DIR`, else `$XDG_CONFIG_HOME/crib`,
+    else ~/.config/crib. The one resolver for config.toml and the system facets
+    file alike."""
+    return _resolve("CRIB_CONFIG_DIR", "XDG_CONFIG_HOME", ".config")
+
+
 @dataclass(frozen=True)
 class Paths:
     config_dir: Path
@@ -90,7 +97,7 @@ class Paths:
     @classmethod
     def resolve(cls) -> Paths:
         return cls(
-            config_dir=_resolve("CRIB_CONFIG_DIR", "XDG_CONFIG_HOME", ".config"),
+            config_dir=config_dir(),
             data_dir=_resolve("CRIB_DATA_DIR", "XDG_DATA_HOME", ".local/share"),
             index_dir=_resolve("CRIB_INDEX_DIR", "XDG_CACHE_HOME", ".cache"),
         )
