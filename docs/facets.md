@@ -265,6 +265,10 @@ naming the fix, and `crib project doctor` reports "waiting to be moved").
   and a move that fails part-way puts back what it moved.
 - Files under the pillar's directory that aren't markdown stay where they
   are, and adopt lists them.
+- Removing (or moving) a mapping in `.crib` while its items are still in the
+  mapped directory, and the new home is empty, would strand them: crib keeps
+  the recorded mapping and says so, until `crib project release` moves them
+  back (or you move the files yourself).
 - While one facet waits to be moved, only its own verbs refuse: the rest of
   the graph keeps working (a dependency on a waiting item just doesn't
   resolve until it moves).

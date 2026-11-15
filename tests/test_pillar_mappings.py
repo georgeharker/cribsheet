@@ -197,6 +197,46 @@ def test_a_pending_graph_facet_blocks_only_its_own_verbs(crib, tmp_path):
     assert [i["title"] for i in crib.plan_next(project="p")["items"]] == ["Do it"]
 
 
+def test_dropping_a_mapping_whose_items_are_still_there_keeps_it(crib, tmp_path, capsys):
+    """Removing facets.design from .crib while the decisions live in the repo
+    would re-point the pillar at an empty home and drop every indexed item:
+    the mapping stays recorded, with a warning naming the fix (review fix 11).
+    After release moves the items back, the drop applies."""
+    from crib.config import CribLink
+
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    run(crib.project_adopt(cwd=repo))
+    (repo / ".crib").write_text("project: p\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    assert run(crib._sync_mappings("p", link)) == {}
+    err = capsys.readouterr().err
+    assert "facets.design was removed" in err and "crib project release" in err
+    assert "design" in crib.project_paths("p").mappings
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]  # still served
+    run(crib.project_release("p"))
+    assert crib.project_paths("p").mappings == {}
+    run(crib._sync_mappings("p", link))
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+
+
+def test_moving_a_mapping_to_an_empty_dir_keeps_the_old_one(crib, tmp_path, capsys):
+    from crib.config import CribLink
+
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    run(crib.project_adopt(cwd=repo))
+    (repo / "elsewhere").mkdir()
+    (repo / ".crib").write_text("project: p\nfacets:\n  design: {dir: elsewhere}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    assert "was moved" in capsys.readouterr().err
+    assert crib.project_paths("p").mappings["design"].root == repo / "decisions"
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+
+
 def test_a_move_that_fails_part_way_moves_nothing(crib, tmp_path, monkeypatch):
     """Adopt moves all or nothing: an OSError on the second file (a read-only
     checkout, a full disk) puts the first back and refuses (review fix 1)."""

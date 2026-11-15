@@ -426,6 +426,8 @@ class Crib:
         pp = self.project_paths(proj)
         pcfg = ProjectConfig.load(pp.config_file, proj)
         had = pcfg.mappings or {}
+        for noun in self._stranded_by(proj, link, had, want):
+            want[noun] = had[noun]  # keep it recorded: release / a move can use it
         if had == want:
             return {}
         pcfg.mappings = want or None
@@ -445,6 +447,52 @@ class Crib:
             out[noun] = {"root": (want.get(noun) or {}).get("root"),
                          "files": res["files"], **({"unstamped": res["unstamped"]}
                                                    if res.get("unstamped") else {})}
+        return out
+
+    def _stranded_by(self, proj: str, link: CribLink, had: dict[str, Any],
+                     want: dict[str, Any]) -> list[str]:
+        """The crib-owned mappings (writable, stamped) that `.crib` dropped or
+        moved while their items still sit at the recorded dir and the new home
+        holds none: following the change would re-point the facet at an empty
+        place and drop every indexed item, stranding the files. Each is warned
+        about, naming the fix; the caller keeps it recorded."""
+        from .filesync import scan
+
+        out = []
+        pp = self.project_paths(proj)
+        for noun, old in had.items():
+            new = want.get(noun)
+            if new == old or old.get("read_only") or old.get("ids", "stamp") != "stamp":
+                continue
+            spec = facets.get(noun)
+            if spec is None:
+                continue
+            loc = pp.mappings.get(spec.store)
+            if loc is None or not loc.available:
+                continue
+            n = sum(1 for r in scan(loc.root, ".md", recursive=True) if loc.owns(r))
+            if not n:
+                continue
+            if new is None:
+                home = pp.home_dir(spec.store)
+                holds = home.is_dir() and any(home.rglob("*.md"))
+            else:
+                root = link.facet_dir(noun)
+                m = link.facets[noun]
+                holds = root is not None and root.is_dir() and any(
+                    FacetLocation(root, "", m.glob).owns(r)
+                    for r in scan(root, ".md", recursive=True))
+            if holds:
+                continue
+            what = "removed" if new is None else "moved"
+            where = link.root / ".crib" if link.root is not None else ".crib"
+            print(f"[crib] {where}: facets.{noun} was {what}, but its "
+                  f"{n} item(s) are still in {loc.root} and the new home is empty — "
+                  f"keeping the mapping until they move: `crib project release` "
+                  f"(back to crib's data dir) or move the files"
+                  f"{'' if new is None else ' to the new dir'}, then re-run",
+                  file=sys.stderr)
+            out.append(noun)
         return out
 
     def _rewatch(self, proj: str) -> None:
