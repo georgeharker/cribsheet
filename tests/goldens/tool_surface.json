@@ -1,0 +1,4378 @@
+{
+ "cli": {
+  "code convert": "usage: crib code convert [-h] [--apply] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --apply\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "code dossier": "usage: crib code dossier [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                         [--lang LANG]\n                         symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "code graph": "usage: crib code graph [-h] [-p PROJECT] [-P PROJECT_PATH] [--callers] [--references]\n                       [--depth DEPTH] [--ascii] [--edges] [--group-by {file,dir,scope}]\n                       [--group-depth GROUP_DEPTH] [--all] [--under UNDER] [--exclude EXCLUDE]\n                       [--path PATH] [--scope SCOPE] [--lang LANG]\n                       [symbol]\n\npositional arguments:\n  symbol                omit with --all for the whole project\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --callers             what CALLS the symbol (default: what it calls)\n  --references          everywhere the symbol is REFERENCED (broader than calls)\n  --depth DEPTH\n  --ascii               ASCII glyphs, no box-drawing\n  --edges               deduplicated node+edge subgraph instead of a tree (convergence stays\n                        visible; feeds a layout tool)\n  --group-by {file,dir,scope}\n                        roll symbol edges up onto one axis: file, dir or scope\n  --group-depth GROUP_DEPTH\n                        how coarse: dirs/scope segments to keep (0 = all)\n  --all                 the WHOLE project: every symbol, every edge, no depth bound\n  --under UNDER         whole-project only: export just the files under this path prefix\n                        (boundary-crossing edges keep truncated frontier nodes)\n  --exclude EXCLUDE     whole-project only: drop files under this path prefix before export\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "code index": "usage: crib code index [-h] [-p PROJECT] [-P PROJECT_PATH] path\n\npositional arguments:\n  path\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "code lookup": "usage: crib code lookup [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n",
+  "code xref": "usage: crib code xref [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                      [--lang LANG]\n                      symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "design add": "usage: crib design add [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--dep DEPS]\n                       [--follows REF] [--rests-on REF] [--informed-by REF] [--source DOC#HEADING]\n                       [--proposed]\n                       title [content]\n\npositional arguments:\n  title\n  content               the decision, why, what was rejected ('-' reads stdin; omitted opens\n                        $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the decision, why, what was rejected from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --dep DEPS            a dependency of the default kind for its target (repeatable): a decision\n                        is rests_on, a plan item follows, a note informed_by\n  --follows REF         a dependency of kind follows (ordering: blocked until it is done;\n                        repeatable)\n  --rests-on REF        a dependency of kind rests_on (grounding: blocked while it is stale;\n                        repeatable)\n  --informed-by REF     a dependency of kind informed_by (context: checked, never blocks;\n                        repeatable)\n  --source DOC#HEADING  doc SECTION this was drawn from (repeatable)\n  --proposed            land it in the import tier (taints nothing until promoted)\n",
+  "design append": "usage: crib design append [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--source SOURCE]\n                          ref [content]\n\npositional arguments:\n  ref\n  content               the text to append ('-' reads stdin; omitted opens $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the text to append from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --source SOURCE       ADD a doc-section citation (doc.md#Heading; repeatable; existing citations\n                        keep their capture-time hashes)\n",
+  "design check": "usage: crib design check [-h] [-p PROJECT] [-P PROJECT_PATH] [ref]\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design dep-add": "usage: crib design dep-add [-h] [-p PROJECT] [-P PROJECT_PATH]\n                           [--as {follows,rests_on,informed_by}]\n                           ref dep\n\npositional arguments:\n  ref\n  dep\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --as {follows,rests_on,informed_by}\n                        the dependency's kind (default: by what it points at)\n",
+  "design dep-remove": "usage: crib design dep-remove [-h] [-p PROJECT] [-P PROJECT_PATH] ref dep\n\npositional arguments:\n  ref\n  dep\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design edit": "usage: crib design edit [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--source DOC#HEADING]\n                        ref [content]\n\npositional arguments:\n  ref\n  content               the new body ('-' reads stdin; omitted opens $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the new body from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --source DOC#HEADING  doc SECTION this was drawn from (repeatable)\n",
+  "design export": "usage: crib design export [-h] [-p PROJECT] [-P PROJECT_PATH] [--out OUT]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --out OUT             write the markdown here (e.g. docs/STATE-designs.md) instead of stdout\n",
+  "design forget": "usage: crib design forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--force] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --force               delete anyway, leaving dependents tainted\n",
+  "design graph": "usage: crib design graph [-h] [-p PROJECT] [-P PROJECT_PATH] [--sources]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --sources             add doc-section attribution nodes + `source` edges\n",
+  "design import": "usage: crib design import [-h] [-p PROJECT] [-P PROJECT_PATH] doc\n\npositional arguments:\n  doc                   note relpath, or a repo path indexed in situ\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design list": "usage: crib design list [-h] [-p PROJECT] [-P PROJECT_PATH] [--tainted]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --tainted             only decisions that need re-reading\n",
+  "design lookup": "usage: crib design lookup [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--hint HINTS] query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --hint HINTS          exact strings you already know (decision titles, symbols) \u2014 each runs as\n                        its own exact-term route; repeatable\n",
+  "design promote": "usage: crib design promote [-h] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design read": "usage: crib design read [-h] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design reaffirm": "usage: crib design reaffirm [-h] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design supersede": "usage: crib design supersede [-h] [-p PROJECT] [-P PROJECT_PATH] ref [by]\n\npositional arguments:\n  ref\n  by\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "design tree": "usage: crib design tree [-h] [-p PROJECT] [-P PROJECT_PATH] [--dependents] [--depth DEPTH]\n                        [--ascii]\n                        [ref]\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --dependents          what builds ON this (default: what this builds on)\n  --depth DEPTH\n  --ascii               ASCII glyphs, no box-drawing\n",
+  "learning add": "usage: crib learning add [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                         [--lang LANG]\n                         symbol text\n\npositional arguments:\n  symbol\n  text\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning edit": "usage: crib learning edit [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                          [--lang LANG]\n                          symbol text\n\npositional arguments:\n  symbol\n  text\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning forget": "usage: crib learning forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                            [--lang LANG]\n                            symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning migrate": "usage: crib learning migrate [-h] [-p PROJECT] [-P PROJECT_PATH] [--apply]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --apply               write the plan out; without it nothing is changed\n",
+  "learning read": "usage: crib learning read [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                          [--lang LANG]\n                          symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning reaffirm": "usage: crib learning reaffirm [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                              [--lang LANG]\n                              symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning rehome": "usage: crib learning rehome [-h] [-p PROJECT] [-P PROJECT_PATH] old [new]\n\npositional arguments:\n  old\n  new\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "learning report": "usage: crib learning report [-h] [-p PROJECT] [-P PROJECT_PATH] [--orphans]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --orphans             only the actionable ones (moved/orphan)\n",
+  "memory history": "usage: crib memory history [-h] [relpath]\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "memory snapshot": "usage: crib memory snapshot [-h] [-m MESSAGE]\n\noptions:\n  -h, --help            show this help message and exit\n  -m, --message MESSAGE\n",
+  "note append": "usage: crib note append [-h] [-p PROJECT] [-P PROJECT_PATH] [--heading HEADING] relpath content\n\npositional arguments:\n  relpath\n  content\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --heading HEADING\n",
+  "note apropos": "usage: crib note apropos [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--tag TAGS] [--hint HINTS]\n                         query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --tag TAGS\n  --hint HINTS          exact strings you already know \u2014 each runs as its own exact-term route;\n                        repeatable\n",
+  "note distill": "usage: crib note distill [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note edit": "usage: crib note edit [-h] [-p PROJECT] [-P PROJECT_PATH] relpath [content]\n\npositional arguments:\n  relpath\n  content\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note elaborate": "usage: crib note elaborate [-h] [-p PROJECT] [-P PROJECT_PATH] [--overwrite] label [relpath]\n\npositional arguments:\n  label\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --overwrite           regenerate even if it already exists\n",
+  "note forget": "usage: crib note forget [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note import": "usage: crib note import [-h] [-p PROJECT] [-P PROJECT_PATH] paths [paths ...]\n\npositional arguments:\n  paths                 files to copy into memory\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note import-memory": "usage: crib note import-memory [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note locate": "usage: crib note locate [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note lookup": "usage: crib note lookup [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--tag TAGS]\n                        [--keywords KEYWORDS] [--keyword-weight KEYWORD_WEIGHT]\n                        [--summaries SUMMARIES] [--summary-weight SUMMARY_WEIGHT] [--hint HINTS]\n                        [--hint-weight HINT_WEIGHT] [--rerank | --no-rerank] [-a]\n                        query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --tag TAGS\n  --keywords KEYWORDS   comma-separated keyword_index labels to fold into BM25 for this query\n                        (overrides [retrieve].keyword_labels)\n  --keyword-weight KEYWORD_WEIGHT\n                        weight of keyword_index tokens vs body in BM25 (overrides\n                        [retrieve].keyword_weight)\n  --summaries SUMMARIES\n                        comma-separated summary_index labels to fold in as dense alias vectors\n                        (overrides [retrieve].summary_labels)\n  --summary-weight SUMMARY_WEIGHT\n                        trust scale of summary alias vectors vs body dense (overrides\n                        [retrieve].summary_weight)\n  --hint HINTS          exact strings you already know (symbol, flag, error code, title) \u2014 each\n                        runs as its own exact-term route and boosts candidates multiple routes\n                        agree on; repeatable\n  --hint-weight HINT_WEIGHT\n                        weight of the hint agreement bonus (overrides [retrieve].hint_weight)\n  --rerank              force the cross-encoder rerank for this query\n  --no-rerank           skip the cross-encoder rerank for this query\n  -a, --render          render each matched section as markdown (like `apropos`) instead of\n                        compact locator lines\n",
+  "note move": "usage: crib note move [-h] [-p PROJECT] [-P PROJECT_PATH] [--to-project TO_PROJECT]\n                      [--to-relpath TO_RELPATH]\n                      relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --to-project TO_PROJECT\n  --to-relpath TO_RELPATH\n",
+  "note read": "usage: crib note read [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note reindex": "usage: crib note reindex [-h] [-p PROJECT] [-P PROJECT_PATH] [relpath]\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note restore": "usage: crib note restore [-h] [-p PROJECT] [-P PROJECT_PATH] relpath version\n\npositional arguments:\n  relpath\n  version\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note store": "usage: crib note store [-h] [-p PROJECT] [-P PROJECT_PATH] [--title TITLE] [--tag TAGS] content\n\npositional arguments:\n  content\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --title TITLE\n  --tag TAGS\n",
+  "note summarize": "usage: crib note summarize [-h] [-p PROJECT] [-P PROJECT_PATH] [--overwrite] label [relpath]\n\npositional arguments:\n  label\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --overwrite           regenerate even if it already exists\n",
+  "note versions": "usage: crib note versions [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "ops": "usage: crib ops [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "plan add": "usage: crib plan add [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--dep DEPS]\n                     [--follows REF] [--rests-on REF] [--informed-by REF] [--source DOC#HEADING]\n                     [--item TITLE] [--after AFTER] [--before BEFORE]\n                     title [content]\n\npositional arguments:\n  title\n  content               the item's detail (optional) ('-' reads stdin; omitted opens $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the item's detail (optional) from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --dep DEPS            a dependency of the default kind for its target (repeatable): a plan item\n                        is follows, a decision rests_on, a note informed_by\n  --follows REF         a dependency of kind follows (ordering: blocked until it is done;\n                        repeatable)\n  --rests-on REF        a dependency of kind rests_on (grounding: blocked while it is stale;\n                        repeatable)\n  --informed-by REF     a dependency of kind informed_by (context: checked, never blocks;\n                        repeatable)\n  --source DOC#HEADING  doc SECTION this was drawn from (repeatable)\n  --item TITLE          another title-only item, added after this one (repeatable)\n  --after AFTER\n  --before BEFORE\n",
+  "plan append": "usage: crib plan append [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--source SOURCE]\n                        ref [content]\n\npositional arguments:\n  ref\n  content               the text to append ('-' reads stdin; omitted opens $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the text to append from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --source SOURCE       ADD a doc-section citation (doc.md#Heading; repeatable; existing citations\n                        keep their capture-time hashes)\n",
+  "plan decline": "usage: crib plan decline [-h] --why WHY [--trigger TRIGGERS] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  --why WHY             the why-not \u2014 the payload a future re-proposal comes back for\n  --trigger TRIGGERS    pillar-qualified ref to watch \u2014 fires on the watched ref's STATUS\n                        transitions (promoted/superseded), not prose rewording; repeatable\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan dep-add": "usage: crib plan dep-add [-h] [-p PROJECT] [-P PROJECT_PATH] [--as {follows,rests_on,informed_by}]\n                         ref dep\n\npositional arguments:\n  ref\n  dep\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --as {follows,rests_on,informed_by}\n                        the dependency's kind (default: by what it points at)\n",
+  "plan dep-remove": "usage: crib plan dep-remove [-h] [-p PROJECT] [-P PROJECT_PATH] ref dep\n\npositional arguments:\n  ref\n  dep\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan edit": "usage: crib plan edit [-h] [--file FILE] [-p PROJECT] [-P PROJECT_PATH] [--source DOC#HEADING]\n                      ref [content]\n\npositional arguments:\n  ref\n  content               the new body ('-' reads stdin; omitted opens $EDITOR)\n\noptions:\n  -h, --help            show this help message and exit\n  --file FILE           read the the new body from a file\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --source DOC#HEADING  doc SECTION this was drawn from (repeatable)\n",
+  "plan export": "usage: crib plan export [-h] [-p PROJECT] [-P PROJECT_PATH] [--out OUT]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --out OUT             write the file (e.g. docs/STATE-plans.md) instead of stdout\n",
+  "plan forget": "usage: crib plan forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--force] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --force               delete anyway, leaving dependents tainted\n",
+  "plan graph": "usage: crib plan graph [-h] [-p PROJECT] [-P PROJECT_PATH] [--sources]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --sources             add doc-section attribution nodes + `source` edges\n",
+  "plan import": "usage: crib plan import [-h] [-p PROJECT] [-P PROJECT_PATH] doc\n\npositional arguments:\n  doc                   note relpath, or a repo path indexed in situ\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan list": "usage: crib plan list [-h] [-p PROJECT] [-P PROJECT_PATH] [--all]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --all                 include done/verified items\n",
+  "plan lookup": "usage: crib plan lookup [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--hint HINTS] query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --hint HINTS          exact strings you already know (item titles, refs) \u2014 each runs as its own\n                        exact-term route; repeatable\n",
+  "plan move": "usage: crib plan move [-h] [-p PROJECT] [-P PROJECT_PATH] [--after AFTER] [--before BEFORE] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --after AFTER\n  --before BEFORE\n",
+  "plan next": "usage: crib plan next [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n",
+  "plan park": "usage: crib plan park [-h] [--trigger TRIGGERS] [--why WHY] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  --trigger TRIGGERS    pillar-qualified ref to watch (design/plan); repeatable \u2014 each records its\n                        own body-hash baseline\n  --why WHY             why it is parked \u2014 rides the record and a dated body line (this is what\n                        makes the deferral searchable)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan read": "usage: crib plan read [-h] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan reaffirm": "usage: crib plan reaffirm [-h] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "plan review": null,
+  "plan review-apply": null,
+  "plan status": "usage: crib plan status [-h] [-p PROJECT] [-P PROJECT_PATH] ref status\n\npositional arguments:\n  ref\n  status\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project adopt": "usage: crib project adopt [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project cancel": "usage: crib project cancel [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project create": "usage: crib project create [-h] [--store RELPATH] [-P PROJECT_PATH] [-p PROJECT_FLAG] [project]\n\npositional arguments:\n  project               the new project's name\n\noptions:\n  -h, --help            show this help message and exit\n  --store RELPATH       create the project IN-REPO at this repo-relative store path (writes .crib\n                        + the machine stub; anchor with -P/--project-path)\n  -P, --project-path PROJECT_PATH\n                        anchor --store at this repo (needed with --store; never the daemon's cwd)\n  -p, --project PROJECT_FLAG\n                        the new project's name (selector spelling)\n",
+  "project current": "usage: crib project current [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project delete": "usage: crib project delete [-h] [-p PROJECT_FLAG] [--force] [--yes] [project]\n\npositional arguments:\n  project               the project to delete (explicit; positional or -p; never the session\n                        default)\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT_FLAG\n                        the project to delete (selector spelling, same fact)\n  --force               accepted for compatibility; NO-OP \u2014 delete never removes anything from a\n                        user repo (its notes stay; release them first if they should follow the\n                        namespace)\n  --yes                 skip the interactive confirmation (for scripts; piped stdin refuses\n                        without it)\n",
+  "project doctor": "usage: crib project doctor [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project forget": "usage: crib project forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--with-learnings]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --with-learnings      also drop attached learnings (default: keep them)\n",
+  "project index": "usage: crib project index [-h] [--budget BUDGET_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project list": "usage: crib project list [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "project lookup": "usage: crib project lookup [-h] [-k K] [--kind KINDS] [--status STATUS] [-p PROJECT]\n                           [-P PROJECT_PATH]\n                           query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -k K\n  --kind KINDS          note/design/plan/learning (repeatable)\n  --status STATUS       only decisions/plans in this status (repeatable)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project migrate": "usage: crib project migrate [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project reconcile": "usage: crib project reconcile [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "project related": "usage: crib project related [-h] [-k K] [-p PROJECT] [-P PROJECT_PATH] ref\n\npositional arguments:\n  ref                   an id, relpath, decision/plan title, or symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -k K                  nearest items per kind\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project release": "usage: crib project release [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project relocate": "usage: crib project relocate [-h] [-P PROJECT_PATH] [--source SOURCE] [--keep-prefix] project\n\npositional arguments:\n  project               the (current) project name\n\noptions:\n  -h, --help            show this help message and exit\n  -P, --project-path PROJECT_PATH\n                        the repo's NEW dir (a moved repo carries its own .crib)\n  --source SOURCE       the mount segment to re-point, when several in-situ sources are dead\n  --keep-prefix         identity-keeping only: do NOT re-home the sources/<repo>/ mount prefix\n                        (citations keep spelling the old dir name; the docs rehash is skipped so\n                        no double-mount)\n",
+  "project rename": "usage: crib project rename [-h] project to\n\npositional arguments:\n  project     the current name\n  to          the new name\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "project setup": "usage: crib project setup [-h] [--budget BUDGET_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project status": "usage: crib project status [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project use": "usage: crib project use [-h] project\n\npositional arguments:\n  project\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "project wait": "usage: crib project wait [-h] [--wait-s WAIT_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --wait-s WAIT_S       bound this WAIT (the sweep keeps running daemon-side); re-invoke to re-\n                        join\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "status": "usage: crib status [-h]\n\noptions:\n  -h, --help  show this help message and exit\n"
+ },
+ "mcp": {
+  "code_convert": {
+   "annotations": null,
+   "description": "Convert this project's symbol store to the current shape, in place \u2014 no\nLSP, no LLM, descriptions/keywords/edges byte-identical or the record is\nleft alone and reported. Per record and resumable: re-run after a crash and\nit continues; a record with no `file`/`name` is reported under\n`needs_reindex` instead of guessed at. DRY RUN unless `apply=True`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "apply": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "code_dossier": {
+   "annotations": null,
+   "description": "EVERYTHING about one symbol in a single call: signature + description, and its\ncallers/callees/references EACH annotated with the NEIGHBOUR'S own description,\nplus any pinned learning. The efficient way to *understand* a symbol (vs\ncode_lookup which *finds* it) \u2014 read a symbol and its whole neighbourhood without\nfollow-up lookups. `symbol` is a bare name or dotted fqname.\n\nNARROW an ambiguous name on the axis you actually know, rather than guessing\ncrib's qualified spelling: `path=` a trailing run of the file path\n(`state.rs`, `core/state.rs`), `scope=` a trailing run of the language's own\nscope (`ServerState`, `state::ServerState`), `lang=` exact. They are\nconstraints \u2014 several narrow further, and none makes an ambiguous name\nresolve by picking one. Pass `project_path=`/`project=` to target a DIFFERENT\nproject than your current resolution.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol"
+    ],
+    "type": "object"
+   }
+  },
+  "code_graph": {
+   "annotations": null,
+   "description": "Call graph around a symbol from the index: `callees` (what it calls),\n`callers` (what calls it), or `references` (everywhere mentioned \u2014 broader than\ncalls, and the only relation for symbols-only servers like zsh's shuck),\nrecursive to `depth`. Nodes with a pinned learning are flagged.\n\nTWO SHAPES, and the default is the reading one:\n- `shape=\"tree\"` (default) \u2014 nested {fqname, kind, file, line, children[]} for\n  following one chain by eye. A symbol reached by several paths CANNOT be shown\n  as one node here: it is duplicated, or marked `repeat` and cut off.\n- `shape=\"edges\"` \u2014 the depth-bounded SUBGRAPH as {nodes[], edges[]}: each\n  symbol once, at its shortest distance, with EVERY edge kept and deduplicated,\n  oriented caller\u2192callee whichever direction you walked. REACH FOR THIS when\n  convergence is the point (which paths all end at the same symbol) or when the\n  output feeds a diagram/layout tool \u2014 it is their native input, and it makes\n  convergence explicit instead of something you reconstruct by hand.\n\n`group_by` (implies `shape=\"edges\"`) rolls symbol edges up onto ONE AXIS,\neach edge carrying a `weight` \u2014 the architecture diagram. `file` is which\nfiles depend on which; `dir` is the same at directory grain, with\n`group_depth=N` choosing how coarse; `scope` groups by what the LANGUAGE\nsays a symbol belongs to, which is a different question from where it lives\n(they nearly agree in Python, are unrelated in C++, and C has no scope at\nall \u2014 those symbols group under `(no scope)`).\n\nOMIT `symbol` for the WHOLE PROJECT: every indexed symbol and every edge, no\nroot, no depth bound \u2014 including symbols no walk reaches (entry points, dead\ncode). Large repos: prefer `group_by=\"module\"` (uncapped) over the raw symbol\nexport.\n\n`symbol` takes a full qualified name, a trailing run of its segments, or a\nbare local name, in any language's separator. A bare name matching SEVERAL\nsymbols returns no graph and errors with the candidates ranked by caller\ncount. NARROW it on the axis you actually know rather than guessing crib's\nspelling: `path=` a trailing run of the file path (`state.rs`,\n`core/state.rs`), `scope=` a trailing run of the language's own scope\n(`ServerState`, `state::ServerState`), `lang=` exact. They are constraints \u2014\nseveral narrow further, and none of them makes an ambiguous name resolve by\npicking one. Every result carries `resolved` naming what the symbol resolved\nto. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to\ntarget a DIFFERENT project than your current one.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "depth": {
+      "default": 6,
+      "type": "integer"
+     },
+     "direction": {
+      "default": "callees",
+      "type": "string"
+     },
+     "exclude": {
+      "default": "",
+      "type": "string"
+     },
+     "group_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "group_depth": {
+      "default": 0,
+      "type": "integer"
+     },
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "shape": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "symbol": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "under": {
+      "default": "",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "code_index": {
+   "annotations": null,
+   "description": "Populate the code index for a source file: extract its symbols (functions,\nclasses, globals, class members) + call graph + references via the LSP,\ndescribe them, persist under `<project>/symbol_index/`. Use when code_lookup\nsays a project isn't indexed yet. `path` MUST be ABSOLUTE \u2014 a relative path\nresolves against the daemon's cwd (not yours) and fails; also pass\n`project_path=<your working dir>` so the project resolves via .crib (which\nWINS over the sticky session project \u2014 indexing a repo files its symbols\nunder that repo's project, never the one you happen to be sitting in).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "path": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "path"
+    ],
+    "type": "object"
+   }
+  },
+  "code_lookup": {
+   "annotations": null,
+   "description": "FIND A SYMBOL BY CONCEPT OR NAME \u2014 reach for this FIRST, before grep/Read,\non ANY \"where/what/how is X\" code question (\"where do we fuse ranked lists\",\n\"the oauth refresh\", a bare/cryptic name). HYBRID: dense search over LLM 'what\nit does' descriptions \u2295 name/subtoken match \u2014 finds by intent (grep can't) OR by\nname. Returns ranked symbols with signature, file:line, callers/callees/refs. If\nthe project isn't indexed it SELF-DIAGNOSES \u2014 so just try it. If THIS repo has no\nindex yet, that's the normal first step: INDEX IT with `project_index`\n(project_path=<the repo dir>), then retry the lookup \u2014 do NOT read files or grep instead.\nPass `project_path=<a path in that repo>` (or `project=<name>`) to search a\nproject other than the current one \u2014 it wins for that call and changes\nnothing after it. Then `code_dossier` a hit to go deep, or `code_graph` to\nwalk the tree.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "code_xref": {
+   "annotations": null,
+   "description": "A symbol's callers (\u2190), callees (\u2192) and references (\u21d0 \u2014 broader than calls),\nplus any human learning pinned to it \u2014 from the persisted index, no live LSP.\n`symbol` is a bare name or dotted fqname. Name the project on the call \u2014\n`project_path=<a path in that repo>` or `project=<name>` \u2014 whenever you mean\nsomewhere other than the current one; naming it always wins.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol"
+    ],
+    "type": "object"
+   }
+  },
+  "design_add": {
+   "annotations": null,
+   "description": "Record a DESIGN DECISION \u2014 the choice, why, and what was rejected \u2014 as a\nnote under `design/`, declaring the decisions it builds on (`deps`: ids,\nrelpaths or titles).\n\nCUE: a design question just got SETTLED (\"chunks are keyed by X\", \"writes\nmust name their project\"). Reach for this then, so the next session sees\nnot just what the code does but what it must keep doing. A dep is a\npromise \u2014 *if that changes, reconsider this* \u2014 and a plain note cannot make\nthat promise.\n\nCONTRACT: staleness is computed from dep body hashes, so `checked` is\nseeded from the deps as they read right now and a new decision is born\nverified; if a dep later changes by ANY path, `design_check` says so.\nBody required (the rationale is the artifact). The result carries\n`similar` \u2014 near-duplicate decisions FORK THE GRAPH, so if one comes back,\nprefer `design_append`/`design_edit` on it. Like any write it must NAME its\nproject (`project=`/`project_path=`).\n\n`sources` cites where the decision came FROM \u2014 `[\"docs/DESIGN.md#4.\nCoordination\"]`, a doc path plus a unique heading-path suffix. It names a\nSECTION, never a whole doc (that is refused, listing the doc's headings \u2014\nwhole-file attribution would re-check this on any edit anywhere in the\nfile); the only exception is a doc with no headings at all. Attribution\nedges check like deps (a changed section taints this) but never gate work;\nthe citation records that section's hash now. `proposed=True` is the\nEXTRACTION tier and belongs to `design_import`'s procedure \u2014 hand-authored\ndecisions land `active`, because you already made the judgement.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "content": {
+      "type": "string"
+     },
+     "deps": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "follows": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "informed_by": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "proposed": {
+      "default": false,
+      "type": "boolean"
+     },
+     "rests_on": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "title": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "content"
+    ],
+    "type": "object"
+   }
+  },
+  "design_append": {
+   "annotations": null,
+   "description": "Extend a decision through the facet \u2014 the same edge-aware answer as\n`design_edit` (`newly_tainted` + chains), for when new information EXTENDS\na decision rather than replacing it.\n\nCUE: you were about to `design_add` a decision that qualifies or elaborates\none that already exists. Append to that one instead; a near-duplicate\ndecision forks the graph and splits its dependents between two records.\nResolves its project like a read.\n\n`sources` ADDS doc-section citations to the decision (deduped; existing\nones keep their capture-time hashes) \u2014 the post-hoc wire for the common\nnode-first-doc-later sequence, where the doc of record grows AFTER the\ndecision was written and its edits would otherwise re-check plan items\nbut silently miss the decision itself. Same `doc.md#Heading` spelling as\n`design_add`; `design_edit(sources=)` is the replace-everything form.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "ref",
+     "content"
+    ],
+    "type": "object"
+   }
+  },
+  "design_check": {
+   "annotations": null,
+   "description": "WHICH DECISIONS ARE NOW OUT OF DATE, and what to do about each.\n\nCUE: BEFORE you change a decision, or change code that implements one \u2014\nand again after. This is the call that turns an unexpected consequence\ninto an expected one.\n\nEach tainted entry carries its ref + title, the chain that explains it\n(`X \u2192 Y`, Y being what actually changed), the CHANGE KIND\n(`dep-edited` | `dep-superseded` | `dep-deleted` | `new-unverified-edge`),\nthe dep's `updated` date, and ends with `next` \u2014 the verb to run.\n\nCONTRACT: computed live from the deps' current bodies, so an edit by ANY\nroute (a facet verb, `note_edit`, your own editor, a git pull) is caught \u2014\nnever track changes yourself, just call this. Taint is COARSE: it means a\ndep moved, NOT that the decision is wrong. The normal outcome of reading a\ntainted decision is `design_reaffirm`, which is cheap and expected \u2014 not\nerror recovery.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "design_dep_add": {
+   "annotations": null,
+   "description": "Declare that one decision BUILDS ON another (cycle-checked, refused if it\nwould create one).\n\n`kind` says what the dependency MEANS: `rests_on` (grounding \u2014 the default\nfor a decision), `follows` (ordering \u2014 the default for a plan item) or\n`informed_by` (context \u2014 the default for a note; it never blocks). The\nresult's `dep_kind` says which applied.\n\nCONTRACT: EVERY dep kind propagates checking \u2014 `informed_by` only never\nBLOCKS; it still taints, because an edge that never taints is precisely\nthe hole through which an origin changes silently. The new edge is deliberately left unverified, so\n`ref` shows up in `design_check` until you re-read it against its new dep.\nKeyed by a ref inside one project, so it resolves that project like a\nread.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "dep_ref": {
+      "type": "string"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "dep_ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_dep_remove": {
+   "annotations": null,
+   "description": "Drop a dependency edge between two decisions (the edge was wrong, or the\ndecision no longer rests on it) \u2014 which also drops the checking that edge\ncarried. Resolves its project like a read, as `design_dep_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "dep_ref": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "dep_ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_edit": {
+   "annotations": null,
+   "description": "Rewrite a decision's body THROUGH THE FACET, and get back the causal\nconsequences: `newly_tainted` lists every decision your change just put out\nof date, each with the chain that explains it \u2014 computed against the\npre-edit state.\n\nCUE: changing a decision. PREFER THIS OVER `note_edit` for anything under\n`design/` \u2014 `note_edit` writes the same bytes but tells you nothing, and\nthe whole point of recording a decision was to learn what a change to it\nimplicates. Read it first (`design_read`).\n\nCONTRACT: hash-taint is the safety net for edits made by any other route,\nso nothing is lost by editing a decision as a raw file \u2014 but only this path\ncan name the consequences in the same breath as the change. `sources`, when\ngiven, REPLACES the decision's citations (re-captured at their current\nsection hashes); omitted, they are left alone. Resolves its project like a\nread, as `design_dep_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "new_content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "ref",
+     "new_content"
+    ],
+    "type": "object"
+   }
+  },
+  "design_export": {
+   "annotations": null,
+   "description": "The whole decision graph as ONE consolidated markdown document \u2014\ndep-topological (foundations first), ties by rank/title/id, so it is\ndeterministic across runs. Status and taint ride inline per section.\nThe state-exam read: one call to see everything and how it rests.\nCUE: about to assess what the codebase's architecture is, or to write a\nDESIGN.md-style summary. (Use `crib design export --out PATH` to write\nthe same doc to a file for git-diffing.)",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "design_forget": {
+   "annotations": null,
+   "description": "Delete a decision (recoverable via the version ring). REFUSES while other\ndecisions depend on it, listing them \u2014 `force=True` deletes anyway and\nleaves those dependents tainted, pointing at a missing dep. Prefer\n`design_supersede` when the decision was replaced rather than mistaken.\nResolves its project like a read, as `design_dep_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "force": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_graph": {
+   "annotations": null,
+   "description": "The whole DECISION MAP as {nodes, edges} \u2014 for rendering or computing\nover, the same shape as code_graph's edge export: every node carries `id`\n(the pasteable `design:x.md` ref) and `name` (the title); every edge\nendpoint is declared. Edge kinds: `dep`, `superseded_by`. `tainted` on a\nnode is live \u2014 the ground under that decision moved. `sources=True` adds\ndoc-section attribution nodes and `source` edges.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "sources": {
+      "default": false,
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "design_import": {
+   "annotations": null,
+   "description": "Capture a DESIGN DOC into the decision graph \u2014 the doc split into\nsections (each with its current `section_hash`, ready to cite verbatim),\nthe entries that already cite it, and THE EXTRACTION PROCEDURE to follow,\nreturned as this result's `instruction`.\n\nCUE: asked to capture a design doc, spec or architecture note into the\ngraph (\"get DESIGN.md into crib\", \"record the decisions in this doc\").\n\nIT RUNS NO MODEL, WRITES NOTHING, AND INTERPRETS NOTHING \u2014 no guess at\nwhich passages are decisions, no summarizing. YOU do the reading and all\nthe judgement; this hands you the one thing you can't compute yourself\n(the section hashes taint checking compares against, so a citation is\ncorrect by construction) and then the steps. Follow `instruction`:\nextracted decisions\nland `proposed` (quarantine tier) with `sources` citing the exact section,\nand `design_promote` is what makes each one real. `relpath` may be a note\nrelpath or the repo-relative path of a doc indexed in situ (`DESIGN.md`).\nResolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "design_list": {
+   "annotations": null,
+   "description": "Every decision as a flat table \u2014 title, ref, status, taint flag, edge\ncounts. The inventory read (`design_tree` is the shape read); `tainted=True`\nfilters to the stale ones, i.e. your work queue of decisions to re-read.\nResolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tainted": {
+      "default": false,
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "design_lookup": {
+   "annotations": null,
+   "description": "Semantic search scoped to DECISIONS, each hit annotated with what\ndecides whether to trust it: `status`, `tainted`, and dep/dependent counts.\n\nCUE: about to answer \"why is it built this way\", or to propose an\narchitecture change. Search the decisions before reconstructing them from\nthe code \u2014 and note the `tainted` flag: a stale decision is exactly the one\nyou must not quietly reason from. Follow a hit with `design_read <ref>`.\n`hints`: exact strings you already have in context (decision titles,\nsymbols) \u2014 each runs as its own exact-term route.\n\nCONTRACT: taint is computed live from dep body hashes; `tainted: true` here\nmeans a dep moved and nobody has re-read this since. Resolves its project\nlike a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "hints": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "design_promote": {
+   "annotations": null,
+   "description": "Promote an EXTRACTED decision: `proposed` \u2192 `active`. The human act\nthat turns something an import proposed into settled ground.\n\nCUE: you (or the maintainer) have read a `proposed` entry against its\nsources and it is right. Until then a proposed decision taints nothing \u2014\nso nothing inherits authority it hasn't earned \u2014 and it GATES any plan item\nthat depends on it, because unpromoted ground is unstable ground.\n\nSeeds `checked` and the source hashes FRESH, so the entry becomes\nauthoritative as of the graph and docs as they read at the moment it was\nconfirmed. Resolves its project like a read, as `design_dep_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_read": {
+   "annotations": null,
+   "description": "A decision's DOSSIER in one call \u2014 body, status, every dep and dependent\nannotated (title, status, tainted?), and this decision's own taint with the\nchains explaining it. The `code_dossier` of the design facet.\n\nCUE: about to read, cite, or change a decision. Do this INSTEAD of\n`note_read` on a path under `design/` \u2014 same prose, plus what it rests on,\nwhat rests on it, and whether either moved under you. The file cannot tell\nyou that; only the graph can.\n\nCONTRACT: taint is computed live from dep body hashes \u2014 an edit by any path\n(a facet verb, a raw file write, another agent, a git pull) is caught, so\nnever track staleness yourself. When this decision is tainted the result\nends with the verb to run next. Resolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_reaffirm": {
+   "annotations": null,
+   "description": "Re-record a decision's dep hashes \u2014 'I re-read this against what changed\nand it still holds'. The only thing that clears taint short of rewriting\nthe decision, so only call it after actually re-reading (`design_read`).\n\nNamed as `learning_reaffirm` is, and meaning the same thing: a re-blessing\nagainst drift, not a proof. Because taint is coarse \u2014 a dep moved \u2014 this is\nthe NORMAL, cheap ending for most tainted decisions; a trivial change to a\ndep should end here, not in soul-searching. When it no longer holds, that's\n`design_supersede`. Resolves its project like a read, as `design_dep_add`\ndoes. Re-records the decision's SOURCE hashes alongside its dep hashes \u2014\nboth are what \"I re-read this and it still holds\" is a statement about.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_supersede": {
+   "annotations": null,
+   "description": "Soft-delete a decision that was REPLACED (name the replacement with\n`by_ref`): marks it superseded, keeps it readable as history, and taints\neverything that built on it so those get re-checked \u2014 those dependents come\nback from `design_check` with change kind `dep-superseded`.\n\nThis is where a tainted decision goes when re-reading shows it NO LONGER\nHOLDS; when it still holds, that's `design_reaffirm`. Resolves its project\nlike a read, as `design_dep_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "by_ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "design_tree": {
+   "annotations": null,
+   "description": "The dependency TREE around a decision: `deps` (what it builds on) or\n`dependents` (what would be affected if you changed it) \u2014 the read to do\nBEFORE touching a decision, or before proposing an architecture change.\nEvery node is taint-flagged. Without `ref`, renders every root.\n(`design_read` is the same picture for ONE decision, plus its body.)",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "depth": {
+      "default": 6,
+      "type": "integer"
+     },
+     "direction": {
+      "default": "deps",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "learning_add": {
+   "annotations": null,
+   "description": "Pin a durable human learning to a code symbol \u2014 the 'now I get it',\nthe subtlety, the gotcha you don't want to re-derive next session. Stored\nas a first-class note in the learnings pillar store keyed to the symbol's\nfqn, SEPARATE from the regenerable LLM description, so it survives\nre-indexing and rides git sync (and works on code you can't edit \u2014 vendored\ndeps, read-only explorations \u2014 where a comment can't go). Appends a dated\nentry to the symbol's running note. `symbol` is a bare name or dotted\nfqname already in the symbol_index (code_index the file first). Surfaces\nback via code_lookup/code_xref. A learning is ABOUT a symbol in the code\nproject you're in, so \u2014 unlike a note write \u2014 it resolves that project the\nway the read tools do (a documented exception; pass `project=`/`project_path=`\nto pin one elsewhere).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     },
+     "text": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol",
+     "text"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_edit": {
+   "annotations": null,
+   "description": "Rewrite a symbol's learning body wholesale (frontmatter preserved) \u2014\nthe standard edit, scoped to a symbol. Errors if none exists; `learning_add`\ncreates. Resolves its project like a read, as `learning_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "new_content": {
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol",
+     "new_content"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_forget": {
+   "annotations": null,
+   "description": "Remove a symbol's learning (stashed to the version ring first, so it's\nrecoverable) \u2014 the standard forget, scoped to a symbol. Resolves its project\nlike a read, as `learning_add` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_migrate": {
+   "annotations": null,
+   "description": "Rebind this project's learning notes to the current symbol identity.\n\nOPTIONAL TIDINESS \u2014 the learnings join resolves a note bound to any prior\nspelling, so an unconverted note keeps working forever; this buys canonical\nfilenames and `symbol_ref` frontmatter. Per record: `noop` (already\ncurrent), `convert` (rebound, file renamed, old binding kept in\n`symbol_was`), `orphan` (binding answers to nothing \u2014 `learning_rehome`\nrepairs it), `collision` (two notes claim one symbol: both kept, said out\nloud, never merged). Re-running is the resume.\n\nDRY RUN unless `apply=True` \u2014 it renames files under a git-synced store.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "apply": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "learning_read": {
+   "annotations": null,
+   "description": "Read a symbol's attached learning note (frontmatter + body), or found=\nFalse if none is written yet. `symbol` is a bare name or dotted fqname.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_reaffirm": {
+   "annotations": null,
+   "description": "Clear a learning's \u26a0\ufe0e stale flag WITHOUT rewriting it \u2014 you re-checked the\nnote against the current code and it still holds. Re-snapshots the symbol's\ncontent_hash so it reads as fresh again. Use when code_lookup shows a \u203b note\nflagged stale but the understanding is still correct.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "lang": {
+      "default": "",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "scope": {
+      "default": "",
+      "type": "string"
+     },
+     "symbol": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "symbol"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_rehome": {
+   "annotations": null,
+   "description": "Re-point an orphaned learning at the symbol it became. Call with just\n`old_fqn` FIRST to get ranked candidate targets (name/signature/file signals);\nthen call again with the chosen `new_fqn` to move the note (id/history\npreserved, frontmatter re-snapshotted). Never auto-moves \u2014 you pick, because a\nwrong attach is worse than a dangling one.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "new_fqn": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "old_fqn": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "old_fqn"
+    ],
+    "type": "object"
+   }
+  },
+  "learning_report": {
+   "annotations": null,
+   "description": "Health report for attached learnings: each is `ok` | `moved` (fqn resolves\nbut the symbol's file drifted) | `orphan` (fqn no longer resolves \u2014 a rename/\nmove/delete left the note dangling). `orphans_only` filters to the actionable\nones. Report-only; drives cleanup via `learning_rehome` / `learning_forget`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "orphans_only": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "memory_history": {
+   "annotations": null,
+   "description": "Show git commit history for the whole tree (or a single note).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "relpath": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "memory_snapshot": {
+   "annotations": null,
+   "description": "Create a git checkpoint of the whole memory store's data tree (if git is set up).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "message": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "note_append": {
+   "annotations": null,
+   "description": "Add to an existing note (found via `note_lookup`) \u2014 the right call when new\ninformation extends or continues something already remembered, rather than\n`note_store`-ing a near-duplicate. Optionally files it under a new heading.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "content": {
+      "type": "string"
+     },
+     "heading": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath",
+     "content"
+    ],
+    "type": "object"
+   }
+  },
+  "note_apropos": {
+   "annotations": null,
+   "description": "Like `note_lookup`, but each hit carries the full matching section's\nmarkdown (`section`) instead of a short snippet \u2014 for reading the\nmatched sections in full, not just locating them. Carries the same\n`index_rebuilding` incompleteness flag. `hints`: exact strings you\nalready have in context, each run as its own exact-term route.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "hints": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "note_distill": {
+   "annotations": null,
+   "description": "LLM-revise a note in place: compress, dedupe, normalize \u2014 keeping\nfacts/decisions, dropping deliberation, preserving code verbatim.\nThrash-guarded (no-op if unchanged); the prior version is recoverable.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "note_edit": {
+   "annotations": null,
+   "description": "Rewrite a note's full content \u2014 use when remembered information has\nchanged, needs correcting, or several notes should be consolidated (read\nit first). Frontmatter (and the note's id/history) is preserved.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "new_content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath",
+     "new_content"
+    ],
+    "type": "object"
+   }
+  },
+  "note_elaborate": {
+   "annotations": null,
+   "description": "keyword_index: generate BM25 search terms per section (or whole\nproject), section-addressed under `label` (e.g. `keywords`, `questions`,\n`phrase`). Skips cached sections unless `overwrite`. Activate via\n[retrieve].keyword_labels.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "type": "string"
+     },
+     "overwrite": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "label"
+    ],
+    "type": "object"
+   }
+  },
+  "note_forget": {
+   "annotations": null,
+   "description": "Delete a note when its information is obsolete or wrong. Removed from\ndisk and the index, but stashed to the version ring first, so it stays\nrecoverable by id.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "note_import": {
+   "annotations": null,
+   "description": "Copy the NAMED files into memory as crib-owned notes (snapshot you own:\ngit-synced, editable, versioned). Distinct from a repo's `.crib` docs, which\nare indexed IN-SITU (source is master, never copied) by `project index`.\n`paths` must be absolute, or relative to `project_path` (there is no shell\ncwd here for them to be relative to). An import is ABOUT a repo, so \u2014 unlike\na note write \u2014 it resolves like the repo-scoped `project_*` tools and REQUIRES\na source: name `project_path=<the repo dir>` (or `project=`), else it errors\nrather than quietly filing the copies in the default project.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "paths": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "paths"
+    ],
+    "type": "object"
+   }
+  },
+  "note_import_memory": {
+   "annotations": null,
+   "description": "Mirror Claude Code's own harness memory (the `memory/*.md` files it\nwrites for this project) into a crib project, so those notes become\nsearchable here alongside everything else. One-way + idempotent; opts the\nrepo into the daemon's live mirror so future memory edits sync on their\nown. REQUIRES a source repo \u2014 pass `project_path=<the repo dir>` (or\n`project=`); like `note_import` it resolves repo-scoped, never from the\nsticky session or the default project.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "note_locate": {
+   "annotations": null,
+   "description": "Get the real on-disk path of a note so you can edit it with your own\nfile tools. After editing, call `note_reindex(relpath)` to make it searchable\nnow (the watcher would catch it shortly regardless).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "note_lookup": {
+   "annotations": null,
+   "description": "Semantic search over memory. Call this FIRST when the user asks\nabout this project \u2014 a prior decision, convention, or investigation\nmay already be stored. Returns ranked note sections, each with its\nrelpath and the line_start/line_end span of the matching section so\nyou can jump straight to it (pair with `note_locate` for the abspath).\n`tags` filters by frontmatter tag. Notes only: design decisions, plan\nitems and learnings live in their own pillar stores and never appear\nhere \u2014 search them with `design_lookup` / `plan_lookup`, whose hits\nalso carry the facet state.\n`hints`: exact strings you already have in context \u2014 symbol names,\nflags, error codes, note titles you just read. Each runs as its own\nexact-term route and boosts candidates multiple routes agree on.\nNo hints? Just query. `keyword_labels`/`keyword_weight` (BM25\nkeyword_index) and `summary_labels` (dense summary_index aliases)\noverride which LLM index sets feed retrieval (default from config);\n`rerank` overrides [retrieve].rerank for this query \u2014 mainly for eval\nsweeps.\nA hit carrying `index_rebuilding: true` means this project is still being\nre-embedded after a store wipe (`status` shows the sweep) \u2014 the result set\nis INCOMPLETE, so retry once it clears rather than concluding nothing exists.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "hint_weight": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "hints": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "keyword_labels": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "keyword_weight": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     },
+     "rerank": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "summary_labels": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "summary_weight": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "note_move": {
+   "annotations": null,
+   "description": "Relocate a note to another project and/or rename it, preserving its id\nand version history (the curation primitive \u2014 not store-new + forget-old).\n`to_project` moves it across namespaces; `to_relpath` renames it.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     },
+     "to_project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "to_relpath": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "note_read": {
+   "annotations": null,
+   "description": "Read a note's full raw markdown (frontmatter + body) \u2014 e.g. to see a\n`note_lookup` hit in full context, or before rewriting the note with `note_edit`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "note_reindex": {
+   "annotations": null,
+   "description": "Reindex a note (or the whole project). Call after editing a note via\nits raw path. Safe to call redundantly \u2014 it no-ops if already current.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "note_restore": {
+   "annotations": null,
+   "description": "Restore a prior version of a note (itself undoable).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     },
+     "version": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath",
+     "version"
+    ],
+    "type": "object"
+   }
+  },
+  "note_store": {
+   "annotations": null,
+   "description": "Persist a durable fact to memory \u2014 a decision, preference,\nconvention, gotcha, or hard-won detail worth recalling in a future\nsession. Assigns an id, writes markdown, indexes it. If a related\nnote already exists (check with `note_lookup`), prefer `note_append`/`note_edit`\nover creating a near-duplicate.\n\nPICK THE RIGHT PROJECT \u2014 REQUIRED. A fact belongs to the project it is ABOUT,\nwhich may NOT be the repo you're working in, so a write won't inherit your\ncurrent project: pass `project=` (the subject's project \u2014 often `default` or a\ntool's own project for cross-cutting knowledge like a CLI/editor/convention),\nor `project_path=` a path in that repo. If you omit both, you'll be ASKED which\nproject (elicitation). Then tell the user which project it landed in.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "content"
+    ],
+    "type": "object"
+   }
+  },
+  "note_summarize": {
+   "annotations": null,
+   "description": "summary_index: generate LLM rephrasings per section (or whole project),\nembedded as dense alias vectors so paraphrased queries match a section\nwith zero shared tokens. Skips cached sections unless `overwrite`.\nActivate via [retrieve].summary_labels.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "type": "string"
+     },
+     "overwrite": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "label"
+    ],
+    "type": "object"
+   }
+  },
+  "note_versions": {
+   "annotations": null,
+   "description": "List recoverable prior versions of a note.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "ops": {
+   "annotations": null,
+   "description": "The ops view: what the engine is doing RIGHT NOW \u2014 live sweeps\n(done/total/failed/scope), per-project in-flight files, and generation\nslot occupancy (in-flight / waiting / rate-limited / cooldown seconds).\nThe one call that answers \"what is running and why is nothing moving.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+   }
+  },
+  "plan_add": {
+   "annotations": null,
+   "description": "Add durable PLAN ITEMS so multi-session work survives a context reset.\n\nCUE: you are about to write a todo list \u2014 into a file, into the chat, or\ninto your own head. Put it here instead: `plan_next` resumes it in any\nlater session, yours or another agent's, and an in-chat list dies with the\nchat.\n\nOne item (`title`, optional `content`) or a BATCH: `items=[{title,\ncontent?, deps?}, \u2026]`, added contiguously in order. A batch item may depend\non an EARLIER item of the same batch by position (`deps=[\"#1\"]`) as well as\non any existing ref \u2014 which is what you usually mean, since the item you\njust wrote has no id yet. A plan item's body is OPTIONAL (a title is a\nlegitimate whole item); a design decision's is not.\n\n`deps` are must-precede refs (plan or design); `after`/`before` place the\nbatch in the order (default: end). Order is preference, deps are\ncorrectness. `sources` cites the doc SECTION an item came from\n(`[\"docs/plans/x.md#Tier 2\"]`, also settable per batch item; a bare doc is\nrefused) \u2014 a finished item whose cited passage later changes flags\n`revisit` rather than re-opening itself. Like any write it must NAME its\nproject.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "after": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "before": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "content": {
+      "default": "",
+      "type": "string"
+     },
+     "deps": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "follows": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "informed_by": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "items": {
+      "anyOf": [
+       {
+        "items": {
+         "additionalProperties": true,
+         "type": "object"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "rests_on": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_append": {
+   "annotations": null,
+   "description": "Extend a plan item's body through the facet \u2014 the same edge-aware answer\nas `plan_edit` (`newly_tainted`), for when new detail EXTENDS an item\nrather than replacing it. The plan-side `design_append`.\n\nA plan body is OPTIONAL, so appending onto a title-only item just SETS the\nbody rather than prepending blank lines. `sources` ADDS doc-section\ncitations (deduped; existing ones keep their capture-time hashes) \u2014 the\npost-hoc wire for the item-first, doc-later sequence. Resolves its project\nlike a read, as `plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "ref",
+     "content"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_decline": {
+   "annotations": null,
+   "description": "Decline an item \u2014 never scheduled, REMEMBERED with the why-not.\n\nCUE: \"we considered this and chose not to\" \u2014 the rationale is REQUIRED\n(a decline without a why-not is refused; it is what a future\nre-proposal comes back for). The probe remembers it: `plan_add` on the\nsame idea returns the declined item + its why at re-proposal time, and\n`plan_lookup` hits carry status + reason inline \u2014 \"settled, don't\nre-litigate\". Optional `triggers` fire NARROWLY: the watched ref's\nSTATUS transitions (promoted/superseded), not prose rewording. Un-\ndeclining is a human claim: `plan_status <ref> todo`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "triggers": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "why": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "why"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_dep_add": {
+   "annotations": null,
+   "description": "Declare that one plan item MUST FOLLOW another (cycle-checked). This is\nwhat makes `plan_next` trustworthy. Resolves its project like a read, as\n`plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "dep_ref": {
+      "type": "string"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "dep_ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_dep_remove": {
+   "annotations": null,
+   "description": "Drop a must-precede edge between plan items. Resolves its project like a\nread, as `plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "dep_ref": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "dep_ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_edit": {
+   "annotations": null,
+   "description": "Rewrite a plan item's body THROUGH THE FACET, and get back what the\nchange tainted: `newly_tainted` lists every item that now reads as out of\ndate, computed against the pre-edit state. The plan-side `design_edit`.\n\nCUE: changing a plan item's detail. PREFER THIS OVER `note_edit` for\nanything under `plans/` \u2014 `note_edit` writes the same bytes but tells you\nnothing about the items that depended on this one. Read it first\n(`plan_read`).\n\nCONTRACT: hash-taint is the safety net for edits made by any other route,\nso nothing is lost by editing a plan item as a raw file \u2014 but only this\npath names the consequences in the same breath. `sources`, when given,\nREPLACES the item's citations; omitted, they are left alone. Resolves its\nproject like a read, as `plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "new_content": {
+      "type": "string"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "sources": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "ref",
+     "new_content"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_export": {
+   "annotations": null,
+   "description": "The whole PLAN as ONE consolidated markdown document \u2014 same ordering\ncontract as `design_export` (dep-topological, ties by rank/title/id;\ndeterministic across runs). Includes done items \u2014 it is a state exam,\nnot a work queue (`plan_list` is that).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_forget": {
+   "annotations": null,
+   "description": "Delete a plan item that is no longer wanted (recoverable via the ring).\nREFUSES while other items depend on it, listing them; `force=True` deletes\nanyway. Prefer `plan_status(done)` for work that actually happened.\nResolves its project like a read, as `plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "force": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_graph": {
+   "annotations": null,
+   "description": "The PLAN as {nodes, edges}, including the design decisions items rest\non (those deps gate: an item drops out of plan_next while its decision is\ntainted). Same consumer contract as code_graph / design_graph. Edge kinds:\n`dep`, `superseded_by`; note-deps appear as lean external nodes.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "sources": {
+      "default": false,
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_import": {
+   "annotations": null,
+   "description": "Capture a PLAN DOC into the plan facet \u2014 the same shape as\n`design_import` (sections + hashes + existing citations + procedure), for\nturning a doc's actionable passages into plan items that cite them.\n\nCUE: asked to put a plan file, a spec's work list, or a TODO doc into the\ngraph. Runs no model and writes nothing: follow the returned\n`instruction`, which ends in ONE batch `plan_add` whose items carry\nintra-batch deps and `sources`. A finished item whose cited passage later\nchanges shows `revisit` in `plan_list --all` \u2014 the graph reports, it never\nre-opens a status. Resolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "relpath": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "relpath"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_list": {
+   "annotations": null,
+   "description": "THE PLAN as a working set: in-progress items first, then ready, then\nblocked (each naming what it waits on), finished hidden unless `all`.\nTopological + rank order holds within each group.\n\nRead this when picking up work \u2014 it's the persistent, resumable version of\na todo list.\n\nCONTRACT (mixed deps): a **plan** dep blocks until it is done/verified; a\n**design** dep blocks only while it is TAINTED (an untainted decision is\nstable ground; a tainted one means the ground moved); a plain **note** dep\nnever blocks \u2014 it is a reference, not a gate.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "all": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_lookup": {
+   "annotations": null,
+   "description": "Semantic search scoped to PLAN ITEMS, each hit annotated with `status`,\n`tainted` and dep/dependent counts.\n\nCUE: \"was this already planned?\" \u2014 before adding an item, and when picking\nup work described in prose rather than by ref. `hints`: exact strings you\nalready have in context (item titles, refs) \u2014 each runs as its own\nexact-term route. Resolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "hints": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_move": {
+   "annotations": null,
+   "description": "Re-order a plan item (rank only \u2014 deps are untouched, so a move can never\nbreak correctness). Use `plan_dep_add` when the order is a real constraint,\nthis when it's just preference. Resolves its project like a read.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "after": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "before": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_next": {
+   "annotations": null,
+   "description": "What to do NEXT: `todo` items nothing blocks, in order. The one-call\n'where was I' at the start of a session.\n\nEXCLUDES `in-progress` items by design \u2014 in-progress means CLAIMED, and\nseveral agents may read one plan. Each returned item carries the loop to\nrun: mark it `in-progress` when you take it (that is how the claim becomes\nvisible), `done` when you finish (the result names what you unblocked).\n\nCONTRACT (mixed deps): plan deps block until done; design deps block while\ntainted; note deps never block.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 5,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_park": {
+   "annotations": null,
+   "description": "Park an item \u2014 not now, with a stated reason, optionally WATCHING refs\nwhose change surfaces it for re-evaluation.\n\nCUE: \"this matters but not now\" or \"I keep re-proposing this\". Each\ntrigger (`triggers`: pillar-qualified refs \u2014 a design decision, another\nplan item) is recorded with the watched ref's body hash AS OF NOW; when\nthat hash later moves, `plan_list` surfaces the item (\"trigger fired\") \u2014\nit NEVER auto-wakes. Unparking is a human claim:\n`plan_status <ref> todo`. Triggers gate attention, never work.\n`why` rides the record and one dated body line, so the deferral is\nsemantically searchable via `plan_lookup`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "triggers": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "why": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_read": {
+   "annotations": null,
+   "description": "A plan item's DOSSIER in one call \u2014 body, status, every dep and dependent\nannotated, and the one thing a plan item lives or dies by: `blocked_by`,\nwhat it is waiting on right now and why. The `plan_list` picture for ONE\nitem, plus its body; the plan-facet twin of `design_read`.\n\nCUE: about to pick up, cite, or change a plan item. Do this INSTEAD of\n`note_read` on a path under `plans/` \u2014 same prose, plus what it waits on,\nwhat waits on it, and whether either moved under you.\n\nCONTRACT (mixed deps): a **plan** dep blocks until done/verified; a\n**design** dep blocks while TAINTED or PROPOSED; a **note** dep never\nblocks. A finished item whose cited source moved carries `revisit` \u2014 the\ngraph reports it, it never re-opens the status. Resolves its project like a\nread.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_reaffirm": {
+   "annotations": null,
+   "description": "Re-record a plan item's dep AND source hashes \u2014 'I re-read what moved\nand this item still stands against it.' The plan-side twin of\n`design_reaffirm`, and what clears a benign taint on an item whose DESIGN\ndep was edited/reaffirmed: without it the item sits blocked in `plan_next`\n(a design dep blocks while tainted) with no verb but the dep_remove/\ndep_add dance. A claim about the item's GROUND; `plan_status` is the claim\nabout the WORK. Resolves its project like a read, as `plan_status` does.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_review": {
+   "annotations": null,
+   "description": "The full-plan REVIEW EVIDENCE PACK \u2014 the consolidated export plus\nper-item evidence (age, dep/blocking state, `revisit`, trigger state,\nand overlap probes for open items against the plan INCLUDING done and\ndeclined items \u2014 a duplicate of a done item is the louder one).\n\nRuns NO model and writes NOTHING (the `design_import` precedent): you\nread, judge, and emit the batch, which `plan_review_apply` applies.\nThe `instruction` carries the contract and the batch format \u2014 READ IT;\nits permission line (the LLM never sets `done`) is load-bearing.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "plan_review_apply": {
+   "annotations": null,
+   "description": "Apply a JUDGED review batch, edge-aware, with per-op reports and\n`reviewed` stamps on every touched item.\n\nOps: retitle / move / park / decline / merge / edit. REFUSED with no\npartial write: `done` (statuses are human claims \u2014 the LLM never sets\ndone; propose completions in prose for a human to confirm) and\n`delete`/`forget` (MERGE instead \u2014 a decline keeps the item readable).\nOne op failing does not abort the batch.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "batch": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "batch"
+    ],
+    "type": "object"
+   }
+  },
+  "plan_status": {
+   "annotations": null,
+   "description": "Move an item along: `todo` | `in-progress` | `done` | `verified` \u2014 and\nfind out what that just freed.\n\nCompleting an item answers with `unblocked`: the items whose deps are now\nall satisfied. That is the plan-side mirror of `design_edit`'s\n`newly_tainted` \u2014 finishing work is an edge event, so the next actionable\nstep arrives with the completion instead of waiting to be asked for.\n\nCUE: as you go, not at the end \u2014 a resumed session (or another agent) reads\nthis. `in-progress` is a CLAIM: it takes the item out of everyone else's\n`plan_next`. (`blocked` is DERIVED from deps and never set here.) Marking\ndone with unfinished deps warns rather than blocks. Keyed by a ref inside\none project, so it resolves that project like a read.\n\nA status write also re-records the item's SOURCE hashes \u2014 a status is a\nstatement about the work as of now, so re-running it after re-reading a\nchanged source is what clears a `revisit` flag.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref",
+     "status"
+    ],
+    "type": "object"
+   }
+  },
+  "project_adopt": {
+   "annotations": null,
+   "description": "Move a project's NOTES into the repo that owns them, at the dir its\n`.crib` declares as `store:` (repo-root-relative). After this the repo's own\ngit carries the notes \u2014 commit them with your code; crib's `memory\nsync`/`snapshot` refuse for this project. The derived index (embeddings,\nsymbol index) stays machine-local, so nothing unshareable lands in the repo.\nNote ids and search results are unchanged \u2014 this moves files, it doesn't\nreindex. Pass `project_path=<the repo dir>`. Idempotent; `project_release`\nundoes it.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_cancel": {
+   "annotations": null,
+   "description": "Cancel a running index sweep for this project. Completed files remain\n(hash-gated); undescribed files retry on the next project_index.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_create": {
+   "annotations": null,
+   "description": "Explicitly create a project: pillar skeleton + birth manifest\n(created/host in `.cribproject`). A DOORWAY, not a gate \u2014 writes still\ncreate implicitly; use this when a project should exist before its\nfirst write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative\npath>` + `project_path=<the repo dir>` writes the repo's `.crib`\n(`project:` + `store:`) and the machine stub, so the project is born\nin-repo (its pillar stores travel with the repo; commit them). The\nat-birth store must be empty \u2014 moving an existing global project's\nnotes into the repo is `project_adopt`, not this. Idempotent.\n\nThe name comes from you OR the repo's `.crib`/repo dir \u2014 never from\nthe session's sticky current project (a fresh repo without a `.crib`\nderives its name from the repo dir; this is why create runs with NO\nresolution policy: the default-project fallback would silently point\na repo-bound store at the shared bucket). The default project is\nrefused as a residency target.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "store": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_current": {
+   "annotations": null,
+   "description": "Show this session's current project (seeding it from `project_path`/.crib if not\nyet set), how it resolved, plus the available projects.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_delete": {
+   "annotations": null,
+   "description": "Fenced removal of a project from CRIB: its index entries, caches,\ncode-index state, mirror bindings, and the machine-local tree \u2014 moved\nto `.trash/` (one-level undo), not rm -rf'd.\n\nTHE INVARIANT: crib NEVER removes anything from a user repo. For an\nin-repo project the committed notes, the store's ring and the repo's\n`.crib` STAY (the result says so, and how to release them first if\nthey should follow the namespace). `force` is accepted for surface\ncompatibility and gates nothing. The default project is refused (no\nowner to consent); a running code sweep or background reconcile is\nrefused. Deletion never resolves a session default or a cwd:\n`project=` is required and is the whole answer.\n\nALWAYS elicited in MCP mode, and the fences run FIRST: the body\ncomputes the deletion plan (which refuses any fence), then the client\nis asked to echo the project name against an exact account of what\nwill happen. A client without elicitation support is refused (the\nCLI's terminal prompt is the same gate in the other mode).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "force": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "project"
+    ],
+    "type": "object"
+   }
+  },
+  "project_doctor": {
+   "annotations": null,
+   "description": "What in a project needs attention, report-only: dangling deps, deps\non superseded/declined items, changed or vanished cited sections,\nmoved/orphaned learnings, one id in several files, near-duplicate\nnotes/decisions/plans, pending descriptions. Each finding names the\nverb that fixes it; nothing is changed.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_forget": {
+   "annotations": null,
+   "description": "Clear a project's CODE INDEX (symbol_index). Keeps attached learnings, notes\nand `.crib` by default (learnings are durable \u2014 pass with_learnings=True to drop\nthem too). Recoverable by re-running project_index. Pass `project_path=<the repo dir>`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "with_learnings": {
+      "default": false,
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_index": {
+   "annotations": null,
+   "description": "(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it\ndeclares under `docs:` \u2014 those are indexed IN-SITU (searchable via\nnote_lookup; the repo keeps the only copy). It differs from\nproject_setup only in not COPYING files into crib-owned notes. Use to\nindex a repo for code_lookup/code_dossier, or to refresh after edits\n(cheap: unchanged files are skipped). Pass\n`project_path=<the repo dir>` (a `.crib` is auto-created if missing); a\nbare `project=<name>` re-indexes an ALREADY-INDEXED project from its\nrecorded root.\n\nTHE SWEEP RUNS DAEMON-OWNED and this call returns at once \u2014 a RUNNING\nHANDLE (`running: true` + done/total) or, for an instant sweep, its full\nresult. DON'T WAIT: poll `project_status` (its `jobs` section: never\nerrors, never blocks, reports failed jobs); re-invoke to join; a\ncompleted sweep's re-invoke returns its full result. `budget_s=<seconds>`\nbounds the WORK (not the call): files not reached are deferred\n(`complete=false, remaining=N`) \u2014 re-invoke to continue (finished files\nre-skip via the content-hash gate).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "budget_s": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_list": {
+   "annotations": null,
+   "description": "List crib projects (separate memory namespaces). Use to discover\nwhat's available before a `note_lookup`/`note_store` in a specific project.\nA project whose notes live in its own repo also carries `store_root`, and\n`unavailable: true` when that repo isn't on this machine (clone it, or\n`project_release` the project) \u2014 such a project can't be read or written\nuntil then.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+   }
+  },
+  "project_lookup": {
+   "annotations": null,
+   "description": "One search across notes, decisions, plans and learnings at once:\neach hit carries its `kind` and, for a decision or plan, its `status`.\n`kinds` (note/design/plan/learning) and `status` (e.g. active, todo)\nnarrow it. Use the per-pillar lookups when you know which you want.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 8,
+      "type": "integer"
+     },
+     "kinds": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "query": {
+      "type": "string"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "required": [
+     "query"
+    ],
+    "type": "object"
+   }
+  },
+  "project_migrate": {
+   "annotations": null,
+   "description": "Move a project's legacy facet notes (`notes/design/`, `notes/plans/`,\n`notes/code-learnings/`) into their sibling pillar stores and requalify\ntheir citations \u2014 the pre-split \u2192 split layout migration, on demand.\nEvery full reindex runs the same routine automatically, so this verb is\nfor driving the move (and reading its report) explicitly. Idempotent;\nname collisions between the two layouts are skipped and reported, never\nmerged.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_reconcile": {
+   "annotations": null,
+   "description": "Sweep every project for changes made while crib was down and bring the\nindex back in line. Safe to call anytime \u2014 the hash gate no-ops anything\nalready current.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+   }
+  },
+  "project_related": {
+   "annotations": null,
+   "description": "One item and everything around it, across kinds: a note, decision,\nplan, learning or code symbol (by id, relpath, title or symbol name),\nits declared links both ways (deps with their kinds, dependents,\ndrawn_from, superseded_by, learns, member_of, calls/references), and\nits `k` nearest items of every kind by stored vector, with status.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 3,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ],
+    "type": "object"
+   }
+  },
+  "project_release": {
+   "annotations": null,
+   "description": "Move an adopted project's notes back OUT of its repo into the global\ncrib store (the inverse of `project_adopt`) \u2014 for when the repo is going\naway, or the notes should stop travelling with it. Also the fix when a\nproject is listed `unavailable` because its repo isn't on this machine\u2026\nexcept that the notes have to BE here to move: clone the repo first.\nIdempotent. Pass `project_path=<the repo dir>` or `project=<name>`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_relocate": {
+   "annotations": null,
+   "description": "The move-and-rename verb: a repo project's checkout was moved and/or\nrenamed on this machine (works after the fact \u2014 the old path may be gone,\nthe project renamed, an earlier relocate cut halfway \u2014 re-invoke RESUMES).\nThe fast half (code-index .source_root, doc-source mounts, the repo's own\n.crib line when it names the pre-rename name, an in-repo store stub) is\nre-pointed at once and idempotent. The HEAVY half \u2014 re-homing the\n`sources/<old>/` mount when the DIR was renamed (doc chunks rekey +\nre-embed; every citation in THIS project's notes rewritten to the new\nspelling) \u2014 runs as a DAEMON-OWNED job: the call returns a RUNNING HALF\nat once with `progress` + `resume_hint`. DON'T WAIT: poll `project_status`\n(its `jobs` section carries live done/total + the banked counts);\nre-invoking the verb joins when the job is still running. A trailing CODE\nrehash sweep joins too \u2014 never an error. keep_prefix=true = identity-\nkeeping only. Foreign sites are REPORTED, not edited.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "keep_prefix": {
+      "default": false,
+      "type": "boolean"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "source": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_rename": {
+   "annotations": null,
+   "description": "Rename a project namespace (`projects/<old>` \u2192 `projects/<new>`).\n\nTravels: the pillar tree, machine stub, symbol_index, version ring\n(note ids live in frontmatter \u2014 untouched). Churns: every chunk id\n(they hash the project name), so this deletes the old chunks and\nreindexes under the new name (a full re-embed; the known cost of a\nrare verb), after stamping any id-less note with its pre-rename\nderived id so ring history stays resolvable. Other projects' `.crib`\n`refs:` naming the old name are reported (they live in foreign repos \u2014\nfix by hand). Pass `project_path=` only to resolve OTHER projects'\ncontext; `project=` is required.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "project"
+      ]
+     },
+     {
+      "required": [
+       "project_path"
+      ]
+     }
+    ],
+    "properties": {
+     "project": {
+      "type": "string"
+     },
+     "to": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "project",
+     "to"
+    ],
+    "type": "object"
+   }
+  },
+  "project_setup": {
+   "annotations": null,
+   "description": "ONBOARD a repo for crib in one call \u2014 when code_lookup says a project isn't\nindexed, do THIS, don't fall back to grep. Ensures a `.crib` (auto-created with\nsensible defaults if missing), imports the repo's docs into notes, AND indexes\nall its source code (functions/classes/globals/members + call graph +\nreferences + descriptions). Pass `project_path=<the repo dir>` (a bare\n`project=<name>` works only for an already-indexed project \u2014 it resolves the\nrecorded root). Idempotent. Then code_lookup/code_dossier work. Code-only\nvariant: project_index.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_status": {
+   "annotations": null,
+   "description": "Is this repo code-indexed? Returns symbol/file counts, a kind breakdown, and\nthe `.crib` source paths \u2014 to orient before project_setup / a code_lookup. Pass\n`project_path=<the repo dir>`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_use": {
+   "annotations": null,
+   "description": "Set THIS session's current project \u2014 subsequent `note_lookup`/`note_store`/etc.\ntarget it without passing `project` each time. Sticky for the connection; a\nper-call `project`/`project_path` still wins for that one call and leaves this\nunchanged. Your first call carrying `project_path` adopts that repo the same\nway (and says so), so call this to SWITCH, or to be explicit up front. The\nnamespace is created immediately (so it's real and listed, not a phantom\nyou're 'in' until the first write).",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "project"
+    ],
+    "type": "object"
+   }
+  },
+  "project_wait": {
+   "annotations": null,
+   "description": "PREFER POLLING (`project_status`'s `jobs` section) \u2014 a blocking wait\nties up a client request and gets cut off at proxy caps. This verb is\nthe JOIN primitive for scripts/terminals only: bounded-block on a\nrunning index job for this project. The final result if the sweep\ncompletes within wait_s; else the live partial state (a re-invoke keeps\nwaiting). Emits progress markers while it waits (`42/317 files (13%) \u00b7\neta 1:50`). Never starts a sweep; `{running: false}` when idle.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "wait_s": {
+      "default": 30.0,
+      "type": "number"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "status": {
+   "annotations": null,
+   "description": "One-call health summary: every project's inventory (notes, in-situ doc\nchunks, code symbols, learnings), how many of its design decisions have\ngone stale (`design_tainted` \u2014 `design_check` says which and why),\ngit-sync state (dirty/ahead/behind),\nwhich warm LSP sessions are attached (alive/busy/idle), and any indexing\ncurrently in flight. `sweeps` is the RELIABLE wait signal for a background\n`project_index`: {project: {done, total}} while it runs, absent when done \u2014\npoll status until your project leaves `sweeps`. Use to orient across ALL\nprojects; `project_status` goes deep on one.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+   }
+  }
+ }
+}
