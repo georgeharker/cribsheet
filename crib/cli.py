@@ -2121,7 +2121,6 @@ class _FacetCli:
     emit: Callable[[Any, Any], None]
     method: str
     is_async: bool
-    mcp: str
     aliases: tuple[str, ...] = ()
 
 
@@ -2304,16 +2303,14 @@ _LIST_CLI = _FacetCli(
     lambda f: f"list {f.plural} by their fields (no search query)",
     _a_list,
     lambda a: {"project": a.project, "k": a.k},
-    _E, "list_items", False, f"{_PROJ} k=50",
+    _E, "list_items", False, 
 )
 
 _FACET_CLI: dict[str, _FacetCli] = {
     "list": _LIST_CLI,
     "lookup": _FacetCli(
         lambda f: "semantic search", _a_lookup, _b_lookup, _E, "lookup", False,
-        f"query {_PROJ} k=8 tags=None keyword_labels=None "
-        "keyword_weight=None summary_labels=None summary_weight=None "
-        "hints=None hint_weight=None rerank=None",
+        
         aliases=("search",),
     ),
     "apropos": _FacetCli(
@@ -2327,16 +2324,16 @@ _FACET_CLI: dict[str, _FacetCli] = {
             "tags": a.tags,
             "hints": a.hints,
         },
-        _E_apropos, "apropos", False, f"query {_PROJ} k=8 tags=None hints=None",
+        _E_apropos, "apropos", False, 
         aliases=("a",),
     ),
     "read": _FacetCli(
         lambda f: f"print a {f.noun}'s raw markdown",
-        _a_relpath, _b_relpath, _E_note, "read_note", False, f"relpath {_PROJ}",
+        _a_relpath, _b_relpath, _E_note, "read_note", False, 
     ),
     "locate": _FacetCli(
         lambda f: f"print a {f.noun}'s on-disk path",
-        _a_relpath, _b_relpath, _E_raw, "locate", False, f"relpath {_PROJ}",
+        _a_relpath, _b_relpath, _E_raw, "locate", False, 
     ),
     "add": _FacetCli(
         lambda f: f"create a new {f.noun} ('-' reads stdin)",
@@ -2347,7 +2344,7 @@ _FACET_CLI: dict[str, _FacetCli] = {
             "project": a.project,
             "tags": a.tags,
         },
-        _E, "store_note", True, f"content {_PROJ} title=None tags=None",
+        _E, "store_note", True, 
     ),
     "append": _FacetCli(
         lambda f: f"append to a {f.noun} ('-' reads stdin)",
@@ -2358,7 +2355,7 @@ _FACET_CLI: dict[str, _FacetCli] = {
             "heading": a.heading,
             "project": a.project,
         },
-        _E, "append_note", True, f"relpath content {_PROJ} heading=None",
+        _E, "append_note", True, 
     ),
     "edit": _FacetCli(
         lambda f: f"replace a {f.noun}'s content (stdin by default)",
@@ -2368,11 +2365,11 @@ _FACET_CLI: dict[str, _FacetCli] = {
             "new_content": _read_content(a.content),
             "project": a.project,
         },
-        _E, "edit_note", True, f"relpath new_content {_PROJ}",
+        _E, "edit_note", True, 
     ),
     "forget": _FacetCli(
         lambda f: f"delete a {f.noun} (recoverable via the ring)",
-        _a_relpath, _b_relpath, _E, "forget", True, f"relpath {_PROJ}",
+        _a_relpath, _b_relpath, _E, "forget", True, 
     ),
     "move": _FacetCli(
         lambda f: f"move/rename a {f.noun} across projects (keeps id)",
@@ -2383,45 +2380,45 @@ _FACET_CLI: dict[str, _FacetCli] = {
             "to_relpath": a.to_relpath,
             "project": a.project,
         },
-        _E, "move_note", True, f"relpath {_PROJ} to_project=None to_relpath=None",
+        _E, "move_note", True, 
     ),
     "reindex": _FacetCli(
         lambda f: "reindex a note or whole project" if _home(f)
         else f"reindex a {f.noun} or all of the project's {f.plural}",
-        _a_reindex, _b_relpath, _E, "reindex", True, f"relpath=None {_PROJ}",
+        _a_reindex, _b_relpath, _E, "reindex", True, 
     ),
     "versions": _FacetCli(
         lambda f: f"list recoverable versions of a {f.noun}",
-        _a_relpath, _b_relpath, _E, "list_versions", False, f"relpath {_PROJ}",
+        _a_relpath, _b_relpath, _E, "list_versions", False, 
     ),
     "restore": _FacetCli(
         lambda f: f"restore a prior version of a {f.noun}",
         _a_restore,
         lambda a: {"relpath": a.relpath, "version": a.version, "project": a.project},
-        _E, "restore", True, f"relpath version {_PROJ}",
+        _E, "restore", True, 
     ),
     "import": _FacetCli(
         lambda f: "copy explicit files into memory as crib-owned notes" if _home(f)
         else f"copy explicit files in as crib-owned {f.plural}",
         _a_import,
         lambda a: {"paths": a.paths, "project": a.project},
-        _E, "import_files", True, f"paths {_PROJ}",
+        _E, "import_files", True, 
     ),
     "distill": _FacetCli(
         lambda f: f"LLM-revise a {f.noun} in place (compress/dedupe/normalize)",
-        _a_relpath, _b_relpath, _E, "distill", True, f"relpath {_PROJ}",
+        _a_relpath, _b_relpath, _E, "distill", True, 
     ),
     "elaborate": _FacetCli(
         lambda f: "keyword_index: generate BM25 search terms per section "
         f"(keywords/questions/phrase/…) for a {f.noun} or project",
         _a_index, _b_index, _E, "elaborate", True,
-        f"label relpath=None {_PROJ} overwrite=False",
+        
     ),
     "summarize": _FacetCli(
         lambda f: "summary_index: generate dense alias rephrasings per "
         f"section for a {f.noun} or project",
         _a_index, _b_index, _E, "summarize", True,
-        f"label relpath=None {_PROJ} overwrite=False",
+        
     ),
 }
 
@@ -2500,7 +2497,7 @@ _ANCHORED_CLI: dict[str, _FacetCli] = {
             "lang": getattr(a, "lang", ""),
         },
         _E_anchored("add"), "learning_add", True,
-        f"symbol text path='' scope='' lang='' {_PROJ}",
+        
     ),
     "edit": _FacetCli(
         lambda f: f"rewrite a symbol's {f.noun} body ('-' reads stdin)",
@@ -2514,41 +2511,41 @@ _ANCHORED_CLI: dict[str, _FacetCli] = {
             "lang": getattr(a, "lang", ""),
         },
         _E_anchored("edit"), "learning_edit", True,
-        f"symbol new_content path='' scope='' lang='' {_PROJ}",
+        
     ),
     "forget": _FacetCli(
         lambda f: f"remove a symbol's {f.noun} (recoverable; works on orphans)",
         _a_symbol, _b_symbol, _E_anchored("forget"), "learning_forget", True,
-        f"symbol path='' scope='' lang='' {_PROJ}",
+        
     ),
     "read": _FacetCli(
         lambda f: f"print a symbol's attached {f.noun}",
         _a_symbol, _b_symbol, _E_anchored("read"), "learning_read", False,
-        f"symbol path='' scope='' lang='' {_PROJ}",
+        
     ),
     "reaffirm": _FacetCli(
         lambda f: f"clear a {f.noun}'s ⚠︎ stale flag without rewriting it",
         _a_symbol, _b_symbol, _E_anchored("reaffirm"), "learning_reaffirm", True,
-        f"symbol path='' scope='' lang='' {_PROJ}",
+        
     ),
     "migrate": _FacetCli(
         lambda f: f"re-attach {f.plural} to the current symbol identity "
         "(dry run unless --apply)",
         _a_migrate,
         lambda a: {"project": a.project, "apply": a.apply},
-        _E, "learning_migrate", True, f"{_PROJ} apply=False",
+        _E, "learning_migrate", True, 
     ),
     "report": _FacetCli(
         lambda f: f"health report for attached {f.plural} (ok/moved/orphan)",
         _a_report,
         lambda a: {"project": a.project, "orphans_only": a.orphans},
-        _E_report, "learning_report", False, f"{_PROJ} orphans_only=False",
+        _E_report, "learning_report", False, 
     ),
     "rehome": _FacetCli(
         lambda f: f"re-point an orphaned {f.noun} (no target = ranked suggestions)",
         _a_rehome,
         lambda a: {"old_fqn": a.old, "new_fqn": a.new, "project": a.project},
-        _E_rehome, "learning_rehome", True, f"old_fqn {_PROJ} new_fqn=None",
+        _E_rehome, "learning_rehome", True, 
     ),
 }
 
@@ -2661,7 +2658,6 @@ class _GraphCli:
     build: Callable[[Any], Callable[[Any], dict[str, Any]]]  # spec -> build
     emit: Callable[[Any], Callable[[Any, Any], None]]  # spec -> emitter
     is_async: bool
-    mcp: Callable[[Any], str]
     parser: bool = True  # False: an MCP-only row (no subcommand)
 
 
@@ -2710,16 +2706,6 @@ def _gb_add(f: Any) -> Callable[[Any], dict[str, Any]]:
         **({"proposed": getattr(a, "proposed", False)} if gated else {}),
         **{k: getattr(a, k) for k in links},
     }
-
-
-def _gm_add(f: Any) -> str:
-    if f.has("ordered"):
-        return (f"title=None content='' {_PROJ} deps=None after=None "
-                "before=None items=None sources=None follows=None rests_on=None "
-                "informed_by=None")
-    proposed = " proposed=False" if f.with_role("gated") else ""
-    return (f"title content deps=None {_PROJ} sources=None{proposed} "
-            "follows=None rests_on=None informed_by=None")
 
 
 def _ga_ref(s: Any, proj: Any, f: Any) -> None:
@@ -2844,99 +2830,93 @@ def _ref_build(a: Any) -> dict[str, Any]:
 
 _GRAPH_CLI: dict[str, _GraphCli] = {
     "add": _GraphCli(lambda f: _gt(f, "add", "add a {n}"), _ga_add, _gb_add,
-                     _const(_E_dwrite), True, _gm_add),
+                     _const(_E_dwrite), True),
     "read": _GraphCli(lambda f: _gt(f, "read", "a {n}'s dossier"), _ga_ref,
                       _const(_ref_build),
-                      lambda f: _E_dread if f.report_taint else _E_pread, False,
-                      _const(f"ref {_PROJ}")),
+                      lambda f: _E_dread if f.report_taint else _E_pread, False),
     "edit": _GraphCli(lambda f: _gt(f, "edit", "rewrite a {n}; lists what the change tainted"),
                       _ga_edit,
                       _const(lambda a: {"ref": a.ref,
                                         "new_content": _body(a.content, a.file,
                                                              what="the new body"),
                                         "project": a.project, "sources": a.sources}),
-                      _const(_E_dwrite), True, _const(f"ref new_content {_PROJ} sources=None")),
+                      _const(_E_dwrite), True),
     "append": _GraphCli(lambda f: _gt(f, "append", "extend a {n}; lists what the change "
                                       "tainted"), _ga_append,
                         _const(lambda a: {"ref": a.ref,
                                           "content": _body(a.content, a.file,
                                                            what="the text to append"),
                                           "project": a.project, "sources": a.source or None}),
-                        _const(_E_dwrite), True, _const(f"ref content {_PROJ} sources=None")),
+                        _const(_E_dwrite), True),
     "lookup": _GraphCli(lambda f: _gt(f, "lookup", "semantic search over {p}"), _ga_lookup,
                         _const(lambda a: {"query": a.query, "k": a.k, "project": a.project,
                                           "hints": a.hints}),
-                        _const(_E_facet), False, _const(f"query {_PROJ} k=8 hints=None")),
+                        _const(_E_facet), False),
     "list": _GraphCli(lambda f: _gt(f, "list", "the {p}"), _ga_list,
                       lambda f: (lambda a: {"tainted": getattr(a, "tainted", False),
                                             "project": _proj_of(a)})
                       if f.report_taint else
                       (lambda a: {"all": getattr(a, "all", False), "project": _proj_of(a)}),
-                      lambda f: _E_dlist if f.report_taint else _E_plans, False,
-                      lambda f: f"{_PROJ} tainted=False" if f.report_taint
-                      else f"{_PROJ} all=False"),
+                      lambda f: _E_dlist if f.report_taint else _E_plans, False),
     "export": _GraphCli(lambda f: _gt(f, "export", "all {p} as one markdown doc"),
                         _ga_export, _const(lambda a: {"project": _proj_of(a)}),
-                        _const(_E_export), False, _const(f"{_PROJ}")),
+                        _const(_E_export), False),
     "dep_add": _GraphCli(lambda f: _gt(f, "dep_add", "make a {n} depend on another"),
                          _ga_dep(True),
                          _const(lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
                                            "project": a.project, "kind": a.kind}),
-                         _const(_E_dwrite), True, _const(f"ref dep_ref {_PROJ} kind=None")),
+                         _const(_E_dwrite), True),
     "dep_remove": _GraphCli(lambda f: _gt(f, "dep_remove", "drop one of a {n}'s "
                                           "dependencies"), _ga_dep(False),
                             _const(lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
                                               "project": a.project}),
-                            _const(_E_dwrite), True, _const(f"ref dep_ref {_PROJ}")),
+                            _const(_E_dwrite), True),
     "forget": _GraphCli(lambda f: _gt(f, "forget", "delete a {n} (refuses while dependents "
                                       "exist)"), _ga_forget,
                         _const(lambda a: {"ref": a.ref, "force": a.force,
                                           "project": a.project}),
-                        _const(_E_dwrite), True, _const(f"ref {_PROJ} force=False")),
+                        _const(_E_dwrite), True),
     "check": _GraphCli(lambda f: _gt(f, "check", "which {p} are stale"), _ga_ref_opt,
-                       _const(_ref_build), _const(_E_dcheck), False,
-                       _const(f"{_PROJ} ref=None")),
+                       _const(_ref_build), _const(_E_dcheck), False),
     "reaffirm": _GraphCli(lambda f: _gt(f, "reaffirm", "re-record a {n}'s dep hashes (you "
                                         "re-read it)"), _ga_ref, _const(_ref_build),
-                          lambda f: _E_dwrite if f.report_taint else _E, True,
-                          _const(f"ref {_PROJ}")),
+                          lambda f: _E_dwrite if f.report_taint else _E, True),
     "tree": _GraphCli(lambda f: _gt(f, "tree", "dependency tree around a {n}"), _ga_tree,
                       _const(lambda a: {"ref": a.ref, "project": a.project,
                                         "direction": ("dependents" if a.dependents
                                                       else "deps"),
                                         "depth": a.depth}),
-                      _const(_E_dtree), False,
-                      _const(f"{_PROJ} ref=None direction='deps' depth=6")),
+                      _const(_E_dtree), False),
     "graph": _GraphCli(lambda f: _gt(f, "graph", "the {p} as {{nodes, edges}}"), _ga_graph,
                        _const(lambda a: {"project": a.project, "sources": a.sources}),
-                       _const(_E), False, _const(f"{_PROJ} sources=False")),
+                       _const(_E), False),
     "supersede": _GraphCli(lambda f: _gt(f, "supersede", "mark a {n} superseded"),
                            _ga_supersede,
                            _const(lambda a: {"ref": a.ref, "by_ref": a.by,
                                              "project": a.project}),
-                           _const(_E_dwrite), True, _const(f"ref {_PROJ} by_ref=None")),
+                           _const(_E_dwrite), True),
     "extract": _GraphCli(lambda f: _gt(f, "extract", "prepare a doc for extraction into "
                                        "{p} (writes nothing)"), _ga_extract,
                          _const(lambda a: {"relpath": a.doc, "project": a.project}),
-                         _const(_E_dimport), False, _const(f"relpath {_PROJ}")),
+                         _const(_E_dimport), False),
     "status": _GraphCli(lambda f: _gt(f, "status", "set a {n}'s status"), _ga_status,
                         _const(lambda a: {"ref": a.ref, "status": a.status,
                                           "project": a.project}),
-                        _const(_E_dwrite), True, _const(f"ref status {_PROJ}")),
+                        _const(_E_dwrite), True),
     "move": _GraphCli(lambda f: _gt(f, "move", "re-order a {n}"), _ga_move,
                       _const(lambda a: {"ref": a.ref, "after": a.after,
                                         "before": a.before, "project": a.project}),
-                      _const(_E_dwrite), True, _const(f"ref {_PROJ} after=None before=None")),
+                      _const(_E_dwrite), True),
     "next": _GraphCli(lambda f: _gt(f, "next", "the {p} ready now"), _ga_next,
                       _const(lambda a: {"k": a.k, "project": a.project}),
-                      _const(_E_plans), False, _const(f"{_PROJ} k=5")),
+                      _const(_E_plans), False),
     "review": _GraphCli(lambda f: "", _ga_ref, _const(lambda a: {"project": a.project}),
-                        _const(_E), True, _const(f"{_PROJ}"), parser=False),
+                        _const(_E), True, parser=False),
     "review_apply": _GraphCli(lambda f: "", _ga_ref,
                               _const(lambda a: {
                                   "batch": json.loads(Path(a.batch).read_text()),
                                   "project": _proj_of(a)}),
-                              _const(_E_dwrite), True, _const(f"batch {_PROJ}"),
+                              _const(_E_dwrite), True, 
                               parser=False),
 }
 
@@ -2955,7 +2935,7 @@ def _transition_cli(spec: Any, verb: str) -> _GraphCli:
         return _GraphCli(lambda f: _gt(f, verb, "pause a {n}"), args,
                          _const(lambda a: {"ref": a.ref, "triggers": a.triggers or None,
                                            "why": a.why, "project": a.project}),
-                         _const(_E_dwrite), True, _const(f"ref {_PROJ} triggers=None why=None"))
+                         _const(_E_dwrite), True)
     if role == "dropped":
         def dargs(s: Any, proj: Any, f: Any) -> None:
             s.add_argument("ref")
@@ -2967,10 +2947,9 @@ def _transition_cli(spec: Any, verb: str) -> _GraphCli:
         return _GraphCli(lambda f: _gt(f, verb, "drop a {n}, saying why"), dargs,
                          _const(lambda a: {"ref": a.ref, "why": a.why, "project": a.project,
                                            "triggers": a.triggers or None}),
-                         _const(_E_dwrite), True, _const(f"ref why {_PROJ} triggers=None"))
+                         _const(_E_dwrite), True)
     return _GraphCli(lambda f: _gt(f, verb, f"move a {{n}} to {spec.transitions[verb]}"),
-                     _ga_ref, _const(_ref_build), _const(_E_dwrite), True,
-                     _const(f"ref {_PROJ}"))
+                     _ga_ref, _const(_ref_build), _const(_E_dwrite), True)
 
 
 # A graph facet's subcommand order (`crib design -h`); transitions follow.
@@ -3121,6 +3100,7 @@ def _facet_rows() -> dict[str, Verb]:
     for spec in facets.FACETS:
         if not verbs.generated(spec):
             continue
+        v = verbs.view(spec)
         for t in _facet_cli_verbs(spec):
             if spec.has("links"):
                 g = _graph_cli(spec, t.verb)
@@ -3128,7 +3108,7 @@ def _facet_rows() -> dict[str, Verb]:
                 rows[f"{spec.noun} {word}"] = Verb(
                     t.verb, g.build(spec), g.emit(spec),
                     method=f"{spec.noun}_{spec.verb_names.get(t.verb, t.verb)}",
-                    is_async=g.is_async, policy=t.policy, mcp=g.mcp(spec),
+                    is_async=g.is_async, policy=t.policy, mcp=v.mcp(t.verb),
                 )
                 continue
             c = _cli_of(t)
@@ -3136,14 +3116,11 @@ def _facet_rows() -> dict[str, Verb]:
             if not spec.builtin:
                 inproc = (("store", spec.store),) if t.verb == "lookup" else (
                     ("facet", spec.noun),)
-            build, mcp, names = c.build, c.mcp, ()
+            build, names = c.build, ()
             if t.fields and spec.params:
                 build = _with_field_args(c.build, spec, t.fields)
                 names = tuple(spec.params)
-                mcp = " ".join(
-                    [c.mcp, *(f"{n}=None" for n in names)]
-                    + (["where=None"] if t.fields == "filter" else [])
-                )
+            mcp = v.mcp(t.verb)  # the MCP twin's signature: its body's
             rows[f"{spec.noun} {_cli_word(spec, t.verb)}"] = Verb(
                 t.verb, build, c.emit, method=c.method, is_async=c.is_async,
                 policy=t.policy, mcp=mcp, inproc=inproc, fields=names,

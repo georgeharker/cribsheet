@@ -47,7 +47,9 @@ class Verb:
     policy: str  # crib.server's resolution policy for the tool
     read_only: bool  # kept by a read-only tool set (`--tools notes:ro`)
     describe: Callable[[FacetSpec], str]
-    make: Callable[[Any, FacetSpec], Callable[..., Any]]  # (crib, spec) -> body
+    # (crib, spec) -> body; must not touch crib until the body is called (its
+    # signature is read with crib=None: FacetView.mcp)
+    make: Callable[[Any, FacetSpec], Callable[..., Any]]
     elicit: bool = False
     needs_target: bool = False
     # A declared facet's own fields on this verb: "set" (typed parameters that
@@ -1399,6 +1401,23 @@ class FacetView:
         elif t.verb == "list" and t.fields:  # the field-filtering list
             doc += _fields_text(self.spec, "filter")
         return doc
+
+    def mcp(self, verb: str) -> str:
+        """`verb`'s MCP wire signature, `name` / `name=default` tokens (the
+        shape crib.cli's VERBS rows declare and tests/test_surface_parity.py
+        holds against the served schema), read off the body itself: its
+        parameters are described once. `ctx` (FastMCP's injected context)
+        isn't on the wire."""
+        import inspect
+
+        t = self.verb(verb)
+        if t is None:
+            raise KeyError(f"{self.spec.noun} has no verb {verb!r}")
+        body = t.make(None, self.spec)  # a body touches crib only when called
+        _with_fields(body, self.spec, t.fields)
+        return " ".join(
+            p.name if p.default is inspect.Parameter.empty else f"{p.name}={p.default!r}"
+            for p in inspect.signature(body).parameters.values() if p.name != "ctx")
 
     @property
     def tools(self) -> tuple[str, ...]:
