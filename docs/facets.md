@@ -105,6 +105,11 @@ and verbs.
 
 A facet with declared fields also gets `list` (filter by fields, no query).
 
+Some combinations are refused because the engine would serve nothing for
+them: `links` without `status` (or the reverse), `ordered` or `sources`
+without both, and `anchored` or `enriched` on a graph facet. `disable` names
+verbs the facet really has (a graph facet's include its transitions).
+
 ## Typed fields and queries
 
 ```toml
@@ -127,7 +132,9 @@ due = "date"        # ISO YYYY-MM-DD
   `--where 'severity>=3' --where 'changeset_id re ^abc'`. An item without the
   field matches no condition.
 
-Types are `int`, `str` and `date`. Field names can't be one of
+Fields work on note-like and anchored facets; a graph facet can't declare
+them yet (its verbs don't set or filter them). Types are `int`, `str` and
+`date`. Field names can't be one of
 [crib's reserved names](#names-crib-keeps-for-itself), since they become
 parameter names and frontmatter keys.
 

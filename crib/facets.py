@@ -118,19 +118,25 @@ def graph_verbs(spec: "FacetSpec") -> tuple[str, ...]:
     """The canonical verbs a graph facet (links + status) gets, before any it
     disables: its core and aspect verbs, the taint-reporting ones if it reports
     taint, and one per status transition (crib.verbs GRAPH_TEMPLATES)."""
+    return _graph_verb_list(spec.aspects, spec.report_taint, spec.transitions)
+
+
+def _graph_verb_list(aspects: Iterable[str], report_taint: bool,
+                     transitions: Iterable[str]) -> tuple[str, ...]:
+    have = set(aspects)
     out = ["add", "read", "edit", "append", "lookup", "list", "forget"]
-    if spec.has("sources"):
+    if "sources" in have:
         out += ["export", "extract"]
     out += ["dep_add", "dep_remove", "reaffirm", "graph"]
-    if spec.report_taint:
+    if report_taint:
         out += ["check", "tree"]
-    if spec.has("supersede"):
+    if "supersede" in have:
         out.append("supersede")
-    if spec.has("progress"):
+    if "progress" in have:
         out += ["status", "review", "review_apply", "next"]
-    if spec.has("ordered"):
+    if "ordered" in have:
         out.append("move")
-    return (*out, *spec.transitions)
+    return (*out, *transitions)
 
 
 # Every verb `graph_verbs` can give a facet (before its transitions): a
@@ -296,6 +302,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
             raise FacetSpecError(
                 f"facet {noun!r}: aspect {a!r} needs {sorted(missing)}"
             )
+    _check_shape(noun, have, raw)
     fields = raw.get("fields", {})
     if not isinstance(fields, dict):
         raise FacetSpecError(f"facet {noun!r}: fields must be a table of name = type")
@@ -352,7 +359,10 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(f"facet {noun!r}: a built-in facet's verbs can't be disabled")
     if not isinstance(disable, list) or not all(isinstance(v, str) for v in disable):
         raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
-    available = verbs_for(have, bool(params))
+    graph = _graph_keys(noun, raw, have)
+    available = (_graph_verb_list(have, bool(graph.get("report_taint")),
+                                  graph.get("transitions", {}))
+                 if {"links", "status"} <= have else verbs_for(have, bool(params)))
     if bad := sorted(set(disable) - set(available)):
         raise FacetSpecError(
             f"facet {noun!r}: can't disable {bad}: its verbs are {list(available)}")
@@ -368,9 +378,33 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         verb_names=MappingProxyType(dict(verbs)),
         params=MappingProxyType(params),
         disabled=frozenset(str(v) for v in disable),
-        **_graph_keys(noun, raw, have),
+        **graph,
         builtin=builtin,
     )
+
+
+def _check_shape(noun: str, have: set[str], raw: Mapping[str, Any]) -> None:
+    """Refuse an aspect combination the engine would silently serve nothing
+    for. A graph facet is links AND status; ordered and sources are graph
+    behaviours; the graph templates have no anchored or enriched verbs, and
+    don't (yet) set or filter declared fields."""
+    graph = {"links", "status"} <= have
+    if ("links" in have) != ("status" in have):
+        half = "links" if "links" in have else "status"
+        raise FacetSpecError(
+            f"facet {noun!r}: aspect {half!r} makes a graph facet together with "
+            f"{'status' if half == 'links' else 'links'!r}: add it (or drop {half!r})")
+    if not graph and (only := sorted(have & {"ordered", "sources"})):
+        raise FacetSpecError(
+            f"facet {noun!r}: aspects {only} belong to a graph facet (links + status)")
+    if graph and (bad := sorted(have & {"anchored", "enriched"})):
+        raise FacetSpecError(
+            f"facet {noun!r}: a graph facet (links + status) can't also be {bad}")
+    if graph and raw.get("fields"):
+        raise FacetSpecError(
+            f"facet {noun!r}: a graph facet (links + status) can't declare fields "
+            "yet (its verbs don't set or filter them); fields work on note-like "
+            "and anchored facets")
 
 
 def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, Any]:
@@ -620,10 +654,15 @@ STARTER = '''# crib's system facets file: declare your own kinds of item (facets
 #            locate, versions, restore, reindex, import, move), enriched
 #            (summaries/keywords: summarize, elaborate, distill), anchored
 #            (items about a code symbol, like learnings: add, edit, forget,
-#            read, reaffirm, migrate, report, rehome)
+#            read, reaffirm, migrate, report, rehome); or a GRAPH facet like
+#            decisions and plans: links + status, optionally progress,
+#            ordered, supersede, sources, with [<noun>.status] values (each
+#            status plays a role), initial, transitions, and [<noun>.edges]
+#            (see crib's docs/facets.md and the built-ins below)
 #   fields:  int | str | date; set on add/edit, filtered on lookup and list
 #            (`where=[{field, op, value}]`: == != < <= > >= for int/date,
-#            == != re for str)
+#            == != re for str). Note-like and anchored facets; not yet on a
+#            graph facet
 #   disable: verbs this facet doesn't want
 #
 # After an edit here: `crib facets sync` shows what the store needs,

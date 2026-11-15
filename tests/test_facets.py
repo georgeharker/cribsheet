@@ -379,6 +379,10 @@ def test_a_declared_graph_spec_parses():
         ),
         ({"edges": {"plan": "blocks"}}, "link kind"),
         ({"aspects": ["links", "progress"]}, "needs \\['status'\\]"),
+        ({"fields": {"severity": "int"}}, "can't declare fields yet"),
+        ({"aspects": ["links", "status", "enriched"]}, "can't also be \\['enriched'\\]"),
+        ({"aspects": ["links", "status", "anchored"]}, "can't also be \\['anchored'\\]"),
+        ({"disable": ["locate"]}, "can't disable \\['locate'\\]"),
     ],
 )
 def test_a_bad_graph_spec_is_refused(patch, match):
@@ -418,3 +422,33 @@ def test_every_top_level_command_and_tool_prefix_is_reserved():
     prefixes = {n.split("_", 1)[0] for n in json.loads(golden.read_text())["mcp"]}
     missing = sorted((commands | prefixes) - builtin - facets.RESERVED_NAMES)
     assert missing == [], f"reserve these in crib.facets.RESERVED_NAMES: {missing}"
+
+
+
+def test_a_graph_facet_disables_its_own_verbs():
+    """disable is checked against the verbs a graph facet really has (graph
+    verbs and transitions), not the core ones (review fix 6)."""
+    s = parse("incident", {**_GRAPH, "disable": ["review", "review_apply", "resolve"]})
+    assert s.disabled == {"review", "review_apply", "resolve"}
+    from crib import verbs
+
+    names = {t.verb for t in verbs.verbs_of(s)}
+    assert not names & {"review", "review_apply", "resolve"}
+    assert {"next", "status", "add"} <= names
+
+
+@pytest.mark.parametrize(
+    ("aspects", "match"),
+    [
+        (["links"], "together with 'status'"),
+        (["status"], "together with 'links'"),
+        (["ordered"], "belong to a graph facet"),
+        (["sources"], "belong to a graph facet"),
+    ],
+)
+def test_half_a_graph_facet_is_refused(aspects, match):
+    raw = {"plural": "ts", "aspects": aspects}
+    if "status" in aspects:
+        raw["status"] = {"values": {"open": "open"}}
+    with pytest.raises(FacetSpecError, match=match):
+        parse("t", raw)
