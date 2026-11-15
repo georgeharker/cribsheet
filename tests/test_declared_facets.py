@@ -1462,6 +1462,67 @@ def test_a_progress_facet_that_reports_taint_reads_both(tmp_path):
     assert out["tainted"] is True
 
 
+def test_a_declared_facets_hints_name_its_own_tools_and_statuses(tmp_path):
+    """The engine's hints (next steps, refusals, blockers) name the facet's own
+    verbs and statuses, never plan_*/design_* (review fix 8)."""
+    out = _run(
+        tmp_path,
+        INCIDENT + RFC,
+        """
+        import asyncio, json
+        from fastmcp import Client
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+        texts = []
+        async def main():
+            async with Client(mcp) as c:
+                async def call(name, **a):
+                    try:
+                        r = (await c.call_tool(name, a)).data
+                    except Exception as e:
+                        r = {"error": str(e)}
+                    texts.append(json.dumps(r, default=str))
+                    return r
+                a = await call("incident_add", title="Failover", content="x", project="p")
+                b = await call("incident_add", title="Postmortem", content="y", project="p")
+                c3 = await call("incident_add", title="Flaky", content="z", project="p")
+                nxt = await call("incident_next", project="p")
+                out["next"] = nxt["items"][0]["next"]
+                s = await call("incident_shelve", ref=b["relpath"], why="later", project="p")
+                out["shelve"] = s["next"]
+                w = await call("incident_wontfix", ref=c3["relpath"], why="noise", project="p")
+                out["wontfix"] = w["next"]
+                await call("incident_add", project="p")  # neither title nor items
+                await call("incident_move", ref=a["relpath"], project="p")
+                d = await call("rfc_add", title="Async API", content="go async", project="p")
+                r = await call("rfc_read", ref=d["relpath"], project="p")
+                out["draft"] = r["next"]
+                t = await call("incident_add", title="Rollout", content="ship it",
+                               rests_on=[d["relpath"]], project="p")  # a draft gates it
+                rd = await call("incident_read", ref=t["relpath"], project="p")
+                out["blocker"] = [x["status"] for x in rd["blocked_by"]]
+        asyncio.run(main())
+        out["texts"] = texts
+    """,
+    )
+    assert out["next"].startswith("starting it? `incident_status ")
+    assert "mitigated" in out["next"] and "resolved" in out["next"]
+    assert "`incident_status " in out["shelve"] and " open`" in out["shelve"]
+    assert "`incident_add`" in out["wontfix"] and "`incident_status <ref> open`" in out["wontfix"]
+    assert "`rfc_accept " in out["draft"] and "DRAFT" in out["draft"]
+    assert out["blocker"] == ["draft — `rfc_accept` it"]
+    joined = "\n".join(out["texts"])
+    assert "every incident needs a title" in joined
+    assert "incident_move needs after" in joined
+    for built_in in ("plan_", "design_"):
+        assert built_in not in joined, [t for t in out["texts"] if built_in in t][:2]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

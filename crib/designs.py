@@ -154,6 +154,42 @@ def _status_for(kind: str, role: str) -> str:
     return _spec(kind).with_role(role)[0]
 
 
+def _tool(kind: str, verb: str) -> str:
+    """The tool a facet calls `verb` (`design_promote`, `incident_status`): the
+    hints this engine writes name the facet's own tools, never the built-ins'."""
+    from . import verbs
+
+    return verbs.view(_spec(kind)).tool(verb)
+
+
+def _to_role_tool(kind: str, role: str) -> str | None:
+    """The tool that moves an item of `kind` to a status playing `role`: its
+    transition into that role (`design_promote`), else its `status` verb (a
+    progress facet), else None (nothing moves it there)."""
+    spec = _spec(kind)
+    move = next((v for v, to in spec.transitions.items() if spec.role(to) == role), None)
+    if move is not None:
+        return _tool(kind, move)
+    return _tool(kind, "status") if spec.has("progress") and spec.with_role(role) else None
+
+
+def _to_role(kind: str, ref: str, role: str) -> str | None:
+    """The call (`plan_status x.md todo`, `design_promote x.md`) that moves the
+    item `ref` of `kind` to a status playing `role`, or None."""
+    spec = _spec(kind)
+    tool = _to_role_tool(kind, role)
+    if tool is None:
+        return None
+    if any(spec.role(to) == role for to in spec.transitions.values()):
+        return f"{tool} {ref}"
+    return f"{tool} {ref} {_status_for(kind, role)}"
+
+
+def _word(kind: str) -> str:
+    """What one item of `kind` is called in prose."""
+    return {"design": "decision", "plan": "plan item"}.get(kind, kind)
+
+
 def _graph_kinds() -> tuple[str, ...]:
     """The facets this engine serves: links and statuses."""
     return tuple(s.noun for s in _facets.FACETS if s.has("links") and s.has("status"))
@@ -190,11 +226,11 @@ and the judgement — this verb ran no model.
 1. READ {relpath} in full (`note_read {relpath}`, or open the `path` above). A
    decision is a choice with consequences: what was chosen, why, and what was
    rejected. Prose that only describes how something works is not one.
-2. DEDUPE FIRST. `existing` lists what already cites this doc; `design_lookup`
-   each candidate before adding it. If the graph already holds it, `design_append`
-   the new detail onto that entry (or `design_dep_add` an edge) — a near-duplicate
+2. DEDUPE FIRST. `existing` lists what already cites this doc; `{lookup}`
+   each candidate before adding it. If the graph already holds it, `{append}`
+   the new detail onto that entry (or `{dep_add}` an edge) — a near-duplicate
    decision forks the graph and splits its dependents between two records.
-3. ADD THEM IN ONE PASS. Each `design_add` carries:
+3. ADD THEM IN ONE PASS. Each `{add}` carries:
    - `deps`: the decisions it builds on, including ones you added a moment ago in
      this same pass (they resolve by title);
    - `sources`: the `source` string of the EXACT section(s) it was drawn from,
@@ -205,8 +241,8 @@ and the judgement — this verb ran no model.
    - `proposed=True`: extraction lands in the quarantine tier, because an
      LLM-extracted decision must not carry the authority of a hand-recorded one.
    Each add answers with `similar` — a hit there means step 2 missed one.
-4. REPORT the subgraph with `design_tree`, and list what you added. Promotion is
-   the human act: `design_promote <ref>` per entry that is confirmed. Until then a
+4. REPORT the subgraph with `{tree}`, and list what you added. Promotion is
+   the human act: `{promote} <ref>` per entry that is confirmed. Until then a
    proposed entry taints nothing and gates any plan item that depends on it.
 """
 
@@ -217,10 +253,10 @@ judgement — this verb ran no model.
 1. READ {relpath} in full (`note_read {relpath}`, or open the `path` above) and
    pull out what someone would actually DO — each item one discrete piece of work,
    in the order the doc implies.
-2. DEDUPE FIRST. `existing` lists items already citing this doc; `plan_lookup`
-   each candidate. Work already tracked takes `plan_dep_add`/`plan_status`, not a
+2. DEDUPE FIRST. `existing` lists items already citing this doc; `{lookup}`
+   each candidate. Work already tracked takes `{dep_add}`/`{status}`, not a
    second item for the same thing.
-3. ADD THEM AS ONE BATCH — `plan_add(items=[...])`, in doc order. Each item
+3. ADD THEM AS ONE BATCH — `{add}(items=[...])`, in doc order. Each item
    carries:
    - `deps`: must-precede constraints, naming EARLIER items of this same batch by
      position ("#1") or any existing ref, plus the design decisions the work rests
@@ -230,7 +266,7 @@ judgement — this verb ran no model.
      so a finished item flags `revisit` if the passage it was done against later
      changes.
    A title is a legitimate whole item; write a body only where the detail matters.
-4. REPORT the result with `plan_list` (and `plan_next` if you are picking work up
+4. REPORT the result with `{list}` (and `{next}` if you are picking work up
    now).
 """
 
@@ -1121,8 +1157,10 @@ class Designs:
                 f"no {kind or 'design/plan'} note matches {ref!r} in project "
                 f"{getattr(graph, 'proj', '') or '(unanchored)'!r} — reference it "
                 f"by id, relpath or title "
-                f"(`{kind or 'design'}_check` / `plan_list` show what exists; "
-                f"a miss in the RIGHT project means the knowledge is genuinely absent)"
+                + (f"(`{kind or 'design'}_check` / `plan_list` show what exists; "
+                   if kind in (None, "design", "plan") else
+                   f"(`{_tool(kind, 'list')}` shows what exists; ")
+                + "a miss in the RIGHT project means the knowledge is genuinely absent)"
             )
         listing = ", ".join(f"{n.id[:8]}… {n.relpath}" for n in matches[:8])
         raise CribUserError(
@@ -1307,14 +1345,17 @@ class Designs:
             cited = ", ".join(dict.fromkeys(c["dep_title"] for c in srcs))
             return (
                 f"re-read {cited} — the source {node.title!r} was drawn from — "
-                f"then `design_reaffirm {node.relpath}` to re-record the section "
+                f"then `{_tool(node.kind, 'reaffirm')} {node.relpath}` to re-record the section "
                 f"hash (a source is attribution: it checks, it never gates)"
             )
+        gone = (f"`{_tool(node.kind, 'supersede')} {node.relpath} <replacement>`"
+                if _spec(node.kind).has("supersede")
+                else f"`{_tool(node.kind, 'edit')} {node.relpath}` it")
         return (
             f"reconsider {node.title!r} against what changed, then "
-            f"`design_reaffirm {node.relpath}` (the usual case — taint means a "
+            f"`{_tool(node.kind, 'reaffirm')} {node.relpath}` (the usual case — taint means a "
             f"dep moved, not that this is wrong); if it no longer holds, "
-            f"`design_supersede {node.relpath} <replacement>`"
+            f"{gone}"
         )
 
     def tainted_designs(self, proj: str) -> set[str]:
@@ -1418,12 +1459,14 @@ class Designs:
         from .app import _slug
 
         if not (title or "").strip():
-            raise CribUserError("a design/plan note needs a title")
+            raise CribUserError("a design/plan note needs a title" if kind in ("design", "plan")
+                                else f"every {kind} needs a title")
         if _spec(kind).requires_body and not (content or "").strip():
             raise CribUserError(
                 "a design decision needs a body — the choice, why, and what was "
                 "rejected. (A plan item may be title-only; a decision may not: "
                 "the rationale is the thing a future reader comes back for.)"
+                if kind == "design" else f"every {kind} needs a body (its facet requires one)"
             )
         graph = self._load_graph(proj)
         for how in kinded or {}:
@@ -1640,11 +1683,12 @@ class Designs:
         if node.id in tainted:
             out["next"] = self._next(node, info.get("causes"))
         if _is(node, "gated"):
+            move = _to_role(node.kind, node.relpath, "open")
             out["next"] = (
-                f"{node.title!r} is PROPOSED — extracted, not yet blessed, so it "
+                f"{node.title!r} is {node.status.upper()} — extracted, not yet blessed, so it "
                 f"taints nothing and nothing should be built on it as settled. "
-                f"Confirm it against its sources, then `design_promote "
-                f"{node.relpath}`"
+                f"Confirm it against its sources"
+                + (f", then `{move}`" if move else "")
             )
         return out
 
@@ -1891,7 +1935,8 @@ class Designs:
         Cycle survivors (merge or hand-edit artifacts, `crib` never writes one)
         come last, deterministically, flagged in the header."""
         if kind not in _graph_kinds():
-            raise CribUserError(f"unknown facet {kind!r}: use 'design' or 'plan'")
+            raise CribUserError(f"unknown facet {kind!r}: use " + " or ".join(
+                repr(k) for k in _graph_kinds()))
         graph = self._load_graph(proj)
         tainted = self._taint(graph)
         nodes = graph.of_kind(kind)
@@ -2001,7 +2046,8 @@ class Designs:
         # aren't out of date, they are un-blessed, and the verb that clears them
         # is `design_promote` rather than `design_reaffirm`.
         proposed = [
-            {**n.brief(), "next": f"confirm it, then `design_promote {n.relpath}`"}
+            {**n.brief(), "next": "confirm it" + (
+                f", then `{m}`" if (m := _to_role(n.kind, n.relpath, "open")) else "")}
             for n in sorted(designs, key=lambda n: n.title)
             if _is(n, "gated") and (not only or n.id == only)
         ]
@@ -2143,8 +2189,9 @@ class Designs:
             # now that it is active, its edges check like any other decision's
             "dependents": dependents,
             "next": (
-                f"{node.title!r} is active — it now taints what builds on "
-                f"it, and `design_check` covers it like any other decision"
+                f"{node.title!r} is {active} — it now taints what builds on it"
+                + (f", and `{_tool(facet, 'check')}` covers it like any other "
+                   f"{_word(facet)}" if _spec(facet).report_taint else "")
             ),
         }
 
@@ -2233,6 +2280,7 @@ class Designs:
             raise CribUserError(
                 f"unknown kind {kind!r}: use 'design' (the decision map) or "
                 f"'plan' (items plus the decisions they rest on)"
+                + "".join(f" or {k!r}" for k in _graph_kinds() if k not in ("design", "plan"))
             )
         graph = self._load_graph(proj)
         tainted = self._taint(graph)
@@ -2350,7 +2398,7 @@ class Designs:
         node = self._resolve_ref(graph, ref, facet)
         by = self._resolve_ref(graph, by_ref, facet) if by_ref else None
         if by and by.id == node.id:
-            raise CribUserError("a decision cannot supersede itself")
+            raise CribUserError(f"a {_word(facet)} cannot supersede itself")
         note = self._note(proj, node)
         marker = (
             f"\n> **Superseded** {_today()}"
@@ -2433,7 +2481,7 @@ class Designs:
             ]
         )
         if not batch:
-            raise CribUserError("plan_add needs a title, or items=[…]")
+            raise CribUserError(f"{_tool(facet, 'add')} needs a title, or items=[…]")
         rows: list[dict[str, Any]] = []
         by_index: dict[str, str] = {}  # "#1" → the id it created
         prev: str | None = None
@@ -2681,9 +2729,9 @@ class Designs:
             ),
             "newly_tainted": newly,
             "next": (
-                "unpark with `plan_status "
-                + node.relpath
-                + " todo` — the trigger SURFACES the item, it never auto-wakes"
+                "unpark with `"
+                + (_to_role(facet, node.relpath, "open") or f"{_tool(facet, 'edit')} {node.relpath}")
+                + "` — the trigger SURFACES the item, it never auto-wakes"
             ),
         }
 
@@ -2761,9 +2809,10 @@ class Designs:
             ),
             "newly_tainted": newly,
             "next": (
-                "re-proposals are answered by the probe: `plan_add` returns this "
-                "item with its why. Un-declining is `plan_status <ref> todo` — "
-                "a human claim, as always"
+                f"re-proposals are answered by the probe: `{_tool(facet, 'add')}` returns this "
+                "item with its why. Un-declining is `"
+                + (_to_role(facet, "<ref>", "open") or f"{_tool(facet, 'edit')} <ref>")
+                + "` — a human claim, as always"
             ),
         }
 
@@ -2785,6 +2834,16 @@ class Designs:
         " a human to confirm. Every applied edit is edge-aware and stamped"
         " `reviewed`."
     )
+
+    def _review_contract(self, facet: str) -> str:
+        """The review contract in the facet's own words (its plural, its done
+        status); the plan's own reads exactly as it always has."""
+        if facet == "plan":
+            return self._REVIEW_CONTRACT
+        done = _status_for(facet, "done")
+        return (self._REVIEW_CONTRACT
+                .replace("this plan as a whole", f"these {_spec(facet).plural} as a whole")
+                .replace("may NEVER set `done`", f"may NEVER set `{done}`"))
 
     async def plan_review(
         self,
@@ -2833,7 +2892,7 @@ class Designs:
             "items": rows,
             "trigger_fired": sum(1 for r in rows if r.get("trigger_fired")),
             "cycles": cycles,
-            "instruction": self._REVIEW_CONTRACT,
+            "instruction": self._review_contract(facet),
         }
 
     async def plan_review_apply(
@@ -2966,7 +3025,7 @@ class Designs:
         except CribUserError as e:
             raise CribUserError(
                 f"merged the body into {winner.relpath} but could not forget "
-                f"{loser.relpath}: {e} — repoint its dependents, then `plan_forget`"
+                f"{loser.relpath}: {e} — repoint its dependents, then `{_tool(facet, 'forget')}`"
             ) from e
         return {"merged": loser.relpath, "into": winner.relpath}
 
@@ -2987,7 +3046,7 @@ class Designs:
         """Re-rank an item. Deps are NOT touched: order is preference, deps are
         correctness (decision 5), so moving can never break the plan."""
         if not (after or before):
-            raise CribUserError("plan_move needs after=<ref> and/or before=<ref>")
+            raise CribUserError(f"{_tool(facet, 'move')} needs after=<ref> and/or before=<ref>")
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
         a = self._resolve_ref(graph, after, facet) if after else None
@@ -3120,7 +3179,9 @@ class Designs:
                         "ref": dep.relpath,
                         "title": dep.title,
                         "kind": dep.kind,
-                        "status": "proposed — `design_promote` it",
+                        "status": f"{dep.status} — " + (
+                            f"`{t}` it" if (t := _to_role_tool(dep.kind, "open"))
+                            else "not confirmed yet"),
                     }
                 )
             elif dep.id in tainted:
@@ -3130,7 +3191,7 @@ class Designs:
                         "ref": dep.relpath,
                         "title": dep.title,
                         "kind": dep.kind,
-                        "status": "stale — `design_read` it",
+                        "status": f"stale — `{_tool(dep.kind, 'read')}` it",
                     }
                 )
         causes = ((full or {}).get(node.id, {}) or {}).get("causes") or []
@@ -3161,7 +3222,9 @@ class Designs:
             row["next"] = (
                 f"a source {node.title!r} was done against has changed — re-read "
                 f"{', '.join(dict.fromkeys(c['dep_title'] for c in moved))} and "
-                f"decide: still done, or `plan_status {node.relpath} todo`"
+                "decide: still done, or `"
+                + (_to_role(node.kind, node.relpath, "open")
+                   or f"{_tool(node.kind, 'edit')} {node.relpath}") + "`"
             )
         return row
 
@@ -3227,10 +3290,13 @@ class Designs:
             if not r["blocked"]
         ]
         for row in rows:
+            start = _to_role(facet, row["relpath"], "claimed")
+            finish = _to_role(facet, row["relpath"], "done")
             row["next"] = (
-                f"starting it? `plan_status {row['relpath']} in-progress` (that is "
-                f"the claim other agents read); finished? `plan_status "
-                f"{row['relpath']} done` — the result names what you unblocked"
+                (f"starting it? `{start}` (that is the claim other agents read); "
+                 if start else "")
+                + (f"finished? `{finish}` — the result names what you unblocked"
+                   if finish else "")
             )
         return {
             "project": proj,
@@ -3308,7 +3374,10 @@ class Designs:
             "existing": existing,
             "instruction": (
                 _DESIGN_IMPORT if _spec(kind).extract == "design" else _PLAN_IMPORT
-            ).format(relpath=doc),
+            ).format(relpath=doc, **{
+                v: _tool(kind, v) for v in (
+                    "lookup", "append", "dep_add", "add", "tree", "status", "list", "next")
+            }, promote=_to_role_tool(kind, "open") or f"{kind}_promote"),
             "next": (
                 f"read {doc}, then follow `instruction` — nothing has been "
                 f"written yet; this verb only prepared the citations"
