@@ -484,3 +484,19 @@ def test_a_graph_facet_without_edges_gets_defaults_for_its_own_links():
     told = parse("rfc", {"plural": "rfcs", "aspects": ["links", "status"], "status": st,
                          "edges": {"*": "informed_by"}})
     assert dict(told.edges) == {"*": "informed_by"}  # a written table is as written
+
+
+
+def test_every_graph_verb_has_an_engine_operation():
+    """GRAPH_OPS names the operation behind every graph verb (extract runs the
+    import procedure) and the transitions' park / decline / promote; each is a
+    real Crib method."""
+    from crib import verbs
+    from crib.app import Crib
+
+    need = {d.verb for d in facets.VERB_CATALOGUE["graph"]} - {"extract"}
+    need |= {"import", "park", "decline", "promote"}
+    assert need == set(verbs.GRAPH_OPS)
+    for op in verbs.GRAPH_OPS.values():
+        for name in (op[1:] if isinstance(op, tuple) else (op,)):
+            assert callable(getattr(Crib, name)), name

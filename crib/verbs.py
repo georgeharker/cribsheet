@@ -826,38 +826,71 @@ def _gd(verb: str, generic: Callable[[FacetSpec], str]):
     return describe
 
 
-# Which engine style a verb runs in, for a declared graph facet (a built-in
-# runs its own): the decision style (taint reported, check/tree, un-gating) or
-# the plan style (progress: status, next, review, ordering, pause, drop).
-_DESIGN_STYLE = frozenset({"check", "tree", "supersede", "promote"})
-_PLAN_STYLE = frozenset({"status", "next", "review", "review_apply", "move", "park",
-                         "decline"})
+# THE engine operation behind each graph verb (and the transitions' park /
+# decline / promote): the Crib method it calls, bound to the facet. Most are
+# one operation for every graph facet (the design_/plan_ pairs behind them are
+# the same code); four depend on ONE trait each, named here: add (ordered:
+# batches and placement), read and list (progress: blocking and the working
+# set, or the taint inventory), append (requires_body: an empty body is set,
+# not appended to).
+GRAPH_OPS: dict[str, str | tuple[str, str, str]] = {
+    "add": ("ordered", "plan_add", "design_add"),
+    "read": ("progress", "plan_read", "design_read"),
+    "list": ("progress", "plan_list", "design_list"),
+    "append": ("requires_body", "design_append", "plan_append"),
+    "edit": "design_edit",
+    "lookup": "design_lookup",
+    "export": "design_export",
+    "import": "design_import",  # the `extract` verb's procedure
+    "dep_add": "design_dep_add",
+    "dep_remove": "design_dep_remove",
+    "forget": "design_forget",
+    "reaffirm": "design_reaffirm",
+    "graph": "design_graph",
+    "check": "design_check",
+    "tree": "design_tree",
+    "supersede": "design_supersede",
+    "promote": "design_promote",
+    "status": "plan_status",
+    "next": "plan_next",
+    "review": "plan_review",
+    "review_apply": "plan_review_apply",
+    "move": "plan_move",
+    "park": "plan_park",
+    "decline": "plan_decline",
+}
 
 
-def _style(f: FacetSpec, verb: str) -> str:
-    if f.builtin:
-        return f.noun
-    if verb in _DESIGN_STYLE:
-        return "design"
-    if verb in _PLAN_STYLE:
-        return "plan"
-    if verb == "add":
-        return "plan" if f.has("ordered") else "design"
-    return "design" if f.report_taint else "plan"
+def _trait(f: FacetSpec, trait: str) -> bool:
+    return f.requires_body if trait == "requires_body" else f.has(trait)
+
+
+def graph_op(f: FacetSpec, verb: str) -> str:
+    """The Crib method serving `verb` on graph facet `f` (GRAPH_OPS)."""
+    op = GRAPH_OPS[verb]
+    if isinstance(op, tuple):
+        trait, yes, no = op
+        return yes if _trait(f, trait) else no
+    return op
 
 
 def _call(crib: Crib, f: FacetSpec, verb: str):
-    """The engine method for `verb` on facet `f`, bound to that facet."""
+    """The engine operation for `verb` on facet `f`, bound to that facet."""
     import functools
 
-    return functools.partial(getattr(crib, f"{_style(f, verb)}_{verb}"), facet=f.noun)
+    return functools.partial(getattr(crib, graph_op(f, verb)), facet=f.noun)
 
 
 def _g_read(crib, f):
     async def body(
         ref: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
-        return _call(crib, f, "read")(ref, project)
+        out = _call(crib, f, "read")(ref, project)
+        if f.has("progress") and f.report_taint and not f.builtin:
+            # a working-set read; this facet reports taint too: say why
+            why = crib.design_read(ref, project, facet=f.noun)
+            out |= {k: why[k] for k in ("reasons", "causes", "paths") if k in why}
+        return out
 
     return body
 

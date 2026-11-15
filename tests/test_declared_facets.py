@@ -1427,6 +1427,41 @@ def test_links_between_a_facets_own_items_block_without_an_edges_table(tmp_path)
     assert out["next"] == ["Migrate"]  # Switch over waits
 
 
+def test_a_progress_facet_that_reports_taint_reads_both(tmp_path):
+    """read on a facet with progress AND report_taint: the working-set read
+    (blocked, blocked_by) and why it is stale (reasons, causes) (factory F3)."""
+    out = _run(
+        tmp_path,
+        TASK.replace('plural = "tasks"', 'plural = "tasks"\nreport_taint = true'),
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+        from fastmcp import Client
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+        async def main():
+            async with Client(mcp) as c:
+                call = lambda n, **a: c.call_tool(n, a)
+                a = (await call("task_add", title="Base", content="the base", project="p")).data
+                b = (await call("task_add", title="On top", content="needs base",
+                                deps=[a["relpath"]], project="p")).data
+                await call("task_edit", ref=a["relpath"], new_content="the base, changed",
+                           project="p")
+                r = (await call("task_read", ref=b["relpath"], project="p")).data
+                out["keys"] = sorted(k for k in ("blocked", "blocked_by", "reasons", "causes")
+                                     if k in r)
+                out["tainted"] = r["tainted"]
+        asyncio.run(main())
+    """,
+    )
+    assert out["keys"] == ["blocked", "blocked_by", "causes", "reasons"]
+    assert out["tainted"] is True
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
