@@ -298,7 +298,7 @@ wheels = [
 
 [[package]]
 name = "cribsheet"
-version = "0.23.1"
+version = "0.24.0.dev1"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
