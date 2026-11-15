@@ -72,7 +72,7 @@ RESERVED_NAMES = frozenset(
 # store directory as a relpath prefix.
 HOME = "note"
 
-_KEYS = frozenset({"plural", "store", "aspects", "fields", "legacy_stores"})
+_KEYS = frozenset({"plural", "store", "aspects", "fields", "legacy_stores", "verbs"})
 
 
 class FacetSpecError(ValueError):
@@ -89,6 +89,9 @@ class FacetSpec:
     aspects: frozenset[str]
     fields: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     legacy_stores: tuple[str, ...] = ()
+    # A built-in's own names for verbs whose canonical name differs (notes'
+    # `note_store` for `add`). Declared facets always use the canonical names.
+    verb_names: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -119,7 +122,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: unknown aspects {sorted(unknown)} (known: {sorted(ASPECTS)})"
         )
-    have = set(aspects) | {"core"}
+    have: set[str] = {str(a) for a in aspects} | {"core"}
     for a in sorted(have):
         if missing := ASPECTS[a] - have:
             raise FacetSpecError(
@@ -140,6 +143,16 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         isinstance(s, str) and s for s in legacy
     ):
         raise FacetSpecError(f"facet {noun!r}: legacy_stores must be a list of names")
+    verbs = raw.get("verbs", {})
+    if verbs and not builtin:
+        raise FacetSpecError(
+            f"facet {noun!r}: only built-in facets may rename verbs (`verbs`); "
+            "a declared facet's verbs have the canonical names")
+    if not isinstance(verbs, dict):
+        raise FacetSpecError(f"facet {noun!r}: verbs must be a table of verb = name")
+    for verb, name in verbs.items():
+        _ident(verb, f"facet {noun!r}: verb")
+        _ident(name, f"facet {noun!r}: name for verb {verb!r}")
     return FacetSpec(
         noun=noun,
         plural=plural,
@@ -147,6 +160,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         aspects=frozenset(have),
         fields=MappingProxyType(dict(fields)),
         legacy_stores=tuple(legacy),
+        verb_names=MappingProxyType(dict(verbs)),
         builtin=builtin,
     )
 

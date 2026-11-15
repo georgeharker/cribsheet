@@ -739,13 +739,17 @@ class Crib:
         self, project: str, relpath: str, note: Note, facet: str = facets.HOME
     ) -> IndexResult:
         res = await self._facet_store(facet).write(project, relpath, note)
-        if facet == facets.HOME:  # the enrichment pass reads the notes store
+        if facet == facets.HOME:
             self._schedule_keyword_refresh(project, relpath)  # keep the sparse facet fresh
+        elif facets.by_noun(facet).has("enriched"):
+            self._schedule_keyword_refresh(project, relpath, kind=facet)
         return res
 
     _KW_SETTLE_S = 1.0  # per-note debounce before the refresh fires
 
-    def _schedule_keyword_refresh(self, project: str, relpath: str) -> None:
+    def _schedule_keyword_refresh(
+        self, project: str, relpath: str, kind: str | None = None
+    ) -> None:
         """AUTO enrichment: after a note write, (re)generate the terms for the active
         `keyword_labels` (BM25 facet) AND `summary_labels` (dense alias facet) — OFF
         the save path, content-hash-gated so unchanged sections skip. Without this the
@@ -777,11 +781,11 @@ class Crib:
                 # labels) in one generation per section. `_generate_enrichment`
                 # already drops the lexical/summary caches iff it generated anything,
                 # so the next query rebuilds — no extra invalidation needed here.
-                await self.enrich(relpath=relpath, project=project)
+                await self.enrich(relpath=relpath, project=project, kind=kind)
             except Exception as e:  # noqa: BLE001 — best-effort background refresh
                 print(f"[crib] auto enrichment refresh failed: {e}", file=sys.stderr)
 
-        key = (project, relpath)
+        key = (project, relpath) if kind is None else (project, f"{kind}:{relpath}")
 
         def _fire() -> None:
             self._kw_timers.pop(key, None)
@@ -1806,6 +1810,8 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         overwrite: bool = False,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """keyword_index: generate search terms per section for BM25 (§3.1).
         `crib elaborate <label>`; activate via `[retrieve].keyword_labels`."""
@@ -1821,6 +1827,7 @@ class Crib:
             project,
             cwd,
             overwrite,
+            kind=None if facet == facets.HOME else facet,
         )
 
     async def summarize(
@@ -1830,6 +1837,8 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         overwrite: bool = False,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """summary_index: generate LLM rephrasings per section, embedded as dense
         alias vectors (§3). `crib summarize <label>`; activate via
@@ -1846,6 +1855,7 @@ class Crib:
             project,
             cwd,
             overwrite,
+            kind=None if facet == facets.HOME else facet,
         )
 
     # --- code symbol index (docs/code-symbol-index.md) --------------------
@@ -5390,6 +5400,7 @@ class Crib:
         cwd: Path | None = None,
         overwrite: bool = False,
         background: bool = False,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """ONE enrichment pass over every configured facet — the keyword labels (BM25
         side) AND the summary labels (dense alias side) together, one bulk generation
@@ -5435,7 +5446,8 @@ class Crib:
         if not facets:
             return {"project": proj, "labels": [], "written": {}, "total": 0}
         return await self._generate_enrichment(
-            proj, "elaborate", facets, relpath, overwrite, background=background
+            proj, "elaborate", facets, relpath, overwrite, background=background,
+            kind=kind,
         )
 
     async def _generate_index(
@@ -5448,6 +5460,7 @@ class Crib:
         project: str | None,
         cwd: Path | None,
         overwrite: bool,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """Single-facet shim over `_generate_enrichment` (the `elaborate`/`summarize`
         verbs) — legacy flat result shape preserved."""
@@ -5466,7 +5479,7 @@ class Crib:
             "store": SectionIndex(self.paths.project_dir(proj), root_name),
         }
         out = await self._generate_enrichment(
-            proj, purpose, [facet], relpath, overwrite
+            proj, purpose, [facet], relpath, overwrite, kind=kind
         )
         return {
             "project": proj,
@@ -5487,6 +5500,7 @@ class Crib:
         relpath: str | None,
         overwrite: bool,
         background: bool = False,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """Shared MULTI-FACET section-level generation: one bulk call per note batch
         emits terms for EVERY facet (a facet = one label of keyword_index or
@@ -5548,7 +5562,12 @@ class Crib:
         # (section_hash, relpath, heading, body, missing-facets)
         targets: list[tuple[str, str, str, str, list[dict]]] = []
         skipped = 0
-        for _cid, (doc, meta) in self.store.get_docs({"project": proj}).items():
+        # `kind` scopes the pass to one facet's items (a declared facet's verbs);
+        # unscoped, it covers the whole project, every pillar.
+        where: dict[str, Any] = {"project": proj}
+        if kind is not None:
+            where["kind"] = kind
+        for _cid, (doc, meta) in self.store.get_docs(where).items():
             if relpath and meta.get("relpath") != relpath:
                 continue
             sh = meta.get("section_hash") or meta.get("content_hash")

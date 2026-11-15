@@ -8,6 +8,7 @@
 #              index scope every chunk of it carries
 #   aspects    the engine behaviours it has; each brings its own data and verbs
 #   legacy_stores  older directory names whose content now belongs here
+#   [<noun>.verbs]  a built-in's own names for canonical verbs (built-ins only)
 #   [<noun>.fields]  its own typed store columns (crib_<noun>_meta), in order
 #
 # Table order is the registry's order: lookups and sweeps visit facets in it.
@@ -21,6 +22,10 @@ aspects = ["core", "enriched"]
 source = "VARCHAR"
 tags = "VARCHAR[]"
 source_path = "VARCHAR"
+
+# Notes' create verb predates the canonical `add` (built-ins only).
+[note.verbs]
+add = "store"
 
 [design]
 plural = "designs"

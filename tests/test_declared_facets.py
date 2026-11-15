@@ -170,3 +170,54 @@ def test_a_bad_facets_file_warns_and_serves_the_builtins(tmp_path, text, match):
     assert out["nouns"] == ["note", "design", "plan", "learning"]
     assert match in out["error"]
     assert "[crib] ignoring" in out["_stderr"]
+
+
+def test_a_declared_facet_gets_its_own_generated_verb_family(tmp_path):
+    out = _run(
+        tmp_path,
+        WIDGET,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import TOOL_POLICY, build_server
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        tools = {t.name: t for t in asyncio.run(build_server(crib).list_tools())}
+        out["widget"] = sorted(n for n in tools if n.startswith("widget_"))
+        out["lookup"] = tools["widget_lookup"].description
+        out["add"] = tools["widget_add"].description
+        out["policy"] = TOOL_POLICY["widget_add"]
+        out["schemas_match"] = all(
+            tools[f"widget_{v}"].parameters == tools[f"note_{v}"].parameters
+            for v in ("read", "edit", "lookup", "versions", "move"))
+    """,
+    )
+    assert out["widget"] == sorted(
+        f"widget_{v}"
+        for v in (
+            "lookup",
+            "apropos",
+            "read",
+            "locate",
+            "add",
+            "append",
+            "edit",
+            "forget",
+            "reindex",
+            "versions",
+            "restore",
+            "distill",
+            "elaborate",
+            "summarize",
+            "import",
+            "move",
+        )
+    )
+    assert "Semantic search over widgets" in out["lookup"]
+    assert "`widget_locate`" in out["lookup"]
+    assert "memory" not in out["lookup"]  # notes' own wording stays with notes
+    assert "`widget_append`/`widget_edit`" in out["add"]
+    assert out["policy"] == "write"
+    assert out["schemas_match"] is True

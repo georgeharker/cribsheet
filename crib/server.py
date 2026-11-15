@@ -741,185 +741,12 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
 
         return register
 
-    @crib_tool("read")
-    async def note_lookup(
-        query: str,
-        project: str | None = None,
-        k: int = 8,
-        tags: list[str] | None = None,
-        keyword_labels: list[str] | None = None,
-        keyword_weight: float | None = None,
-        summary_labels: list[str] | None = None,
-        summary_weight: float | None = None,
-        hints: list[str] | None = None,
-        hint_weight: float | None = None,
-        rerank: bool | None = None,
-        project_path: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """Semantic search over memory. Call this FIRST when the user asks
-        about this project — a prior decision, convention, or investigation
-        may already be stored. Returns ranked note sections, each with its
-        relpath and the line_start/line_end span of the matching section so
-        you can jump straight to it (pair with `note_locate` for the abspath).
-        `tags` filters by frontmatter tag. Notes only: design decisions, plan
-        items and learnings live in their own pillar stores and never appear
-        here — search them with `design_lookup` / `plan_lookup`, whose hits
-        also carry the facet state.
-        `hints`: exact strings you already have in context — symbol names,
-        flags, error codes, note titles you just read. Each runs as its own
-        exact-term route and boosts candidates multiple routes agree on.
-        No hints? Just query. `keyword_labels`/`keyword_weight` (BM25
-        keyword_index) and `summary_labels` (dense summary_index aliases)
-        override which LLM index sets feed retrieval (default from config);
-        `rerank` overrides [retrieve].rerank for this query — mainly for eval
-        sweeps.
-        A hit carrying `index_rebuilding: true` means this project is still being
-        re-embedded after a store wipe (`status` shows the sweep) — the result set
-        is INCOMPLETE, so retry once it clears rather than concluding nothing exists."""
-        return [
-            vars(h)
-            for h in crib.lookup(
-                query,
-                project,
-                k,
-                tags,
-                keyword_labels=keyword_labels,
-                keyword_weight=keyword_weight,
-                summary_labels=summary_labels,
-                summary_weight=summary_weight,
-                hints=hints,
-                hint_weight=hint_weight,
-                rerank=rerank,
-            )
-        ]
+    # Every generated facet's verb family (crib.verbs): the notes tools, and
+    # any declared facet's. Registered here, where the hand-written notes
+    # tools were, through the same `crib_tool` policy declaration.
+    from . import verbs as _verbs
 
-    @crib_tool("read")
-    async def note_apropos(
-        query: str,
-        project: str | None = None,
-        k: int = 8,
-        tags: list[str] | None = None,
-        hints: list[str] | None = None,
-        project_path: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """Like `note_lookup`, but each hit carries the full matching section's
-        markdown (`section`) instead of a short snippet — for reading the
-        matched sections in full, not just locating them. Carries the same
-        `index_rebuilding` incompleteness flag. `hints`: exact strings you
-        already have in context, each run as its own exact-term route."""
-        return crib.apropos(query, project, k, tags, hints=hints)
-
-    @crib_tool("read")
-    async def note_read(
-        relpath: str, project: str | None = None, project_path: str | None = None
-    ) -> str:
-        """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
-        `note_lookup` hit in full context, or before rewriting the note with `note_edit`."""
-        return crib.read_note(relpath, project)
-
-    @crib_tool("read")
-    async def note_locate(
-        relpath: str, project: str | None = None, project_path: str | None = None
-    ) -> str:
-        """Get the real on-disk path of a note so you can edit it with your own
-        file tools. After editing, call `note_reindex(relpath)` to make it searchable
-        now (the watcher would catch it shortly regardless)."""
-        return crib.locate(relpath, project)
-
-    @crib_tool("write", elicit=True)
-    async def note_store(
-        content: str,
-        title: str | None = None,
-        project: str | None = None,
-        tags: list[str] | None = None,
-        project_path: str | None = None,
-        ctx: Context | None = None,
-    ) -> dict[str, Any]:
-        """Persist a durable fact to memory — a decision, preference,
-        convention, gotcha, or hard-won detail worth recalling in a future
-        session. Assigns an id, writes markdown, indexes it. If a related
-        note already exists (check with `note_lookup`), prefer `note_append`/`note_edit`
-        over creating a near-duplicate.
-
-        PICK THE RIGHT PROJECT — REQUIRED. A fact belongs to the project it is ABOUT,
-        which may NOT be the repo you're working in, so a write won't inherit your
-        current project: pass `project=` (the subject's project — often `default` or a
-        tool's own project for cross-cutting knowledge like a CLI/editor/convention),
-        or `project_path=` a path in that repo. If you omit both, you'll be ASKED which
-        project (elicitation). Then tell the user which project it landed in."""
-        # A write is a ONE-OFF at an explicitly-named target — it must NOT flip the
-        # session's current project (no _switch_if_created): storing a cross-cutting
-        # fact shouldn't hijack the repo you're working in. `elicit=True` on the
-        # declaration asks the client for the target when it's omitted (rather than
-        # erroring) and stamps the answer's `project_source`; `ctx` is declared here
-        # only so FastMCP injects it for that.
-        # NOTE: `content` is stored VERBATIM to a markdown file — deliberately
-        # not html-escaped: notes are DATA (markdown on disk, rendered by
-        # nothing as raw HTML; legit HTML/code samples must survive), so this
-        # sink is disk, not a browser context.
-        # pi-lens-ignore: xss-html-injection
-        return await crib.store_note(content, title, project, tags)
-
-    @crib_tool("write")
-    async def note_append(
-        relpath: str,
-        content: str,
-        heading: str | None = None,
-        project: str | None = None,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """Add to an existing note (found via `note_lookup`) — the right call when new
-        information extends or continues something already remembered, rather than
-        `note_store`-ing a near-duplicate. Optionally files it under a new heading."""
-        return await crib.append_note(relpath, content, heading, project)
-
-    @crib_tool("write")
-    async def note_edit(
-        relpath: str,
-        new_content: str,
-        project: str | None = None,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """Rewrite a note's full content — use when remembered information has
-        changed, needs correcting, or several notes should be consolidated (read
-        it first). Frontmatter (and the note's id/history) is preserved."""
-        return await crib.edit_note(relpath, new_content, project)
-
-    @crib_tool("write")
-    async def note_forget(
-        relpath: str, project: str | None = None, project_path: str | None = None
-    ) -> dict[str, Any]:
-        """Delete a note when its information is obsolete or wrong. Removed from
-        disk and the index, but stashed to the version ring first, so it stays
-        recoverable by id."""
-        return await crib.forget(relpath, project)
-
-    @crib_tool("read")
-    async def note_reindex(
-        relpath: str | None = None,
-        project: str | None = None,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """Reindex a note (or the whole project). Call after editing a note via
-        its raw path. Safe to call redundantly — it no-ops if already current."""
-        return await crib.reindex(relpath, project)
-
-    @crib_tool("read")
-    async def note_versions(
-        relpath: str, project: str | None = None, project_path: str | None = None
-    ) -> list[dict[str, Any]]:
-        """List recoverable prior versions of a note."""
-        return crib.list_versions(relpath, project)
-
-    @crib_tool("read")
-    async def note_restore(
-        relpath: str,
-        version: str,
-        project: str | None = None,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """Restore a prior version of a note (itself undoable)."""
-        return await crib.restore(relpath, version, project)
+    _verbs.register(crib, crib_tool)
 
     @crib_tool("none")
     async def project_reconcile() -> dict[str, Any]:
@@ -935,43 +762,6 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         slot occupancy (in-flight / waiting / rate-limited / cooldown seconds).
         The one call that answers "what is running and why is nothing moving."""
         return crib.ops_status()
-
-    @crib_tool("read")
-    async def note_distill(
-        relpath: str, project: str | None = None, project_path: str | None = None
-    ) -> dict[str, Any]:
-        """LLM-revise a note in place: compress, dedupe, normalize — keeping
-        facts/decisions, dropping deliberation, preserving code verbatim.
-        Thrash-guarded (no-op if unchanged); the prior version is recoverable."""
-        return await crib.distill(relpath, project)
-
-    @crib_tool("read")
-    async def note_elaborate(
-        label: str,
-        relpath: str | None = None,
-        project: str | None = None,
-        overwrite: bool = False,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """keyword_index: generate BM25 search terms per section (or whole
-        project), section-addressed under `label` (e.g. `keywords`, `questions`,
-        `phrase`). Skips cached sections unless `overwrite`. Activate via
-        [retrieve].keyword_labels."""
-        return await crib.elaborate(label, relpath, project, overwrite=overwrite)
-
-    @crib_tool("read")
-    async def note_summarize(
-        label: str,
-        relpath: str | None = None,
-        project: str | None = None,
-        overwrite: bool = False,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """summary_index: generate LLM rephrasings per section (or whole project),
-        embedded as dense alias vectors so paraphrased queries match a section
-        with zero shared tokens. Skips cached sections unless `overwrite`.
-        Activate via [retrieve].summary_labels."""
-        return await crib.summarize(label, relpath, project, overwrite=overwrite)
 
     @crib_tool("source")
     async def code_index(
@@ -2276,22 +2066,6 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         return crib.history(relpath)
 
     @crib_tool("source", needs_target=True)
-    async def note_import(
-        paths: list[str], project: str | None = None, project_path: str | None = None
-    ) -> dict[str, Any]:
-        """Copy the NAMED files into memory as crib-owned notes (snapshot you own:
-        git-synced, editable, versioned). Distinct from a repo's `.crib` docs, which
-        are indexed IN-SITU (source is master, never copied) by `project index`.
-        `paths` must be absolute, or relative to `project_path` (there is no shell
-        cwd here for them to be relative to). An import is ABOUT a repo, so — unlike
-        a note write — it resolves like the repo-scoped `project_*` tools and REQUIRES
-        a source: name `project_path=<the repo dir>` (or `project=`), else it errors
-        rather than quietly filing the copies in the default project."""
-        return _switch_if_created(
-            await crib.import_files(paths, project, cwd=_cwd(project_path))
-        )
-
-    @crib_tool("source", needs_target=True)
     async def note_import_memory(
         project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
@@ -2305,21 +2079,6 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         return _switch_if_created(
             await crib.import_claude_memory(project, cwd=_cwd(project_path))
         )
-
-    @crib_tool("write")
-    async def note_move(
-        relpath: str,
-        to_project: str | None = None,
-        to_relpath: str | None = None,
-        project: str | None = None,
-        project_path: str | None = None,
-    ) -> dict[str, Any]:
-        """Relocate a note to another project and/or rename it, preserving its id
-        and version history (the curation primitive — not store-new + forget-old).
-        `to_project` moves it across namespaces; `to_relpath` renames it."""
-        # a move is a one-off curation op — it must not flip the session project
-        # onto the source or destination (no _switch_if_created).
-        return await crib.move_note(relpath, to_project, to_relpath, project)
 
     @crib_tool("none")
     def status() -> dict[str, Any]:

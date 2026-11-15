@@ -171,3 +171,11 @@ def test_load_reads_file_order_and_rejects_bad_toml():
         load("[a\n")
     with pytest.raises(FacetSpecError, match="must be a table"):
         load("a = 1\n")
+
+
+def test_only_builtins_may_rename_verbs():
+    with pytest.raises(FacetSpecError, match="only built-in facets may rename verbs"):
+        parse("routine", {"plural": "routines", "verbs": {"add": "store"}})
+    s = parse("thing", {"plural": "things", "verbs": {"add": "store"}}, builtin=True)
+    assert dict(s.verb_names) == {"add": "store"}
+    assert dict(facets.by_noun("note").verb_names) == {"add": "store"}
