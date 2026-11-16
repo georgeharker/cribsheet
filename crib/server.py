@@ -358,7 +358,6 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
     **{
         s.plural: _verbs.view(s).read_only_tools
         for s in _facets.FACETS
-        if _verbs.generated(s)
     },
     "code": frozenset({"code_lookup", "code_dossier", "code_graph", "code_xref"}),
     "learnings": frozenset({"learning_read", "learning_report"}),

@@ -1,6 +1,6 @@
 # The built-in facets: crib's own pillars, declared the way any facet is
-# (see crib/facets.py). Shipped with the package. A system facets file may turn
-# a built-in off or extend it additively, never override it.
+# (see crib/facets.py). Shipped with the package. A system facets file declares
+# facets of its own beside these; it can't change or turn off a built-in.
 #
 #   [<noun>]   the item kind and its verb prefix (note_*), singular
 #   plural     its tool-set name (`--tools notes:ro`)

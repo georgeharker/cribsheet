@@ -229,8 +229,6 @@ def test_aspect_verbs_match_the_builtins_generated_families():
     from crib import verbs
 
     for s in facets.FACETS:
-        if not verbs.generated(s):
-            continue
         assert [t.verb for t in verbs.verbs_of(s)] == list(facets.verb_names(s)), s.noun
 
 

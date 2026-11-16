@@ -1353,12 +1353,6 @@ TEMPLATES: tuple[Verb, ...] = (
 )
 
 
-def generated(spec: FacetSpec) -> bool:
-    """Whether this facet's verbs come from the templates here. A declared
-    graph facet gets none until its bodies are generic (registry step 7)."""
-    return not spec.has("links") or spec.builtin or _graph(spec)
-
-
 # Each family's templates by verb (facets.VERB_CATALOGUE says which a facet has).
 TEMPLATES_BY_FAMILY: dict[str, dict[str, Verb]] = {
     "note": {t.verb: t for t in TEMPLATES if t.aspect != "anchored"},
@@ -1370,8 +1364,6 @@ TEMPLATES_BY_FAMILY: dict[str, dict[str, Verb]] = {
 def verbs_of(spec: FacetSpec) -> list[Verb]:
     """The templates a facet gets, in registration order: one per verb the
     catalogue gives it (facets.verb_names), a graph facet's transitions last."""
-    if not generated(spec):
-        return []
     table = TEMPLATES_BY_FAMILY[facets.family(spec.aspects)]
     moves = {t.verb: t for t in _transition_verbs(spec)} if _graph(spec) else {}
     return [moves[v] if v in moves else table[v] for v in facets.verb_names(spec)]

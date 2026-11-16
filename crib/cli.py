@@ -3030,10 +3030,8 @@ def _facet_cli_verbs(spec: Any) -> list[Any]:
 def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
     """Each generated facet's subcommands: a built-in's under its existing
     noun parser (`nouns`), a declared facet's under its own."""
-    from . import verbs
-
     for spec in _facets_mod().FACETS:
-        if not verbs.generated(spec) or not _facet_cli_verbs(spec):
+        if not _facet_cli_verbs(spec):
             continue
         fsub = nouns.get(spec.noun)
         if fsub is None:
@@ -3130,8 +3128,6 @@ def _facet_rows() -> dict[str, Verb]:
 
     rows: dict[str, Verb] = {}
     for spec in facets.FACETS:
-        if not verbs.generated(spec):
-            continue
         v = verbs.view(spec)
         for t in _facet_cli_verbs(spec):
             if spec.has("links"):
