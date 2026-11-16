@@ -296,6 +296,9 @@ class NoteStore:
         raw = path.read_text()
         fallback = fallback_id or derived_ulid(project, relpath)
         ring = self.versions_for(project)
+        if self._policy(project).get("ids") == "derived":
+            ring.stash(fallback, raw)  # the id is the path's (a file's own `id:` isn't crib's)
+            return fallback
         try:
             fm, body = notes.parse(raw, path)
         except NoteParseError:
@@ -493,6 +496,8 @@ class NoteStore:
         the still-legible `id:` out of the broken header (the same salvage
         `_stash_existing` uses on the way in), falling back to the derived id an
         id-less note's stashes are keyed by."""
+        if self._policy(project).get("ids") == "derived":
+            return derived_ulid(project, relpath)  # the path's, never the file's
         raw = self.abspath(project, relpath).read_text()
         try:
             fm, _body = notes.parse(raw, relpath)

@@ -329,7 +329,9 @@ class IndexEngine:
         if doc:
             note_id = note.id or _derive_id(relpath)
         elif ids == "derived":
-            note_id = note.id or _derive_id(project, relpath)
+            # the id IS the path's: a file's own `id:` belongs to whatever
+            # else reads it (another tool's ids can repeat, or mean otherwise)
+            note_id = _derive_id(project, relpath)
         elif read_only and not note.id:
             # read-only and id-stamped, but no id yet: wait for a writable
             # checkout to stamp it, rather than give it an id that would flip

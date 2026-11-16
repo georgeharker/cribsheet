@@ -1776,6 +1776,35 @@ def test_doctor_names_a_field_value_that_doesnt_fit_its_type(tmp_path):
     assert "takes an int" in out["fix"][0]
 
 
+def test_derived_ids_ignore_a_files_own_id(tmp_path):
+    """Under `ids: derived` the id is the path's: another tool's `id:` in the
+    frontmatter (here two files sharing one) must not merge or hide items."""
+    body_a = "---\nid: morning-brief\ntype: periodic-task\n---\nbrief me about the weather\n"
+    body_b = "---\nid: morning-brief\n---\na second file claiming that id\n"
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+        {"workflows/morning.md": body_a, "workflows/other.md": body_b},
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        from crib.util import derived_ulid
+        items = crib.store.items({"project": "p", "kind": "routine"})
+        out["rels"] = sorted(i.relpath for i in items.values())
+        out["ids_ok"] = all(i.id == derived_ulid("p", i.relpath) for i in items.values())
+        out["tagged"] = [h.relpath for h in crib.lookup("weather", "p", store="routines",
+                                                        tags=["periodic-task"])]
+    """,
+    )
+    assert out["rels"] == ["morning.md", "other.md"]
+    assert out["ids_ok"]
+    assert out["tagged"] == ["morning.md"]  # its `type` still filters as a tag
+    assert (repo / "workflows" / "morning.md").read_text() == body_a  # untouched
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

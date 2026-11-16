@@ -83,6 +83,7 @@ from .items import (
     prose_hash,
 )
 from .notes import Note
+from .util import derived_ulid
 
 if TYPE_CHECKING:
     from .notestore import NoteStore
@@ -632,7 +633,7 @@ class Designs:
                 # and what is already in the mapping (a teammate's committed items)
                 loc = store.location(proj)
                 if loc is not None and loc.available:
-                    nodes += self._nodes_owned(kind, loc)
+                    nodes += self._nodes_owned(kind, loc, proj)
                 for node in nodes:
                     for src in node.sources:
                         src["current"] = self._section_hash(proj, src, docs)
@@ -713,11 +714,15 @@ class Designs:
         if not ch:
             return
         parsed: list[tuple[str, dict[str, Any], str]] = []
+        loc = store.location(proj)
+        derived = loc is not None and loc.prefix is None and loc.ids == "derived"
         for name in sorted(ch.changed):
             try:
                 fm, body = notes.parse((d / name).read_text(), d / name)
             except (OSError, UnicodeDecodeError, notes.NoteParseError):
                 continue  # one broken note must not blind the graph
+            if derived:  # the id is the path's, whatever the file says
+                fm = {**fm, "id": derived_ulid(proj, name)}
             parsed.append((name, fm, body))
         rows = store.index.item_rows(proj, store.spec.name, parsed)
         files: list[tuple[str, int, int, list[Any]]] = []
@@ -748,9 +753,10 @@ class Designs:
         return out
 
     @staticmethod
-    def _nodes_owned(kind: str, loc: Any) -> list[Node]:
+    def _nodes_owned(kind: str, loc: Any, proj: str = "") -> list[Node]:
         """`kind`'s nodes parsed from the files a mapped location owns (its
-        glob), relpaths relative to the mapping."""
+        glob), relpaths relative to the mapping (ids derived from the path
+        under `ids: derived`)."""
         out: list[Node] = []
         for path in sorted(loc.root.rglob("*.md")):
             rel = str(path.relative_to(loc.root))
@@ -760,6 +766,8 @@ class Designs:
                 fm, body = notes.parse(path.read_text(), path)
             except (OSError, UnicodeDecodeError, notes.NoteParseError):
                 continue
+            if loc.ids == "derived":
+                fm = {**fm, "id": derived_ulid(proj, rel)}
             if fm.get("id"):
                 out.append(_node_from_file(kind, rel, fm, body))
         return out
