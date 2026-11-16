@@ -1870,6 +1870,12 @@ def test_project_index_reports_the_facets_even_while_its_sweep_runs(tmp_path, ca
     assert "indexing in progress — 11/14 files" in printed
     assert "facet routine:" in printed and "1 item(s) indexed" in printed
     assert "indexed 0/0" not in printed
+    _emit_project({"project": "toucan", "running": True, "done": None, "total": None},
+                  "index", False)
+    _emit_project({"project": "toucan", "running": True, "done": None, "total": None},
+                  "wait", False)
+    printed = capsys.readouterr().out
+    assert "None" not in printed and printed.count("starting (counting files)") == 2
 
 
 def test_doctor_lists_untitled_items_when_the_facet_insists(tmp_path):

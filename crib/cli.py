@@ -469,6 +469,14 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
         print(line)
 
 
+def _sweep_progress(d: Any) -> str:
+    """`done/total files`, or "starting" before the sweep has counted its files
+    (right after it began, both are still None)."""
+    if d.get("total") is None:
+        return "starting (counting files)"
+    return f"{d.get('done') or 0}/{d['total']} files"
+
+
 def _emit_facet_summary(d: Any) -> None:
     """One line per facet mapping a setup/index answer reports (`facets`)."""
     for noun, f in (d.get("facets") or {}).items():
@@ -579,7 +587,7 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     if verb == "wait":
         if d.get("running"):
             print(
-                f"{proj}: still running — {d.get('done')}/{d.get('total')} files; "
+                f"{proj}: still running — {_sweep_progress(d)}; "
                 f"call `crib project wait` again to keep waiting"
             )
         else:
@@ -598,7 +606,7 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
         return
     # setup / index
     if d.get("running"):  # a daemon-side sweep still going (joined or started)
-        print(f"{proj}: indexing in progress — {d.get('done')}/{d.get('total')} files "
+        print(f"{proj}: indexing in progress — {_sweep_progress(d)} "
               f"(`crib project wait` to follow it, `crib project status` to look)")
         _emit_facet_summary(d)
         return
