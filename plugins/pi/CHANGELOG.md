@@ -9,6 +9,21 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.25.0-dev2] - 2026-11-15
+
+### Changed
+
+- **A declared facet's fields are required unless its spec lists them under
+  `optional`.** `add` refuses a new item without a required field, and
+  `crib project doctor` names files missing one; `edit` still works on an
+  existing item that lacks one. If you declared fields before, list the ones
+  items may leave out: `optional = ["timeout"]`.
+
+### Fixed
+
+- `crib project index` / `wait` say "starting (counting files)" before a
+  sweep has counted its files, instead of `None/None`.
+
 ## [0.25.0-dev1] - 2026-11-15
 
 The facet registry and everything since 0.23.1, as a new minor line: the
