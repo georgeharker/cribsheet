@@ -2605,76 +2605,13 @@ _ANCHORED_CLI_ORDER = _cli_order("anchored")
 # surface snapshot holds every subcommand's --help); their wording is data,
 # keyed (noun, what). A declared graph facet gets the general wording.
 
-_GTEXT: dict[tuple[str, str], str] = {
-    ("design", "add"): "record a design decision (body: arg, '-', --file or $EDITOR)",
-    ("design", "add.body"): "the decision, why, what was rejected",
-    ("design", "add.dep"): "a dependency of the default kind for its target (repeatable): a "
-    "decision is rests_on, a plan item follows, a note informed_by",
-    ("plan", "add"): "add plan item(s) — body optional, `--item` adds more",
-    ("plan", "add.body"): "the item's detail (optional)",
-    ("plan", "add.dep"): "a dependency of the default kind for its target (repeatable): a "
-    "plan item is follows, a decision rests_on, a note informed_by",
-    ("design", "read"): "a decision's dossier: body + annotated edges + taint",
-    ("plan", "read"): "an item's dossier: body + status + what it's blocked on",
-    ("design", "export"): "the whole decision graph as ONE markdown doc (dep-topological, "
-    "deterministic) — --out to write a file, else stdout",
-    ("design", "export.out"): "write the markdown here (e.g. docs/STATE-designs.md) instead "
-    "of stdout",
-    ("plan", "export"): "the whole plan as ONE markdown doc (dep-topological, deterministic; "
-    "includes done) — --out to write a file, else stdout",
-    ("plan", "export.out"): "write the file (e.g. docs/STATE-plans.md) instead of stdout",
-    ("design", "edit"): "rewrite a decision; lists what the change tainted",
-    ("plan", "edit"): "rewrite an item's body; lists what the change tainted",
-    ("design", "append"): "extend a decision; lists what the change tainted",
-    ("plan", "append"): "extend an item's body; lists what the change tainted",
-    ("design", "lookup"): "semantic search over DECISIONS (hits flag stale ones)",
-    ("design", "lookup.hint"): "exact strings you already know (decision titles, symbols) — "
-    "each runs as its own exact-term route; repeatable",
-    ("plan", "lookup"): "semantic search over PLAN ITEMS",
-    ("plan", "lookup.hint"): "exact strings you already know (item titles, refs) — "
-    "each runs as its own exact-term route; repeatable",
-    ("design", "list"): "every decision as a table (--tainted filters to stale)",
-    ("plan", "list"): "the plan in execution order (topo + rank)",
-    ("design", "dep_add"): "declare that a decision depends on another (default kind: by target)",
-    ("design", "dep_remove"): "drop a dependency edge between decisions",
-    ("plan", "dep_add"): "declare that an item depends on another (default kind: by target)",
-    ("plan", "dep_remove"): "drop a must-precede edge between items",
-    ("design", "forget"): "delete a decision (refuses while dependents exist)",
-    ("plan", "forget"): "delete a plan item (refuses while dependents exist)",
-    ("design", "check"): "which decisions are stale w.r.t. what they build on",
-    ("design", "reaffirm"): "re-record a decision's dep hashes (you re-read it)",
-    ("plan", "reaffirm"): "re-record an item's dep/source hashes — its ground "
-    "moved, you re-read it, it still stands",
-    ("design", "tree"): "dependency tree around a decision (taint-flagged)",
-    ("design", "graph"): "the decision map as {nodes, edges} (taint-flagged; "
-    "same shape as `code graph --edges`)",
-    ("plan", "graph"): "the plan as {nodes, edges}, including the decisions items rest on",
-    ("design", "supersede"): "mark a decision superseded + taint its dependents",
-    ("design", "promote"): "proposed → active (an extracted decision, confirmed)",
-    ("design", "extract"): "prepare a doc for extraction into decisions (writes nothing)",
-    ("plan", "extract"): "prepare a doc for extraction into actionable work (writes nothing)",
-    ("plan", "status"): "set an item's status (todo/in-progress/parked/done/verified)",
-    ("plan", "park"): "park an item — not now, with a reason; optional trigger refs whose "
-    "change SURFACE it (never auto-wake)",
-    ("plan", "park.trigger"): "pillar-qualified ref to watch (design/plan); repeatable — "
-    "each records its own body-hash baseline",
-    ("plan", "park.why"): "why it is parked — rides the record and a dated body line "
-    "(this is what makes the deferral searchable)",
-    ("plan", "decline"): "decline an item — never scheduled, remembered with the why-not "
-    "(the rationale is REQUIRED)",
-    ("plan", "decline.why"): "the why-not — the payload a future re-proposal comes back for",
-    ("plan", "decline.trigger"): "pillar-qualified ref to watch — fires on the watched ref's "
-    "STATUS transitions (promoted/superseded), not prose rewording; repeatable",
-    ("plan", "move"): "re-order an item (rank only; deps untouched)",
-    ("plan", "next"): "actionable items now (todo, deps satisfied)",
-}
-
-
 def _gt(spec: Any, key: str, generic: str) -> str:
-    """A built-in's own CLI wording for `key`, else the general one."""
-    if spec.builtin and (spec.noun, key) in _GTEXT:
-        return _GTEXT[(spec.noun, key)]
-    return generic.format(n=spec.noun, p=spec.plural)
+    """A built-in's own CLI wording for `key` (crib/wording.toml), else the
+    general one."""
+    from . import wording
+
+    own = wording.cli(spec.noun, key) if spec.builtin else None
+    return own if own is not None else generic.format(n=spec.noun, p=spec.plural)
 
 
 def _g_body_args(sp: Any, what: str) -> None:

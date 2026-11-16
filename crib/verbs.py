@@ -810,7 +810,7 @@ def _with_fields(body: Any, spec: FacetSpec, mode: str) -> None:
 # ── graph facets (links + status): decisions, plans ──────────────────────────
 # One template per verb; a facet's aspects (and its statuses' roles) decide
 # which verbs it gets and, for add / list, which parameters. The built-ins'
-# descriptions are data (crib.graph_texts), held to the byte by the surface
+# descriptions are data (crib/wording.toml), held to the byte by the surface
 # snapshot. Bodies call the built-in's own Crib method for now; a declared
 # graph facet gets generic bodies in facet registry step 7, and no verbs before.
 
@@ -821,10 +821,10 @@ def _graph(f: FacetSpec) -> bool:
 
 def _gd(verb: str, generic: Callable[[FacetSpec], str]):
     def describe(f: FacetSpec) -> str:
-        from .graph_texts import TEXTS
+        from . import wording
 
-        name = tool_name(f, verb)
-        return TEXTS[name] if f.builtin and name in TEXTS else generic(f)
+        own = wording.mcp(f.noun, verb) if f.builtin else None
+        return own if own is not None else generic(f)
 
     return describe
 
