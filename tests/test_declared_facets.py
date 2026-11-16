@@ -1845,6 +1845,33 @@ def test_toucans_routines_get_titles_tags_reads_and_a_summary(tmp_path):
     assert (s["items"], s["read_only"], s["ids"], s["glob"]) == (2, True, "derived", "*.md")
 
 
+def test_project_index_reports_the_facets_even_while_its_sweep_runs(tmp_path, capsys):
+    """Every `project index` answer, a running sweep's handle included, carries
+    the facet summary, and the CLI prints a running sweep as running (it used
+    to print `indexed 0/0 files` and nothing about the facet)."""
+    repo = _repo(tmp_path, "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+                 {"workflows/a.md": "---\nname: a\n---\n# A\nbody\n"})
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        res = asyncio.run(crib.project_index(cwd=Path(REPO)))
+        out["facets"] = res.get("facets")
+        out["running"] = bool(res.get("running"))
+    """.replace("REPO", repr(str(repo))),
+    )
+    assert out["facets"]["routine"]["items"] == 1
+    from crib.cli import _emit_project
+
+    _emit_project({"project": "toucan", "running": True, "joined": True, "done": 11,
+                   "total": 14, "facets": out["facets"]}, "index", False)
+    printed = capsys.readouterr().out
+    assert "indexing in progress — 11/14 files" in printed
+    assert "facet routine:" in printed and "1 item(s) indexed" in printed
+    assert "indexed 0/0" not in printed
+
+
 def test_doctor_lists_untitled_items_when_the_facet_insists(tmp_path):
     repo = _repo(tmp_path, "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
                  {"workflows/a.md": "---\nname: a\n---\nno heading here\n"})

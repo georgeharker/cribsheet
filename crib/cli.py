@@ -469,6 +469,17 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
         print(line)
 
 
+def _emit_facet_summary(d: Any) -> None:
+    """One line per facet mapping a setup/index answer reports (`facets`)."""
+    for noun, f in (d.get("facets") or {}).items():
+        how = ", ".join(w for w in ("read-only" if f.get("read_only") else "",
+                                   "ids derived" if f.get("ids") == "derived" else "") if w)
+        state = (f"{f['items']} item(s) indexed" if "items" in f
+                 else f"waiting {f.get('waiting', '')}")
+        print(f"  facet {noun}: {f.get('dir')} {f.get('glob')}"
+              f"{f' ({how})' if how else ''}: {state}")
+
+
 def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     """Human summary for `crib project <verb>`."""
     if as_json:
@@ -586,6 +597,11 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
             print(f"{proj}: nothing running")
         return
     # setup / index
+    if d.get("running"):  # a daemon-side sweep still going (joined or started)
+        print(f"{proj}: indexing in progress — {d.get('done')}/{d.get('total')} files "
+              f"(`crib project wait` to follow it, `crib project status` to look)")
+        _emit_facet_summary(d)
+        return
     made = "  (created .crib)" if d.get("crib_created") else ""
     docs = f", {d['docs_imported']} docs imported" if d.get("docs_imported") else ""
     fails = (
@@ -596,13 +612,7 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
         f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described"
         f"{fails}{docs}{made}"
     )
-    for noun, f in (d.get("facets") or {}).items():
-        how = ", ".join(w for w in ("read-only" if f.get("read_only") else "",
-                                   "ids derived" if f.get("ids") == "derived" else "") if w)
-        state = (f"{f['items']} item(s) indexed" if "items" in f
-                 else f"waiting {f.get('waiting', '')}")
-        print(f"  facet {noun}: {f.get('dir')} {f.get('glob')}"
-              f"{f' ({how})' if how else ''}: {state}")
+    _emit_facet_summary(d)
     errs = d.get("errors") or []
     if errs:
         print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")

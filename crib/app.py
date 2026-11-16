@@ -2543,6 +2543,22 @@ class Crib:
         `budget_s` bounds the WORK: files not reached are deferred
         (`complete=False, remaining=N`) — re-invoke to continue (finished files
         re-skip via the content-hash gate)."""
+        res = await self._project_index(project, cwd, budget_s, wait_s)
+        # every answer, a running handle included, says what the repo's facet
+        # mappings hold (the sweep below is code; mapped facets index apart)
+        if "facets" not in res and res.get("project"):
+            if fs := self._mapping_summary(res["project"]):
+                res = {**res, "facets": fs}
+        return res
+
+    async def _project_index(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        budget_s: float | None = None,
+        wait_s: float | None = None,
+    ) -> dict[str, Any]:
+        """The body of `project_index` (which adds the facet summary)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
         await self._sync_mappings(proj, link)
