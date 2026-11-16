@@ -130,16 +130,26 @@ def test_parse_defaults_store_to_plural_and_always_has_core():
         ("my_thing", {"plural": "things"}, "can't contain '_'"),
         (
             "rfc",
-            {"plural": "rfcs", "aspects": ["links", "status"],
-             "status": {"values": {"open": "open", "done": "done"},
-                        "transitions": {"list": "done"}}},
+            {
+                "plural": "rfcs",
+                "aspects": ["links", "status"],
+                "status": {
+                    "values": {"open": "open", "done": "done"},
+                    "transitions": {"list": "done"},
+                },
+            },
             "name of a graph verb",
         ),
         (
             "rfc",
-            {"plural": "rfcs", "aspects": ["links", "status", "supersede"],
-             "status": {"values": {"open": "open", "gone": "retired"},
-                        "transitions": {"retire": "gone"}}},
+            {
+                "plural": "rfcs",
+                "aspects": ["links", "status", "supersede"],
+                "status": {
+                    "values": {"open": "open", "gone": "retired"},
+                    "transitions": {"retire": "gone"},
+                },
+            },
             "role retired",
         ),
     ],
@@ -235,12 +245,19 @@ def test_the_catalogue_and_the_templates_name_the_same_verbs():
         assert len(names) == len(set(names)), fam
         assert set(names) == set(verbs.TEMPLATES_BY_FAMILY[fam]), fam
         aspects = {d.verb: d.aspect for d in decls}
-        assert all(verbs.TEMPLATES_BY_FAMILY[fam][v].aspect == a
-                   for v, a in aspects.items()), fam
-    orders = {"note": _FACET_CLI_ORDER, "anchored": _ANCHORED_CLI_ORDER,
-              "graph": _GRAPH_CLI_ORDER}
+        assert all(
+            verbs.TEMPLATES_BY_FAMILY[fam][v].aspect == a for v, a in aspects.items()
+        ), fam
+    orders = {
+        "note": _FACET_CLI_ORDER,
+        "anchored": _ANCHORED_CLI_ORDER,
+        "graph": _GRAPH_CLI_ORDER,
+    }
     for fam, order in orders.items():
-        assert set(order) >= {d.verb for d in facets.VERB_CATALOGUE[fam]} - {"extract"}, fam
+        assert set(order) >= {d.verb for d in facets.VERB_CATALOGUE[fam]} - {
+            "extract"
+        }, fam
+
 
 def test_disable():
     s = parse(
@@ -397,8 +414,14 @@ def test_a_declared_graph_spec_parses():
         ({"edges": {"plan": "blocks"}}, "link kind"),
         ({"aspects": ["links", "progress"]}, "needs \\['status'\\]"),
         ({"fields": {"severity": "int"}}, "can't declare fields yet"),
-        ({"aspects": ["links", "status", "enriched"]}, "can't also be \\['enriched'\\]"),
-        ({"aspects": ["links", "status", "anchored"]}, "can't also be \\['anchored'\\]"),
+        (
+            {"aspects": ["links", "status", "enriched"]},
+            "can't also be \\['enriched'\\]",
+        ),
+        (
+            {"aspects": ["links", "status", "anchored"]},
+            "can't also be \\['anchored'\\]",
+        ),
         ({"disable": ["locate"]}, "can't disable \\['locate'\\]"),
     ],
 )
@@ -412,7 +435,6 @@ def test_status_and_edges_need_their_aspects():
         parse("t", {"plural": "ts", "status": {"values": {"a": "open"}}})
     with pytest.raises(FacetSpecError, match="needs the links aspect"):
         parse("t", {"plural": "ts", "edges": {"*": "informed_by"}})
-
 
 
 @pytest.mark.parametrize("noun", ["status", "serve", "info", "ops", "facets", "store"])
@@ -432,14 +454,16 @@ def test_every_top_level_command_and_tool_prefix_is_reserved():
     from crib import cli
 
     builtin = {s.noun for s in facets.BUILTINS}
-    sp = next(a for a in cli.build_parser()._actions
-              if isinstance(a, argparse._SubParsersAction))
+    sp = next(
+        a
+        for a in cli.build_parser()._actions
+        if isinstance(a, argparse._SubParsersAction)
+    )
     commands = {c for c in sp.choices if c.isidentifier()}
     golden = Path(__file__).parent / "goldens" / "tool_surface.json"
     prefixes = {n.split("_", 1)[0] for n in json.loads(golden.read_text())["mcp"]}
     missing = sorted((commands | prefixes) - builtin - facets.RESERVED_NAMES)
     assert missing == [], f"reserve these in crib.facets.RESERVED_NAMES: {missing}"
-
 
 
 def test_a_graph_facet_disables_its_own_verbs():
@@ -471,20 +495,27 @@ def test_half_a_graph_facet_is_refused(aspects, match):
         parse("t", raw)
 
 
-
 def test_a_graph_facet_without_edges_gets_defaults_for_its_own_links():
     """Without an [edges] table a progress facet's own links are follows and a
     decision-like one's rests_on; other targets as crib's own (review fix 7)."""
     st = {"values": {"todo": "open", "done": "done"}}
-    task = parse("task", {"plural": "tasks", "aspects": ["links", "status", "progress"],
-                          "status": st})
+    task = parse(
+        "task",
+        {"plural": "tasks", "aspects": ["links", "status", "progress"], "status": st},
+    )
     assert task.edges["task"] == "follows" and task.edges["*"] == "informed_by"
     rfc = parse("rfc", {"plural": "rfcs", "aspects": ["links", "status"], "status": st})
     assert rfc.edges["rfc"] == "rests_on" and rfc.edges["design"] == "rests_on"
-    told = parse("rfc", {"plural": "rfcs", "aspects": ["links", "status"], "status": st,
-                         "edges": {"*": "informed_by"}})
+    told = parse(
+        "rfc",
+        {
+            "plural": "rfcs",
+            "aspects": ["links", "status"],
+            "status": st,
+            "edges": {"*": "informed_by"},
+        },
+    )
     assert dict(told.edges) == {"*": "informed_by"}  # a written table is as written
-
 
 
 def test_every_graph_verb_has_an_engine_operation():
@@ -498,9 +529,8 @@ def test_every_graph_verb_has_an_engine_operation():
     need |= {"import", "park", "decline", "promote"}
     assert need == set(verbs.GRAPH_OPS)
     for op in verbs.GRAPH_OPS.values():
-        for name in (op[1:] if isinstance(op, tuple) else (op,)):
+        for name in op[1:] if isinstance(op, tuple) else (op,):
             assert callable(getattr(Crib, name)), name
-
 
 
 def test_a_facets_own_wording_joins_every_tool_description():
@@ -508,16 +538,26 @@ def test_a_facets_own_wording_joins_every_tool_description():
     `[<noun>.when]` adds to one verb's; fields' text comes last (factory F2)."""
     from crib import verbs
 
-    s = parse("routine", {
-        "plural": "routines", "fields": {"schedule": "str"},
-        "about": "A routine is a scheduled job an agent runs.",
-        "when": {"add": "Name the schedule in the title."},
-    })
+    s = parse(
+        "routine",
+        {
+            "plural": "routines",
+            "fields": {"schedule": "str"},
+            "about": "A routine is a scheduled job an agent runs.",
+            "when": {"add": "Name the schedule in the title."},
+        },
+    )
     v = verbs.view(s)
     add, read = v.describe("add"), v.describe("read")
-    assert "A routine is a scheduled job" in add and "A routine is a scheduled job" in read
+    assert (
+        "A routine is a scheduled job" in add and "A routine is a scheduled job" in read
+    )
     assert "Name the schedule" in add and "Name the schedule" not in read
-    assert add.index("scheduled job") < add.index("Name the schedule") < add.index("Fields:")
+    assert (
+        add.index("scheduled job")
+        < add.index("Name the schedule")
+        < add.index("Fields:")
+    )
     plain = verbs.view(parse("routine", {"plural": "routines"})).describe("read")
     assert v.describe("read").startswith(plain.rstrip("\n"))  # the template first
 
@@ -537,8 +577,14 @@ def test_bad_wording_is_refused(raw, match):
 
 
 def test_wording_round_trips_through_toml():
-    s = parse("routine", {"plural": "routines", "about": 'Two lines,\nwith "quotes".',
-                          "when": {"add": "Say when."}})
+    s = parse(
+        "routine",
+        {
+            "plural": "routines",
+            "about": 'Two lines,\nwith "quotes".',
+            "when": {"add": "Say when."},
+        },
+    )
     again = load(facets.to_toml([s]))[0]
     assert (again.about, dict(again.when)) == (s.about, dict(s.when))
 
@@ -555,7 +601,6 @@ def test_the_view_names_a_facets_tools_commands_and_statuses():
     assert note.tool("add") == "note_store" and note.command("add") == "crib note store"
 
 
-
 def test_the_facets_file_sits_beside_config_toml(tmp_path, monkeypatch):
     """$XDG_CONFIG_HOME moves both, the same way (review fix 12)."""
     from crib.paths import Paths
@@ -567,7 +612,6 @@ def test_the_facets_file_sits_beside_config_toml(tmp_path, monkeypatch):
     assert facets.system_file().parent == Paths.resolve().config_dir
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "own"))
     assert facets.system_file() == tmp_path / "own" / "facets.toml"
-
 
 
 def test_a_store_cannot_take_a_directory_crib_keeps_in_every_project():
@@ -587,30 +631,56 @@ def test_every_generated_verb_parameter_is_a_reserved_field():
 
     from crib import verbs
 
-    st = {"values": {"d": "gated", "o": "open", "c": "claimed", "x": "done",
-                     "p": "paused", "n": "dropped", "r": "retired"},
-          "initial": "o", "transitions": {"shelve": "p", "reject": "n", "accept": "o"}}
+    st = {
+        "values": {
+            "d": "gated",
+            "o": "open",
+            "c": "claimed",
+            "x": "done",
+            "p": "paused",
+            "n": "dropped",
+            "r": "retired",
+        },
+        "initial": "o",
+        "transitions": {"shelve": "p", "reject": "n", "accept": "o"},
+    }
     samples = [
         parse("n", {"plural": "ns", "aspects": ["enriched"], "fields": {"f": "int"}}),
         parse("a", {"plural": "as", "aspects": ["anchored"], "fields": {"f": "int"}}),
-        parse("g", {"plural": "gs", "aspects": ["links", "status", "progress", "ordered",
-                                                "supersede", "sources"],
-                    "report_taint": True, "status": st}),
+        parse(
+            "g",
+            {
+                "plural": "gs",
+                "aspects": [
+                    "links",
+                    "status",
+                    "progress",
+                    "ordered",
+                    "supersede",
+                    "sources",
+                ],
+                "report_taint": True,
+                "status": st,
+            },
+        ),
         *facets.BUILTINS,
     ]
     names: set[str] = set()
     for s in samples:
         for t in verbs.view(s).verbs:
             sig = inspect.signature(t.make(None, s))
-            names |= {p.name for p in sig.parameters.values() if p.kind is not p.VAR_KEYWORD}
+            names |= {
+                p.name for p in sig.parameters.values() if p.kind is not p.VAR_KEYWORD
+            }
     assert sorted(names - {"f"} - facets.RESERVED_FIELDS) == []
 
 
-@pytest.mark.parametrize("name", ["superseded_by", "checked", "trigger", "proposed", "why"])
+@pytest.mark.parametrize(
+    "name", ["superseded_by", "checked", "trigger", "proposed", "why"]
+)
 def test_a_field_cannot_take_a_frontmatter_key_or_parameter_crib_uses(name):
     with pytest.raises(FacetSpecError, match="reserved"):
         parse("routine", {"plural": "routines", "fields": {name: "str"}})
-
 
 
 def test_every_spec_key_is_documented():
@@ -619,5 +689,35 @@ def test_every_spec_key_is_documented():
 
     doc = (Path(__file__).resolve().parent.parent / "docs" / "facets.md").read_text()
     ref = doc.split("## Spec reference", 1)[1].split("\n## ", 1)[0]
-    missing = [k for k in sorted(facets._KEYS) if f"`{k}`" not in ref and f"<noun>.{k}" not in ref]
-    assert missing == [], f"document these in docs/facets.md's spec reference: {missing}"
+    missing = [
+        k
+        for k in sorted(facets._KEYS)
+        if f"`{k}`" not in ref and f"<noun>.{k}" not in ref
+    ]
+    assert missing == [], (
+        f"document these in docs/facets.md's spec reference: {missing}"
+    )
+
+
+
+@pytest.mark.parametrize(
+    ("title_from", "fm", "body", "rel", "want"),
+    [
+        (["title"], {"title": "T"}, "# H\n", "a.md", "T"),
+        (["title"], {}, "# H\n", "a.md", ""),
+        (["title", "heading"], {}, "intro\n\n## Morning Briefing ##\n", "a.md", "Morning Briefing"),
+        (["title", "heading", "filename"], {}, "no heading", "dir/morning-briefing.md", "morning-briefing"),
+        (["name", "filename"], {"name": "morning"}, "", "x.md", "morning"),
+    ],
+)
+def test_title_from_sources(title_from, fm, body, rel, want):
+    s = parse("routine", {"plural": "routines", "title_from": title_from})
+    assert facets.item_title(s, fm, body, rel) == want
+
+
+def test_title_from_round_trips_and_is_checked():
+    s = parse("routine", {"plural": "routines", "title_from": ["title", "filename"]})
+    assert load(facets.to_toml([s]))[0].title_from == ("title", "filename")
+    assert parse("routine", {"plural": "routines"}).title_from == ("title",)
+    with pytest.raises(FacetSpecError, match="title_from"):
+        parse("routine", {"plural": "routines", "title_from": []})

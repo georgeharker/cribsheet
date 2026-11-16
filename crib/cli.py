@@ -596,6 +596,13 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
         f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described"
         f"{fails}{docs}{made}"
     )
+    for noun, f in (d.get("facets") or {}).items():
+        how = ", ".join(w for w in ("read-only" if f.get("read_only") else "",
+                                   "ids derived" if f.get("ids") == "derived" else "") if w)
+        state = (f"{f['items']} item(s) indexed" if "items" in f
+                 else f"waiting {f.get('waiting', '')}")
+        print(f"  facet {noun}: {f.get('dir')} {f.get('glob')}"
+              f"{f' ({how})' if how else ''}: {state}")
     errs = d.get("errors") or []
     if errs:
         print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")
@@ -2302,12 +2309,14 @@ def _b_relpath(a: Any) -> dict[str, Any]:
 def _a_list(s: Any, proj: Any, f: Any) -> None:
     proj(s)
     s.add_argument("-k", type=int, default=50)
+    s.add_argument("--tag", action="append", dest="tags",
+                   help="only items with this tag (a file's `type` counts; repeatable: any)")
 
 
 _LIST_CLI = _FacetCli(
     lambda f: f"list {f.plural} by their fields (no search query)",
     _a_list,
-    lambda a: {"project": a.project, "k": a.k},
+    lambda a: {"project": a.project, "k": a.k, "tags": a.tags},
     _E, "list_items", False, 
 )
 

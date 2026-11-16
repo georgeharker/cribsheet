@@ -136,6 +136,9 @@ due = "date"        # ISO YYYY-MM-DD
   On `edit`, the fields you don't pass are left as they are. Values are written
   into the file's frontmatter, which stays the truth; a wrong type is refused
   before anything is written.
+- **Listing by tag.** `list` shows each item's tags (its own, plus its
+  `type`), and `tags=["periodic-task"]` (`--tag periodic-task`) keeps only
+  items carrying any of them.
 - **Hand-written values.** A field is read from each file's frontmatter (for
   a mapped directory too). A value that doesn't fit the field's type
   (`timeout: 30s` on an `int` field) is indexed as empty, so filters on that
@@ -386,6 +389,7 @@ then falls back to the built-ins, and `crib facets show` says why).
 | `plural` | identifier | (required) | its tool set's name (`--tools <plural>:ro`), and how it reads in prose. |
 | `store` | directory name | the plural | the directory its items live in, in each project (or at its mapping). Not one crib keeps for itself (`symbol_index`, `sources`, ...). |
 | `aspects` | list | `["core"]` | what it can do ([aspects](#aspects-what-a-facet-can-do)); `core` is implied. `links` and `status` come together (a graph facet); `progress`, `ordered`, `sources` and `supersede` need them; `anchored` and `enriched` don't mix with them. |
+| `title_from` | list of sources | `["title"]` | where an item's title comes from, tried in order: `"title"` (its frontmatter title), `"heading"` (its first `# heading`), `"filename"` (its file's name), or any other frontmatter key (toucan's `"name"`). An item none of them names has no title, and `crib project doctor` lists it. |
 | `about` | string | none | what one of these items is, and when to use this family rather than notes; added to every one of its tool descriptions and to the session section ([how agents learn](#how-agents-learn-about-your-facets)). |
 | `disable` | list of verbs | none | verbs it doesn't want; each must be one its aspects give it (a graph facet's include its transitions), and not all of them. |
 | `[<noun>.fields]` | `name = "int" \| "str" \| "date"` | none | its own typed fields ([fields](#typed-fields-and-queries)); not on a graph facet yet. |

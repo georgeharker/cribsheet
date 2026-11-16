@@ -11,6 +11,7 @@ Checks:
 - learnings whose symbol moved or is gone;
 - one id in several files;
 - a declared facet's field value that doesn't fit its type (`timeout: 30s`);
+- a declared facet's item with no title (none of its `title_from` sources);
 - near-duplicate notes / decisions / plans (stored vectors, all pairs);
 - symbols waiting for a description (outside generation mode "on").
 """
@@ -139,6 +140,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     findings += _near_duplicates(crib, proj)
     findings += _unstamped(crib, proj)
     findings += _mistyped_fields(crib, proj)
+    findings += _untitled(crib, proj)
 
     gen = crib._generation_state([{"project": proj, "symbols": 1}])
     pending = (gen.get("pending_descriptions") or {}).get(proj)
@@ -195,6 +197,27 @@ def _mistyped_fields(crib: Crib, proj: str) -> list[dict[str, Any]]:
                 continue
             out += [{"item": rel, **f} for f in _misfits(spec, fm)]
     return out
+
+
+def _untitled(crib: Crib, proj: str) -> list[dict[str, Any]]:
+    """A declared facet's items that came out with no title: none of its
+    `title_from` sources (default: the frontmatter `title`) yielded one. The
+    facet insists on titles; name each, and the two ways out."""
+    out = []
+    for spec in facets.FACETS:
+        if spec.builtin or spec.noun in crib.pending_facets:
+            continue
+        for it in crib.store.items({"project": proj, "kind": spec.noun}, vectors=False).values():
+            if not (it.title or "").strip():
+                out.append({
+                    "check": "no title",
+                    "item": it.relpath,
+                    "kind": spec.noun,
+                    "fix": f"give it a `title:` (or a `# heading`), or let the facet "
+                    f"name its items another way: `title_from = [\"title\", "
+                    f"\"heading\", \"filename\"]` in its [{spec.noun}] spec",
+                })
+    return sorted(out, key=lambda f: f["item"])
 
 
 def _misfits(spec: Any, fm: dict[str, Any]) -> list[dict[str, Any]]:

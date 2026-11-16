@@ -920,16 +920,29 @@ class Crib:
         spec: facets.FacetSpec,
         fields: dict[str, Any] | None,
         where: list[dict[str, Any]] | None,
+        tags: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """A facet's items in `proj` whose own fields match the filters (crib.fields),
-        by relpath: relpath, title, and the declared fields (plus the symbol, for
-        an anchored facet)."""
+        by relpath: relpath, title, tags (its own, plus its `type`), and the
+        declared fields (plus the symbol, for an anchored facet). `tags`: only
+        items carrying any of them."""
         conds = conditions(spec, fields, where)
+        # tags live on the chunks (`labels`: the note's tags plus its type)
+        labels: dict[str, list[str]] = {}
+        for m in self.store.get_meta({"project": proj, "kind": spec.noun}).values():
+            rel = str(m.get("relpath") or "")
+            for t in m.get("labels") or []:
+                if t not in labels.setdefault(rel, []):
+                    labels[rel].append(t)
+        want = set(tags or [])
         out = []
         for it in self.store.items({"project": proj, "kind": spec.noun}).values():
             if not matches(conds, it.facet):
                 continue
-            row: dict[str, Any] = {"relpath": it.relpath, "title": it.title}
+            have = labels.get(it.relpath, [])
+            if want and not want & set(have):
+                continue
+            row: dict[str, Any] = {"relpath": it.relpath, "title": it.title, "tags": have}
             if spec.has("anchored"):
                 row["symbol"] = it.facet.get("symbol_ref")
             row.update({k: it.facet.get(k) for k in spec.params})
@@ -945,12 +958,14 @@ class Crib:
         fields: dict[str, Any] | None = None,
         where: list[dict[str, Any]] | None = None,
         k: int = 50,
+        tags: list[str] | None = None,
     ) -> dict[str, Any]:
         """A declared facet's items filtered by its own fields, no query: `fields`
-        are equality filters, `where` the operator conditions (crib.fields)."""
+        are equality filters, `where` the operator conditions (crib.fields),
+        `tags` any of the items' tags (a file's `type` counts as one)."""
         proj = self.resolve_project(project, cwd)
         self._require_conformed(facet)
-        rows = self._field_items(proj, facets.by_noun(facet), fields, where)
+        rows = self._field_items(proj, facets.by_noun(facet), fields, where, tags)
         return {"project": proj, "total": len(rows), "items": rows[:k]}
 
     def abspath(self, project: str, relpath: str, facet: str = facets.HOME) -> Path:
@@ -1290,7 +1305,8 @@ class Crib:
         facet: str = facets.HOME,
     ) -> str:
         proj = self.resolve_project(project, cwd)
-        return str(self.abspath(proj, relpath, facet))
+        store = self._facet_store(facet)
+        return str(store.abspath(proj, store.resolve(proj, relpath)))
 
     async def reindex(
         self,
@@ -2497,6 +2513,7 @@ class Crib:
             "created": new_project,
             "docs_indexed": docs.get("docs", 0),
             **({"facets_mapped": mapped} if mapped else {}),
+            **({"facets": fs} if (fs := self._mapping_summary(proj)) else {}),
             **code,
         }
 
@@ -2639,8 +2656,32 @@ class Crib:
             "crib_created": created,
             "created": new_project,
             "docs_indexed": docs.get("docs", 0),
+            **({"facets": fs} if (fs := self._mapping_summary(proj)) else {}),
             **code,
         }
+
+    def _mapping_summary(self, proj: str) -> dict[str, Any]:
+        """Each facet mapped in `proj` (its `.crib` `facets:`, as recorded):
+        where, how, and how many of its items are indexed (or why none are)."""
+        out: dict[str, Any] = {}
+        for store, loc in self.project_paths(proj).mappings.items():
+            spec = facets.by_store(store)
+            if spec is None or loc.prefix is not None:
+                continue
+            row: dict[str, Any] = {"dir": loc.token, "glob": loc.glob,
+                                   "read_only": loc.read_only, "ids": loc.ids}
+            pillar = self.pillars.get(store)
+            if spec.noun in self.pending_facets:
+                row["waiting"] = "for `crib facets sync --apply`"
+            elif pillar is not None and (why := pillar.pending_move(proj)):
+                row["waiting"] = why
+            elif not loc.available:
+                row["waiting"] = "its dir isn't on this machine"
+            else:
+                row["items"] = len(self.store.items(
+                    {"project": proj, "kind": spec.noun}, vectors=False))
+            out[spec.noun] = row
+        return out
 
     async def project_wait(
         self,

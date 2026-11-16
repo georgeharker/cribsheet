@@ -249,7 +249,7 @@ HOME = "note"
 _KEYS = frozenset(
     {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
      "status", "edges", "label", "requires_body", "extract", "report_taint",
-     "export_with_deps", "about", "when"}
+     "export_with_deps", "about", "when", "title_from"}
 )
 
 
@@ -306,6 +306,10 @@ class FacetSpec:
     # this family (rather than notes). `when` adds wording to one verb's tool.
     about: str = ""
     when: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    # Where an item's title comes from, tried in order (item_title): its
+    # frontmatter `title`, its first `heading`, its `filename`, or a named
+    # frontmatter key (toucan's `name`). None found: no title (doctor says so).
+    title_from: tuple[str, ...] = ("title",)
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -417,6 +421,14 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     if not set(available) - set(disable):
         raise FacetSpecError(f"facet {noun!r}: disables every one of its verbs")
     about, when = _wording(noun, raw, [v for v in available if v not in disable])
+    title_from = raw.get("title_from", ["title"])
+    if isinstance(title_from, str):
+        title_from = [title_from]
+    if not isinstance(title_from, list) or not title_from or not all(
+            isinstance(t, str) and t.strip() for t in title_from):
+        raise FacetSpecError(
+            f"facet {noun!r}: title_from is a list of sources: \"title\", \"heading\", "
+            "\"filename\" or a frontmatter key")
     return FacetSpec(
         noun=noun,
         plural=plural,
@@ -429,9 +441,30 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         disabled=frozenset(str(v) for v in disable),
         about=about,
         when=MappingProxyType(when),
+        title_from=tuple(t.strip() for t in title_from),
         **graph,
         builtin=builtin,
     )
+
+
+def item_title(spec: "FacetSpec | None", fm: Mapping[str, Any], body: str,
+               relpath: str) -> str:
+    """An item's title, by its facet's `title_from` (default: the frontmatter
+    `title` alone): the first source that yields one."""
+    import re
+
+    for src in (spec.title_from if spec is not None else ("title",)):
+        if src == "heading":
+            m = re.search(r"^#{1,6}[ \t]+(.+?)[ \t#]*$", body or "", re.M)
+            value: Any = m.group(1) if m else None
+        elif src == "filename":
+            name = relpath.rsplit("/", 1)[-1]
+            value = name[: -len(".md")] if name.endswith(".md") else name
+        else:  # "title", or any other frontmatter key
+            value = fm.get(src)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
 
 
 def _wording(noun: str, raw: Mapping[str, Any],
@@ -692,6 +725,8 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"label = {q(s.label)}")
         if s.about:
             out.append(f"about = {q(s.about)}")
+        if s.title_from != ("title",):
+            out.append(f"title_from = {arr(s.title_from)}")
         if s.requires_body:
             out.append("requires_body = true")
         if s.extract:

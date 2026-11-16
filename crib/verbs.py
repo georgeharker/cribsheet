@@ -744,12 +744,13 @@ def _m_list(crib: Crib, f: FacetSpec):
     async def body(
         project: str | None = None,
         k: int = 50,
+        tags: list[str] | None = None,
         project_path: str | None = None,
         **fields: Any,
     ) -> dict[str, Any]:
         where = fields.pop("where", None)
         return crib.list_items(
-            project, facet=f.noun, fields=fields or None, where=where, k=k
+            project, facet=f.noun, fields=fields or None, where=where, k=k, tags=tags
         )
 
     return body

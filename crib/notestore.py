@@ -331,7 +331,46 @@ class NoteStore:
                                            store=self.spec.name, **policy)
 
     def read(self, project: str, relpath: str) -> str:
-        return self.abspath(project, relpath).read_text()
+        path = self.abspath(project, self.resolve(project, relpath))
+        if not path.is_file():
+            from .errors import NoSuchItem
+
+            raise NoSuchItem(self._missing(project, relpath))
+        return path.read_text()
+
+    def resolve(self, project: str, relpath: str) -> str:
+        """`relpath`, or, when no such file exists but one does with this
+        location's suffix (`morning-briefing` -> `morning-briefing.md`), that
+        one: a ref named the way its tool names it still reads."""
+        if self.abspath(project, relpath).exists():
+            return relpath
+        for ext in dict.fromkeys((self.suffix(project), ".md")):
+            if not relpath.endswith(ext) and self.abspath(project, relpath + ext).is_file():
+                return relpath + ext
+        return relpath
+
+    def _missing(self, project: str, relpath: str) -> str:
+        """No such item: say so, with the nearest names this facet has."""
+        import difflib
+
+        from .filesync import scan
+
+        noun = self.spec.facet or "note"
+        loc = self.location(project)
+        rels: list[str] = []
+        try:
+            root = loc.root if loc is not None and loc.prefix is None else self.root(project)
+            if root.is_dir():
+                rels = [r for r in scan(root, ".md", recursive=True)
+                        if loc is None or loc.prefix is not None or loc.owns(r)]
+        except CribUserError:
+            pass
+        stem = relpath.rsplit("/", 1)[-1].split(".", 1)[0]
+        near = [r for r in rels if r.rsplit("/", 1)[-1].split(".", 1)[0] == stem]
+        near += [r for r in difflib.get_close_matches(relpath, rels, n=3, cutoff=0.6)
+                 if r not in near]
+        hint = f" (did you mean {', '.join(near[:3])}?)" if near else ""
+        return f"no {noun} {relpath!r} in project {project!r}{hint}"
 
     async def delete(self, project: str, relpath: str) -> dict[str, Any]:
         """Delete a note: stash current content to the version ring (keyed by id, so

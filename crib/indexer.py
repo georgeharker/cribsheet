@@ -19,6 +19,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
+from . import facets as _facets
 from . import filesync, notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note, kind_of
 from .embed import Embedder, embed_batch
@@ -280,7 +281,7 @@ class IndexEngine:
             note_id = str(fm.get("id") or "")
             if not note_id:
                 continue
-            title = str(fm.get("title") or "")
+            title = _facets.item_title(_facets.by_store(store), fm, body, relpath)
             want = self._want_item(project, store, relpath, note_id, title, body, fm)
             item, needs = self._against(want, have.get(note_id))
             if item is None:
@@ -368,14 +369,17 @@ class IndexEngine:
         # content gate misses. Refresh metadata cheaply — no re-embed. Compare
         # ignoring file_mtime, which changes every reindex on its own.
         meta_updates: dict[str, dict] = {}
+        # the title by the facet's title_from (crib's own: the frontmatter's)
+        title = _facets.item_title(_facets.by_store(store), note.frontmatter, note.body,
+                                   relpath)
         for cid, c in new_by_id.items():
             if existing_hash.get(cid) == c.content_hash:   # content unchanged
-                new_meta = c.metadata(note.title, note.tags, source, mtime, note_type)
+                new_meta = c.metadata(title, note.tags, source, mtime, note_type)
                 if _meta_stable(existing.get(cid, {})) != _meta_stable(new_meta):
                     meta_updates[cid] = new_meta
 
         item, item_embed = self._item_for(
-            project, store, relpath, note_id, note.title or "", note.body,
+            project, store, relpath, note_id, title, note.body,
             note.frontmatter)
         if not to_embed and not stale_ids and not meta_updates:
             return _Plan(note_id=note_id, item=item, item_embed=item_embed,
@@ -384,7 +388,7 @@ class IndexEngine:
 
         return _Plan(
             note_id=note_id,
-            to_embed=[(c, c.metadata(note.title, note.tags, source, mtime, note_type))
+            to_embed=[(c, c.metadata(title, note.tags, source, mtime, note_type))
                       for c in to_embed],
             stale_ids=stale_ids, meta_updates=meta_updates,
             item=item, item_embed=item_embed, wrote=wrote)

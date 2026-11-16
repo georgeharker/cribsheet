@@ -26,3 +26,10 @@ from __future__ import annotations
 
 class CribUserError(ValueError):
     """The caller can fix this by asking differently. The message says how."""
+
+
+class NoSuchItem(CribUserError, FileNotFoundError):
+    """A read of an item that doesn't exist: a user error (a clean message, with
+    the nearest names) that is still the FileNotFoundError callers have always
+    caught for a missing file."""
+

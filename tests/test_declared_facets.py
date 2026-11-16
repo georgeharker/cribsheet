@@ -1805,6 +1805,63 @@ def test_derived_ids_ignore_a_files_own_id(tmp_path):
     assert (repo / "workflows" / "morning.md").read_text() == body_a  # untouched
 
 
+def test_toucans_routines_get_titles_tags_reads_and_a_summary(tmp_path):
+    """The routine rough edges: a title from the heading or filename (none in
+    the frontmatter), list rows with tags and a tags filter (type counts),
+    an extensionless read, a clean miss, and the index summary."""
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+        {
+            "workflows/morning-briefing.md": (
+                "---\nname: morning-briefing\ntype: periodic-task\ntags: [daily]\n"
+                "schedule: 0 16 * * 1-5\n---\n# Morning Briefing\n\nbrief me\n"),
+            "workflows/research.md": "---\nname: research\ntype: workflow\n---\nlook it up\n",
+        },
+    )
+    spec = ROUTINE.replace('plural = "routines"', 'plural = "routines"\n'
+                           'title_from = ["title", "heading", "filename"]')
+    out = _run(
+        tmp_path,
+        spec + '[routine.fields]\nname = "str"\nschedule = "str"\n',
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        rows = crib.list_items("p", facet="routine")["items"]
+        out["titles"] = {r["relpath"]: r["title"] for r in rows}
+        out["tags"] = {r["relpath"]: r["tags"] for r in rows}
+        out["periodic"] = [r["relpath"] for r in crib.list_items(
+            "p", facet="routine", tags=["periodic-task"])["items"]]
+        out["read"] = crib.read_note("morning-briefing", "p", facet="routine")[:3]
+        out["miss"] = refused(lambda: crib.read_note("morning-brief", "p", facet="routine"))
+        out["summary"] = crib._mapping_summary("p")
+    """,
+    )
+    assert out["titles"] == {"morning-briefing.md": "Morning Briefing", "research.md": "research"}
+    assert out["tags"]["morning-briefing.md"] == ["daily", "periodic-task"]
+    assert out["periodic"] == ["morning-briefing.md"]
+    assert out["read"] == "---"
+    assert "no routine 'morning-brief'" in out["miss"] and "morning-briefing.md" in out["miss"]
+    s = out["summary"]["routine"]
+    assert (s["items"], s["read_only"], s["ids"], s["glob"]) == (2, True, "derived", "*.md")
+
+
+def test_doctor_lists_untitled_items_when_the_facet_insists(tmp_path):
+    repo = _repo(tmp_path, "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+                 {"workflows/a.md": "---\nname: a\n---\nno heading here\n"})
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        from crib.doctor import diagnose
+        out["found"] = [(f["item"], f["fix"]) for f in diagnose(crib, "p")["findings"]
+                        if f["check"] == "no title"]
+    """,
+    )
+    assert [i for i, _ in out["found"]] == ["a.md"]
+    assert "title_from" in out["found"][0][1]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
