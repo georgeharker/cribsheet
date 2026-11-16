@@ -1749,6 +1749,33 @@ def test_learnings_are_named_for_their_mappings_suffix(tmp_path):
     assert out["name"].endswith(".lrn.md")
 
 
+def test_doctor_names_a_field_value_that_doesnt_fit_its_type(tmp_path):
+    """`timeout: 30s` on an int field indexes as empty, so the item drops out
+    of filters on it: doctor names the file, the field and the fix."""
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+        {
+            "workflows/morning.md": "---\nname: morning\ntimeout: 30s\n---\nbrief me\n",
+            "workflows/nightly.md": "---\nname: nightly\ntimeout: 600\nwhen: 2026-11-16\n---\nback up\n",
+        },
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE + '[routine.fields]\ntimeout = "int"\nwhen = "date"\n',
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        from crib.doctor import diagnose
+        out["found"] = [(f["item"], f["field"], f["value"]) for f in diagnose(crib, "p")["findings"]
+                        if f["check"] == "field value doesn't fit its type"]
+        out["fix"] = [f["fix"] for f in diagnose(crib, "p")["findings"]
+                      if f["check"] == "field value doesn't fit its type"]
+    """,
+    )
+    assert out["found"] == [["morning.md", "timeout", "30s"]]
+    assert "takes an int" in out["fix"][0]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

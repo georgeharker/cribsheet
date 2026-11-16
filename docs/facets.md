@@ -136,6 +136,11 @@ due = "date"        # ISO YYYY-MM-DD
   On `edit`, the fields you don't pass are left as they are. Values are written
   into the file's frontmatter, which stays the truth; a wrong type is refused
   before anything is written.
+- **Hand-written values.** A field is read from each file's frontmatter (for
+  a mapped directory too). A value that doesn't fit the field's type
+  (`timeout: 30s` on an `int` field) is indexed as empty, so filters on that
+  field miss the item; `crib project doctor` names the file, the field and
+  the fix.
 - **Equality.** On `lookup` and `list`, a field parameter is an equality
   filter (`ticket_list(changeset_id="abc123")`). On `lookup` the search runs
   over the matching items only.

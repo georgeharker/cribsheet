@@ -10,6 +10,7 @@ Checks:
 - citations whose source section is gone or has changed since recorded;
 - learnings whose symbol moved or is gone;
 - one id in several files;
+- a declared facet's field value that doesn't fit its type (`timeout: 30s`);
 - near-duplicate notes / decisions / plans (stored vectors, all pairs);
 - symbols waiting for a description (outside generation mode "on").
 """
@@ -137,6 +138,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     findings += _duplicate_ids(crib, proj)
     findings += _near_duplicates(crib, proj)
     findings += _unstamped(crib, proj)
+    findings += _mistyped_fields(crib, proj)
 
     gen = crib._generation_state([{"project": proj, "symbols": 1}])
     pending = (gen.get("pending_descriptions") or {}).get(proj)
@@ -159,6 +161,66 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
         "counts": counts,
         "findings": findings,
     }
+
+
+def _mistyped_fields(crib: Crib, proj: str) -> list[dict[str, Any]]:
+    """A declared facet's field whose value in a file doesn't fit its type
+    (`timeout: 30s` on an int field): the index keeps it as empty, so the item
+    quietly drops out of every filter on that field. Read from the files (the
+    truth), mapped or not; hand-edited ones are where this happens."""
+    from . import notes
+    from .errors import CribUserError
+    from .filesync import scan
+
+    out = []
+    for spec in facets.FACETS:
+        if spec.builtin or not spec.params or spec.noun in crib.pending_facets:
+            continue
+        store = crib.pillars.get(spec.store)
+        if store is None:
+            continue
+        loc = store.location(proj)
+        try:
+            root = loc.root if loc is not None else store.root(proj)
+        except CribUserError:  # pending a move, or not on this machine
+            continue
+        if not root.is_dir():
+            continue
+        for rel in sorted(scan(root, ".md", recursive=True)):
+            if loc is not None and not loc.owns(rel):
+                continue
+            try:
+                fm, _body = notes.parse((root / rel).read_text())
+            except (OSError, UnicodeDecodeError, notes.NoteParseError):
+                continue
+            out += [{"item": rel, **f} for f in _misfits(spec, fm)]
+    return out
+
+
+def _misfits(spec: Any, fm: dict[str, Any]) -> list[dict[str, Any]]:
+    """The findings for one file's frontmatter: each field value that doesn't
+    fit its declared type (fields.coerce refuses it)."""
+    from . import fields as _fields
+    from .errors import CribUserError
+
+    out = []
+    for name, kind in spec.params.items():
+        value = fm.get(name)
+        if value is None:
+            continue
+        try:
+            _fields.coerce(spec, name, value)
+        except CribUserError:
+            takes = "an ISO date (YYYY-MM-DD)" if kind == "date" else f"an {kind}"
+            out.append({
+                "check": "field value doesn't fit its type",
+                "kind": spec.noun,
+                "field": name,
+                "value": str(value),
+                "fix": f"`{name}` takes {takes}: correct it in the file (until then "
+                f"the item has no value for it, so filters on `{name}` miss it)",
+            })
+    return out
 
 
 def _unstamped(crib: Crib, proj: str) -> list[dict[str, Any]]:
