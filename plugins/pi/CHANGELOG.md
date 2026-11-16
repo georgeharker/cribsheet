@@ -9,6 +9,11 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.25.0-dev1] - 2026-11-15
+
+The facet registry and everything since 0.23.1, as a new minor line: the
+0.24.0 dev releases below describe each change. Requires Python 3.14.
+
 ## [0.24.0-dev4] - 2026-11-15
 
 ### Fixed
