@@ -3137,9 +3137,10 @@ def _facet_rows() -> dict[str, Verb]:
             if spec.has("links"):
                 g = _graph_cli(spec, t.verb)
                 word = _cli_word(spec, t.verb)
+                method, inproc_kw = verbs.inproc_method(spec, t.verb)
                 rows[f"{spec.noun} {word}"] = Verb(
                     t.verb, g.build(spec), g.emit(spec),
-                    method=f"{spec.noun}_{spec.verb_names.get(t.verb, t.verb)}",
+                    method=method, inproc=inproc_kw,
                     is_async=g.is_async, policy=t.policy, mcp=v.mcp(t.verb),
                 )
                 continue
@@ -3907,6 +3908,8 @@ def _run_inprocess(args: Any, cfg: Any) -> None:
                 daemon=True,
             )
             watcher.start()
+        if (facet := dict(entry.inproc).get("facet")) is not None:
+            crib._require_conformed(facet)  # as the daemon's tool would refuse
         method = getattr(crib, entry.crib_method())
         call.update(entry.inproc)
         if entry.fields:

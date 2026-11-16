@@ -877,10 +877,30 @@ def graph_op(f: FacetSpec, verb: str) -> str:
     return op
 
 
+def inproc_method(f: FacetSpec, verb: str) -> tuple[str, tuple[tuple[str, Any], ...]]:
+    """The Crib method a graph verb runs on IN-PROCESS (the CLI's `--no-daemon`
+    path), and the keyword arguments it adds: the same engine operation the
+    MCP tool's body calls (GRAPH_OPS), never a `<noun>_<verb>` name Crib
+    doesn't have. crib's own facets keep their named methods (design_read ...)."""
+    if f.builtin:
+        return f"{f.noun}_{f.verb_names.get(verb, verb)}", ()
+    own = (("facet", f.noun),)
+    if verb in f.transitions:
+        to = f.transitions[verb]
+        role = f.role(to)
+        if role == "paused":
+            return GRAPH_OPS["park"], (*own, ("to", to))  # type: ignore[return-value]
+        if role == "dropped":
+            return GRAPH_OPS["decline"], (*own, ("to", to))  # type: ignore[return-value]
+        return "graph_transition", (*own, ("verb", verb))
+    return graph_op(f, "import" if verb == "extract" else verb), own
+
+
 def _call(crib: Crib, f: FacetSpec, verb: str):
     """The engine operation for `verb` on facet `f`, bound to that facet."""
     import functools
 
+    crib._require_conformed(f.noun)  # a pending facet refuses, never reads as empty
     return functools.partial(getattr(crib, graph_op(f, verb)), facet=f.noun)
 
 
@@ -1193,6 +1213,7 @@ def _t_move(verb: str):
         async def body(
             ref: str, project: str | None = None, project_path: str | None = None
         ) -> dict[str, Any]:
+            crib._require_conformed(f.noun)
             return await crib.graph_transition(ref, verb, project, facet=f.noun)
 
         return body

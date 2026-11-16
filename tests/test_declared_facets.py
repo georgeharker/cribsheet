@@ -1922,6 +1922,50 @@ def test_add_refuses_a_missing_required_field_and_doctor_names_files(tmp_path):
     assert out["edit"] is None
 
 
+def test_a_declared_graph_facets_cli_runs_in_process(tmp_path):
+    """Every CLI row of a declared graph facet names a real Crib method whose
+    signature takes what the row passes (design review P1: `crib --no-daemon
+    incident list` raised AttributeError on `incident_list`), and the verbs run
+    end to end without the daemon."""
+    out = _run(
+        tmp_path,
+        INCIDENT + RFC,
+        _CONFORM_PRELUDE + """
+        import inspect
+        from crib import cli as climod
+        rows = {k: v for k, v in climod._facet_rows().items()
+                if k.split()[0] in ("incident", "rfc")}
+        bad = []
+        for key, row in rows.items():
+            m = getattr(Crib, row.crib_method(), None)
+            if m is None:
+                bad.append((key, row.crib_method(), "missing"))
+                continue
+            names = set(inspect.signature(m).parameters)
+            want = {n for n, _ in row.inproc} | {"cwd"}
+            if not want <= names:
+                bad.append((key, row.crib_method(), sorted(want - names)))
+        out["bad"] = bad
+        out["n"] = len(rows)
+        out["pending"] = cli("--no-daemon", "incident", "list", "-p", "p")
+        cli("facets", "sync", "--apply")
+        out["add"] = cli("--no-daemon", "incident", "add", "Failover", "the primary failed",
+                         "-p", "p")
+        out["list"] = cli("--no-daemon", "incident", "list", "-p", "p")
+        out["next"] = cli("--no-daemon", "incident", "next", "-p", "p")
+        out["shelve"] = cli("--no-daemon", "incident", "shelve", "failover.md", "--why",
+                            "later", "-p", "p")
+        out["rfc"] = cli("--no-daemon", "rfc", "add", "Async API", "go async", "-p", "p")
+        out["accept"] = cli("--no-daemon", "rfc", "accept", "async-api.md", "-p", "p")
+    """,
+    )
+    assert out["n"] > 20 and out["bad"] == []
+    assert out["pending"][0] != 0  # refused while pending, not an empty list
+    for k in ("add", "list", "next", "shelve", "rfc", "accept"):
+        assert out[k][0] == 0, (k, out[k])
+    assert "Failover" in out["list"][1]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
