@@ -9,6 +9,32 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.24.0-dev3] - 2026-11-15
+
+### Added
+
+- **`title_from`** in a facet spec: where an item's title comes from, tried
+  in order: its frontmatter `title`, its first `heading`, its `filename`, or
+  any frontmatter key. Default: the title alone (unchanged). An item with no
+  title is listed by `crib project doctor`.
+- **Listing by tag:** a declared facet's `list` shows each item's tags (its
+  own plus its `type`) and takes `tags=` / `--tag`.
+- `crib project setup` and `index` report each facet mapping: where, how,
+  and how many items it has indexed.
+- `crib project doctor` names a declared field value that doesn't fit its
+  type (`timeout: 30s` on an int field).
+- `docs/facets.md`: a complete spec reference, and the frontmatter keys crib
+  reads in a mapped file.
+
+### Fixed
+
+- `read` and `locate` find an item named without its suffix
+  (`morning-briefing` for `morning-briefing.md`); a missing item is a clean
+  error with suggestions instead of a raw "No such file".
+- Under `ids: derived` (and for `docs:`), the id is always the path's: a
+  file's own `id:` key (another tool's) no longer decides crib's identity,
+  where two files sharing one used to merge.
+
 ## [0.24.0-dev2] - 2026-11-15
 
 ### Fixed
