@@ -9,6 +9,15 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.24.0-dev4] - 2026-11-15
+
+### Fixed
+
+- `crib project index` reports each facet mapping and its indexed item count
+  on every answer: while its code sweep was still running daemon-side, it
+  printed `indexed 0/0 files` and nothing about the facets. A running sweep
+  now prints as "indexing in progress: done/total".
+
 ## [0.24.0-dev3] - 2026-11-15
 
 ### Added
