@@ -118,3 +118,21 @@ def test_watcher_dispatch_reindexes_doc(crib, tmp_path):
     changes = {"\x00doc\x00README.md": (str(repo), False)}
     run(crib._on_code_change("proj", changes))
     assert "pistons" in crib.read_note("sources/myrepo/README.md", project="proj")
+
+
+
+def test_a_docs_own_id_is_not_its_identity(crib, tmp_path):
+    """A repo doc's frontmatter `id:` belongs to whatever else reads it: two
+    docs sharing one stay two items, each under its path's id."""
+    from crib.util import derived_ulid
+
+    repo = _repo(tmp_path, project="proj")
+    for name in ("a.md", "b.md"):
+        (repo / "docs" / name).write_text(f"---\nid: shared\n---\n# {name}\n\nabout {name}\n")
+    run(crib.index_docs_insitu(cwd=repo))
+    meta = crib.store.get_meta({"project": "proj"}).values()
+    docs = {m["relpath"]: m.get("item_id") for m in meta
+            if str(m.get("relpath", "")).startswith("sources/myrepo/docs/")}
+    assert {"sources/myrepo/docs/a.md", "sources/myrepo/docs/b.md"} <= set(docs)
+    for rel, nid in docs.items():
+        assert nid == derived_ulid(rel)

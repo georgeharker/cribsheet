@@ -245,6 +245,18 @@ facets:
   for hand-authored files shared with another tool, `ids: derived` and
   `read_only: true` keep crib from writing them at all.
 
+### Frontmatter crib reads in a mapped file
+
+A mapped file is often read by another tool too. crib gives meaning only to
+these keys, and leaves every other key alone (toucan's `name`, say); a tool
+sharing the files should not use them for something else:
+
+| facet | keys crib reads |
+|---|---|
+| any | `title`, `tags`, `type` (only as an extra tag: `tags=["periodic-task"]` finds it), the facet's declared fields, and `id` only under `ids: stamp` (under `ids: derived` the id is always the path's, whatever the file says) |
+| graph facets | also `status`, `deps`, `dep_kinds`, `checked`, `sources`, `superseded_by`, `trigger`, `reviewed`, `rank`, `created`, `updated` |
+| anchored facets | also `symbol_ref`, `symbol_was`, `file`, `signature`, `lang` |
+
 `docs:` is the notes facet mapped read-only, with derived ids, under
 `sources/<repo>/`; `facets: {note: {dir: docs, glob: "**/*.md"}}` means the
 same.

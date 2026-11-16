@@ -327,7 +327,8 @@ class IndexEngine:
             rewrote = notes.heal_file(path)  # self-heal merge-duplicated frontmatter (§14)
         note = notes.load(path)
         if doc:
-            note_id = note.id or _derive_id(relpath)
+            # a repo's doc: its id is its (keyed) path's, never its own `id:`
+            note_id = _derive_id(relpath)
         elif ids == "derived":
             # the id IS the path's: a file's own `id:` belongs to whatever
             # else reads it (another tool's ids can repeat, or mean otherwise)
