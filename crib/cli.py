@@ -2456,11 +2456,22 @@ _FACET_CLI: dict[str, _FacetCli] = {
 
 # The CLI's order of a facet's subcommands (`crib note -h`), as the notes
 # parsers were registered.
-_FACET_CLI_ORDER = (
-    "lookup", "apropos", "read", "locate", "add", "append", "edit", "forget",
-    "move", "reindex", "versions", "restore", "import", "distill", "elaborate",
-    "summarize", "list",
-)
+def _cli_order(family: str, after: tuple[tuple[str, str], ...] = ()) -> tuple[str, ...]:
+    """A verb family's subcommand order in `--help`: the catalogue's order
+    (facets.VERB_CATALOGUE, the same one the MCP tools register in), with
+    `after` placing a verb right after another, in turn: the few places the
+    CLI's help has always grouped differently. Derived, not hand-kept, so a
+    new catalogue verb gets its command without touching this module."""
+    from .facets import VERB_CATALOGUE
+
+    order = [d.verb for d in VERB_CATALOGUE[family]]
+    for verb, anchor in after:
+        order.remove(verb)
+        order.insert(order.index(anchor) + 1, verb)
+    return tuple(order)
+
+
+_FACET_CLI_ORDER = _cli_order("note", (("move", "forget"), ("import", "restore")))
 
 
 def _a_symbol(s: Any, proj: Any, f: Any) -> None:
@@ -2582,10 +2593,7 @@ _ANCHORED_CLI: dict[str, _FacetCli] = {
 }
 
 # The CLI's order of an anchored facet's subcommands, as learnings' were.
-_ANCHORED_CLI_ORDER = (
-    "add", "edit", "forget", "read", "reaffirm", "migrate", "report", "rehome",
-    "list",
-)
+_ANCHORED_CLI_ORDER = _cli_order("anchored")
 
 
 # ── graph facets' CLI (decisions, plans): the CLI half of crib.verbs'
@@ -2985,11 +2993,8 @@ def _transition_cli(spec: Any, verb: str) -> _GraphCli:
 
 
 # A graph facet's subcommand order (`crib design -h`); transitions follow.
-_GRAPH_CLI_ORDER = (
-    "add", "read", "edit", "append", "lookup", "list", "export", "dep_add",
-    "dep_remove", "forget", "check", "reaffirm", "tree", "graph", "supersede",
-    "extract", "status", "move", "next", "review", "review_apply",
-)
+_GRAPH_CLI_ORDER = _cli_order(
+    "graph", (("extract", "supersede"), ("review", "next"), ("review_apply", "review")))
 
 
 def _graph_cli(spec: Any, verb: str) -> _GraphCli:
