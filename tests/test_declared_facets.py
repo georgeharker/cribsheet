@@ -1995,6 +1995,38 @@ def test_a_declared_graph_facet_gets_similar_with_its_own_roles_and_tools(tmp_pa
     assert "incident_read" in hit[0][2]
 
 
+def test_graph_verbs_are_one_operation_each_and_the_builtin_names_alias_them(tmp_path):
+    """Tidy D: GRAPH_OPS names only graph_* operations, crib's own design_*/
+    plan_* names reach the same code, and a progress facet that reports taint
+    lists by keyword (its `tainted` flag used to land in `all`)."""
+    out = _run(
+        tmp_path,
+        TASK.replace('plural = "tasks"', 'plural = "tasks"\nreport_taint = true'),
+        """
+        import asyncio
+        from fastmcp import Client
+        from crib import verbs
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+        out["ops"] = sorted(set(verbs.GRAPH_OPS.values()))
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        out["alias"] = crib.design_dep_add.func.__name__, crib.plan_status.func.__name__
+        async def main():
+            async with Client(build_server(crib)) as c:
+                await c.call_tool("task_add", {"title": "One", "content": "x", "project": "p"})
+                r = (await c.call_tool("task_list", {"tainted": True, "project": "p"})).data
+                out["listed"] = [i["title"] for i in r["items"]]
+        asyncio.run(main())
+    """,
+    )
+    assert all(op.startswith("graph_") for op in out["ops"])
+    assert out["alias"] == ["graph_dep_add", "graph_status"]
+    assert out["listed"] == ["One"]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

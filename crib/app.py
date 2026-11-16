@@ -5391,43 +5391,6 @@ class Crib:
     # core that takes it explicitly. The FACET is the interface — reads, writes and
     # retrieval all have their own verbs here, so a caller never has to know the
     # decisions are notes in a directory (they are; that's backend).
-    async def design_add(
-        self,
-        title: str,
-        content: str,
-        deps: list[str] | None = None,
-        project: str | None = None,
-        sources: list[Any] | None = None,
-        proposed: bool = False,
-        cwd: Path | None = None,
-        follows: list[str] | None = None,
-        rests_on: list[str] | None = None,
-        informed_by: list[str] | None = None, *, facet: str = "design") -> dict[str, Any]:
-        """Record a design decision (deps validated + `checked` seeded, `sources`
-        captured at their current section hashes), with the same near-duplicate
-        probe `note_store` runs.
-
-        A near-duplicate DECISION is worse than a near-duplicate note: it forks
-        the graph, so two half-authoritative decisions each collect their own
-        dependents and neither taints the other's."""
-        proj = self.resolve_project(project, cwd)
-        out = await self.designs.design_add(
-            proj, title, content, deps, sources, proposed,
-            _kinded(follows, rests_on, informed_by),
-            facet=facet,
-        )
-        similar = await asyncio.to_thread(self._similar, proj, out["relpath"], facets.by_noun(facet).store)
-        return {**out, "similar": similar}
-
-    def design_read(
-        self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
-        """A decision's dossier: body, status, annotated edges, taint + chains,
-        and `suggested_deps`: live decisions it is close to but doesn't depend
-        on (see `_similar`)."""
-        proj = self.resolve_project(project, cwd)
-        out = self.designs.design_read(proj, ref, facet=facet)
-        return {**out, "suggested_deps": self._suggested_deps(proj, out, facets.by_noun(facet).store)}
-
     async def graph_edit(
         self,
         ref: str,
@@ -5440,24 +5403,6 @@ class Crib:
         return await self.designs.graph_edit(
             self.resolve_project(project, cwd), ref, new_content, sources, facet=facet
         )
-
-    async def design_append(
-        self,
-        ref: str,
-        content: str,
-        project: str | None = None,
-        cwd: Path | None = None,
-        sources: list[Any] | None = None, *, facet: str = "design") -> dict[str, Any]:
-        """Extend a decision through the facet; result names what it tainted.
-        `sources` ADDS citations (post-hoc doc wiring), never replaces."""
-        return await self.designs.design_append(
-            self.resolve_project(project, cwd), ref, content, sources, facet=facet
-        )
-
-    def design_list(
-        self, tainted: bool = False, project: str | None = None, cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
-        """Every decision as a flat table (`tainted` filters to the stale ones)."""
-        return self.designs.design_list(self.resolve_project(project, cwd), tainted, facet=facet)
 
     def graph_export(
         self, project: str | None = None, cwd: Path | None = None, *, facet: str) -> dict[str, Any]:
@@ -5640,41 +5585,6 @@ class Crib:
             self.resolve_project(project, cwd), ref, by_ref, facet=facet
         )
 
-    async def plan_add(
-        self,
-        title: str | None = None,
-        content: str = "",
-        deps: list[str] | None = None,
-        after: str | None = None,
-        before: str | None = None,
-        items: list[dict[str, Any]] | None = None,
-        project: str | None = None,
-        sources: list[Any] | None = None,
-        cwd: Path | None = None,
-        follows: list[str] | None = None,
-        rests_on: list[str] | None = None,
-        informed_by: list[str] | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        """Add one plan item, or a whole batch (`items`), ranked at the end unless
-        after/before place them. A single item answers with `similar` (what it
-        is close to, with a verdict: see `_similar`)."""
-        proj = self.resolve_project(project, cwd)
-        out = await self.designs.plan_add(
-            proj,
-            title,
-            content,
-            deps,
-            after,
-            before,
-            items,
-            sources,
-            _kinded(follows, rests_on, informed_by),
-            facet=facet,
-        )
-        if not items and out.get("relpath"):
-            out["similar"] = await asyncio.to_thread(
-                self._similar, proj, out["relpath"], facets.by_noun(facet).store)
-        return out
-
     async def graph_status(
         self, ref: str, status: str, project: str | None = None, cwd: Path | None = None, *, facet: str) -> dict[str, Any]:
         """Set a plan item's status (todo/in-progress/parked/done/verified)."""
@@ -5730,15 +5640,6 @@ class Crib:
             self.resolve_project(project, cwd), batch or [], facet=facet
         )
 
-    def plan_read(
-        self, ref: str, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        """A plan item's dossier: body, status, annotated edges, derived blocking
-        + taint — the plan-side design_read — and `suggested_deps` (see
-        `design_read`)."""
-        proj = self.resolve_project(project, cwd)
-        out = self.designs.plan_read(proj, ref, facet=facet)
-        return {**out, "suggested_deps": self._suggested_deps(proj, out, facets.by_noun(facet).store)}
-
     def _suggested_deps(self, proj: str, read: dict[str, Any],
                         store: str) -> list[dict[str, Any]]:
         """The `link` rows of `_similar` for a read item: live decisions it is
@@ -5748,19 +5649,6 @@ class Crib:
             return []
         return [{k: r[k] for k in ("relpath", "title", "status", "score", "link")
                  if k in r} for r in self._similar(proj, rel, store) if "link" in r]
-
-    async def plan_append(
-        self,
-        ref: str,
-        content: str,
-        project: str | None = None,
-        cwd: Path | None = None,
-        sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        """Extend a plan item's body through the facet; result names what it
-        tainted. `sources` ADDS citations, never replaces."""
-        return await self.designs.plan_append(
-            self.resolve_project(project, cwd), ref, content, sources, facet=facet
-        )
 
     async def graph_move(
         self,
@@ -5773,11 +5661,6 @@ class Crib:
         return await self.designs.graph_move(
             self.resolve_project(project, cwd), ref, after, before, facet=facet
         )
-
-    def plan_list(
-        self, all: bool = False, project: str | None = None, cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        """The plan in topological, rank-tie-broken order."""
-        return self.designs.plan_list(self.resolve_project(project, cwd), all, facet=facet)
 
     def graph_next(
         self, k: int = 5, project: str | None = None, cwd: Path | None = None, *, facet: str) -> dict[str, Any]:
@@ -6698,6 +6581,93 @@ class Crib:
     plan_review = functools.partialmethod(graph_review, facet="plan")
     plan_review_apply = functools.partialmethod(graph_review_apply, facet="plan")
     plan_status = functools.partialmethod(graph_status, facet="plan")
+
+    # ── read, list, add, append: one operation each (the engine branches on
+    # the facet's trait); crib's own names call them with their facet ────────
+
+    def graph_read(self, ref: str, project: str | None = None, cwd: Path | None = None,
+                   *, facet: str) -> dict[str, Any]:
+        """An item's dossier (Designs.graph_read), plus `suggested_deps`: live
+        items it is close to but doesn't depend on (see `_similar`)."""
+        proj = self.resolve_project(project, cwd)
+        out = self.designs.graph_read(proj, ref, facet=facet)
+        return {**out, "suggested_deps": self._suggested_deps(proj, out, facets.by_noun(facet).store)}
+
+    def graph_list(self, project: str | None = None, cwd: Path | None = None, *,
+                   facet: str, tainted: bool = False, all: bool = False) -> dict[str, Any]:
+        """The facet's items as a working set or an inventory (Designs.graph_list)."""
+        return self.designs.graph_list(self.resolve_project(project, cwd), facet=facet,
+                                       tainted=tainted, all=all)
+
+    async def graph_add(
+        self, title: str | None = None, content: str = "", deps: list[str] | None = None,
+        project: str | None = None, sources: list[Any] | None = None, cwd: Path | None = None,
+        follows: list[str] | None = None, rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None, *, facet: str, proposed: bool = False,
+        after: str | None = None, before: str | None = None,
+        items: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """Add one item (or a batch, for an ordered facet), deps validated and
+        `checked` seeded; one item answers with `similar` (see `_similar`). A
+        near-duplicate graph item is worse than a near-duplicate note: it forks
+        the graph, each copy collecting its own dependents."""
+        proj = self.resolve_project(project, cwd)
+        out = await self.designs.graph_add(
+            proj, title, content, deps, facet=facet, sources=sources, proposed=proposed,
+            kinded=_kinded(follows, rests_on, informed_by), after=after, before=before,
+            items=items)
+        if not items and out.get("relpath"):
+            out["similar"] = await asyncio.to_thread(
+                self._similar, proj, out["relpath"], facets.by_noun(facet).store)
+        return out
+
+    async def graph_append(self, ref: str, content: str, project: str | None = None,
+                           cwd: Path | None = None, sources: list[Any] | None = None,
+                           *, facet: str) -> dict[str, Any]:
+        """Extend an item through the facet; result names what it tainted.
+        `sources` ADDS citations (post-hoc doc wiring), never replaces."""
+        return await self.designs.graph_append(
+            self.resolve_project(project, cwd), ref, content, sources, facet=facet)
+
+    design_read = functools.partialmethod(graph_read, facet="design")
+    plan_read = functools.partialmethod(graph_read, facet="plan")
+    design_append = functools.partialmethod(graph_append, facet="design")
+    plan_append = functools.partialmethod(graph_append, facet="plan")
+
+    def design_list(self, tainted: bool = False, project: str | None = None,
+                    cwd: Path | None = None, *, facet: str = "design") -> dict[str, Any]:
+        """Every decision as a flat table (`tainted` filters to the stale ones)."""
+        return self.graph_list(project, cwd, facet=facet, tainted=tainted)
+
+    def plan_list(self, all: bool = False, project: str | None = None,
+                  cwd: Path | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        """The plan in topological, rank-tie-broken order."""
+        return self.graph_list(project, cwd, facet=facet, all=all)
+
+    async def design_add(
+        self, title: str, content: str, deps: list[str] | None = None,
+        project: str | None = None, sources: list[Any] | None = None,
+        proposed: bool = False, cwd: Path | None = None,
+        follows: list[str] | None = None, rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None, *, facet: str = "design",
+    ) -> dict[str, Any]:
+        """Record a design decision (see graph_add)."""
+        return await self.graph_add(title, content, deps, project, sources, cwd, follows,
+                                    rests_on, informed_by, facet=facet, proposed=proposed)
+
+    async def plan_add(
+        self, title: str | None = None, content: str = "", deps: list[str] | None = None,
+        after: str | None = None, before: str | None = None,
+        items: list[dict[str, Any]] | None = None, project: str | None = None,
+        sources: list[Any] | None = None, cwd: Path | None = None,
+        follows: list[str] | None = None, rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None, *, facet: str = "plan",
+    ) -> dict[str, Any]:
+        """Add one plan item, or a whole batch (`items`), ranked at the end unless
+        after/before place them (see graph_add)."""
+        return await self.graph_add(title, content, deps, project, sources, cwd, follows,
+                                    rests_on, informed_by, facet=facet, after=after,
+                                    before=before, items=items)
 
 
 def _build_store(

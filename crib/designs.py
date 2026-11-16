@@ -1694,7 +1694,7 @@ class Designs:
 
     # ── design verbs ──────────────────────────────────────────────────────────
 
-    async def design_add(
+    async def _add_single(
         self,
         proj: str,
         title: str,
@@ -1702,7 +1702,7 @@ class Designs:
         deps: list[str] | None = None,
         sources: list[Any] | None = None,
         proposed: bool = False,
-        kinded: dict[str, list[str]] | None = None, *, facet: str = "design") -> dict[str, Any]:
+        kinded: dict[str, list[str]] | None = None, *, facet: str) -> dict[str, Any]:
         """Record a design decision under `notes/design/`, `checked` seeded from
         the current dep hashes (so a new decision is born verified) and `sources`
         from the cited sections' hashes.
@@ -1714,7 +1714,7 @@ class Designs:
         return await self._add(proj, facet, title, content, deps, extra, sources,
                                kinded)
 
-    def design_read(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
+    def _read_ground(self, proj: str, ref: str, *, facet: str) -> dict[str, Any]:
         """The one-call orientation on a decision: body + status + every edge
         annotated + this node's own taint state with the chains explaining it.
 
@@ -1828,8 +1828,8 @@ class Designs:
             proj, ref, lambda _: (new_content or "").strip() + "\n", sources, kind=facet
         )
 
-    async def design_append(
-        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str = "design") -> dict[str, Any]:
+    async def _append_keep(
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str) -> dict[str, Any]:
         """Extend a decision's body through the facet, answering with the
         dependents the change just tainted.
 
@@ -1871,7 +1871,7 @@ class Designs:
         ]
         return kept + new
 
-    def plan_read(self, proj: str, ref: str, *, facet: str = "plan") -> dict[str, Any]:
+    def _read_working(self, proj: str, ref: str, *, facet: str) -> dict[str, Any]:
         """A plan item's dossier: body, status, every edge annotated, its DERIVED
         blocking (the mixed-dep rule `plan_next` gates on), and its own taint.
 
@@ -1909,8 +1909,8 @@ class Designs:
             out["next"] = row["next"]
         return out
 
-    async def plan_append(
-        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
+    async def _append_set(
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str) -> dict[str, Any]:
         """Extend a plan item's body through the facet, answering with the
         dependents the change just tainted — the plan-side `design_append`.
 
@@ -1932,7 +1932,7 @@ class Designs:
             kind=facet,
         )
 
-    def design_list(self, proj: str, tainted: bool = False, *, facet: str = "design") -> dict[str, Any]:
+    def _list_inventory(self, proj: str, tainted: bool = False, *, facet: str) -> dict[str, Any]:
         """Every decision as a flat table — title, ref, status, taint flag, edge
         counts. The inventory read; `design_tree` is the shape read."""
         graph = self._load_graph(proj)
@@ -2470,7 +2470,7 @@ class Designs:
             return _rank_between(prev, before.rank)
         return _rank_between(ranks[-1] if ranks else None, None)
 
-    async def plan_add(
+    async def _add_ordered(
         self,
         proj: str,
         title: str | None = None,
@@ -2480,7 +2480,7 @@ class Designs:
         before: str | None = None,
         items: list[dict[str, Any]] | None = None,
         sources: list[Any] | None = None,
-        kinded: dict[str, list[str]] | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        kinded: dict[str, list[str]] | None = None, *, facet: str) -> dict[str, Any]:
         """Add plan items (default: at the end; `after`/`before` place them).
 
         Takes ONE item (`title`/`content`/`deps`/`sources`) or a BATCH (`items`),
@@ -3239,7 +3239,7 @@ class Designs:
             )
         return row
 
-    def plan_list(self, proj: str, all: bool = False, *, facet: str = "plan") -> dict[str, Any]:
+    def _list_working(self, proj: str, all: bool = False, *, facet: str) -> dict[str, Any]:
         """The plan as a WORKING SET, not a graph dump: in-progress first, then
         ready, then blocked, then parked (each naming what it waits on or watches),
         with finished AND declined work hidden unless `all`.
@@ -3432,4 +3432,79 @@ class Designs:
     plan_review = functools.partialmethod(graph_review, facet="plan")
     plan_review_apply = functools.partialmethod(graph_review_apply, facet="plan")
     plan_status = functools.partialmethod(graph_status, facet="plan")
+
+    # ── the per-trait verbs as one operation each ─────────────────────────────
+    # A graph facet's read, list, add and append differ by ONE trait each; the
+    # operation branches on it here, in the engine, instead of every caller
+    # choosing between two methods.
+
+    def graph_read(self, proj: str, ref: str, *, facet: str) -> dict[str, Any]:
+        """An item's dossier: the working-set view (blocking) for a facet with
+        progress, the ground view (taint and its chains) otherwise; a progress
+        facet that also reports taint gets both."""
+        spec = _spec(facet)
+        if not spec.has("progress"):
+            return self._read_ground(proj, ref, facet=facet)
+        out = self._read_working(proj, ref, facet=facet)
+        if spec.report_taint:  # a working set that reports staleness too: say why
+            why = self._read_ground(proj, ref, facet=facet)
+            out |= {k: why[k] for k in ("reasons", "causes", "paths") if k in why}
+        return out
+
+    def graph_list(self, proj: str, *, facet: str, tainted: bool = False,
+                   all: bool = False) -> dict[str, Any]:
+        """The working set (progress; `all` shows finished and declined too), or
+        the inventory (`tainted`: only the stale ones)."""
+        if _spec(facet).has("progress"):
+            return self._list_working(proj, all, facet=facet)
+        return self._list_inventory(proj, tainted, facet=facet)
+
+    async def graph_add(
+        self, proj: str, title: str | None = None, content: str = "",
+        deps: list[str] | None = None, *, facet: str,
+        sources: list[Any] | None = None, proposed: bool = False,
+        kinded: dict[str, list[str]] | None = None, after: str | None = None,
+        before: str | None = None, items: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """Add an item: in the facet's order (`ordered`: batches, after/before),
+        or one at a time (`proposed`: in its gated status)."""
+        if _spec(facet).has("ordered"):
+            return await self._add_ordered(proj, title, content, deps, after, before,
+                                           items, sources, kinded, facet=facet)
+        return await self._add_single(proj, title or "", content, deps, sources,
+                                      proposed, kinded, facet=facet)
+
+    async def graph_append(self, proj: str, ref: str, content: str,
+                           sources: list[Any] | None = None, *, facet: str) -> dict[str, Any]:
+        """Extend an item's body (a facet that may hold title-only items SETS an
+        empty body rather than appending blank lines to it)."""
+        impl = self._append_keep if _spec(facet).requires_body else self._append_set
+        return await impl(proj, ref, content, sources, facet=facet)
+
+    design_read = functools.partialmethod(graph_read, facet="design")
+    plan_read = functools.partialmethod(graph_read, facet="plan")
+    design_append = functools.partialmethod(graph_append, facet="design")
+    plan_append = functools.partialmethod(graph_append, facet="plan")
+
+    def design_list(self, proj: str, tainted: bool = False, *, facet: str = "design") -> dict[str, Any]:
+        return self.graph_list(proj, facet=facet, tainted=tainted)
+
+    def plan_list(self, proj: str, all: bool = False, *, facet: str = "plan") -> dict[str, Any]:
+        return self.graph_list(proj, facet=facet, all=all)
+
+    async def design_add(self, proj: str, title: str, content: str,
+                         deps: list[str] | None = None, sources: list[Any] | None = None,
+                         proposed: bool = False, kinded: dict[str, list[str]] | None = None,
+                         *, facet: str = "design") -> dict[str, Any]:
+        return await self.graph_add(proj, title, content, deps, facet=facet, sources=sources,
+                                    proposed=proposed, kinded=kinded)
+
+    async def plan_add(self, proj: str, title: str | None = None, content: str = "",
+                       deps: list[str] | None = None, after: str | None = None,
+                       before: str | None = None, items: list[dict[str, Any]] | None = None,
+                       sources: list[Any] | None = None,
+                       kinded: dict[str, list[str]] | None = None,
+                       *, facet: str = "plan") -> dict[str, Any]:
+        return await self.graph_add(proj, title, content, deps, facet=facet, sources=sources,
+                                    kinded=kinded, after=after, before=before, items=items)
 

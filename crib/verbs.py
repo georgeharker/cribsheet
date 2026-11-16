@@ -830,17 +830,16 @@ def _gd(verb: str, generic: Callable[[FacetSpec], str]):
 
 
 # THE engine operation behind each graph verb (and the transitions' park /
-# decline / promote): the Crib method it calls, bound to the facet. Most are
-# one operation for every graph facet (the design_/plan_ pairs behind them are
-# the same code); four depend on ONE trait each, named here: add (ordered:
-# batches and placement), read and list (progress: blocking and the working
-# set, or the taint inventory), append (requires_body: an empty body is set,
-# not appended to).
-GRAPH_OPS: dict[str, str | tuple[str, str, str]] = {
-    "add": ("ordered", "plan_add", "design_add"),
-    "read": ("progress", "plan_read", "design_read"),
-    "list": ("progress", "plan_list", "design_list"),
-    "append": ("requires_body", "design_append", "plan_append"),
+# decline / promote): the Crib graph_* method it calls, bound to the facet.
+# One operation per verb for every graph facet; where a verb depends on a
+# trait (add: ordered, read/list: progress, append: requires_body), the
+# operation branches on it in the engine (Designs.graph_*). crib's own
+# facets' design_*/plan_* names are aliases of these.
+GRAPH_OPS: dict[str, str] = {
+    "add": "graph_add",
+    "read": "graph_read",
+    "list": "graph_list",
+    "append": "graph_append",
     "edit": "graph_edit",
     "lookup": "graph_lookup",
     "export": "graph_export",
@@ -864,17 +863,11 @@ GRAPH_OPS: dict[str, str | tuple[str, str, str]] = {
 }
 
 
-def _trait(f: FacetSpec, trait: str) -> bool:
-    return f.requires_body if trait == "requires_body" else f.has(trait)
-
-
 def graph_op(f: FacetSpec, verb: str) -> str:
-    """The Crib method serving `verb` on graph facet `f` (GRAPH_OPS)."""
-    op = GRAPH_OPS[verb]
-    if isinstance(op, tuple):
-        trait, yes, no = op
-        return yes if _trait(f, trait) else no
-    return op
+    """The Crib method serving `verb` on graph facet `f` (GRAPH_OPS): one
+    graph_* operation per verb, for every graph facet (the engine branches on
+    the facet's traits, not its callers)."""
+    return GRAPH_OPS[verb]
 
 
 def inproc_method(f: FacetSpec, verb: str) -> tuple[str, tuple[tuple[str, Any], ...]]:
@@ -908,12 +901,7 @@ def _g_read(crib, f):
     async def body(
         ref: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
-        out = _call(crib, f, "read")(ref, project)
-        if f.has("progress") and f.report_taint and not f.builtin:
-            # a working-set read; this facet reports taint too: say why
-            why = crib.design_read(ref, project, facet=f.noun)
-            out |= {k: why[k] for k in ("reasons", "causes", "paths") if k in why}
-        return out
+        return _call(crib, f, "read")(ref, project)
 
     return body
 
@@ -1087,8 +1075,8 @@ def _g_add(crib, f):
             informed_by: list[str] | None = None,
         ) -> dict[str, Any]:
             return await _call(crib, f, "add")(
-                title, content, deps, after, before, items, project, sources,
-                follows=follows, rests_on=rests_on, informed_by=informed_by,
+                title, content, deps, project, sources, None, follows, rests_on,
+                informed_by, after=after, before=before, items=items,
             )
 
         return ordered
@@ -1106,8 +1094,8 @@ def _g_add(crib, f):
             informed_by: list[str] | None = None,
         ) -> dict[str, Any]:
             return await _call(crib, f, "add")(
-                title, content, deps, project, sources, False,
-                follows=follows, rests_on=rests_on, informed_by=informed_by,
+                title, content, deps, project, sources, None, follows, rests_on,
+                informed_by,
             )
 
         return plain
@@ -1125,8 +1113,8 @@ def _g_add(crib, f):
         informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         return await _call(crib, f, "add")(
-            title, content, deps, project, sources, proposed,
-            follows=follows, rests_on=rests_on, informed_by=informed_by,
+            title, content, deps, project, sources, None, follows, rests_on,
+            informed_by, proposed=proposed,
         )
 
     return body
@@ -1139,14 +1127,14 @@ def _g_list(crib, f):
             project: str | None = None,
             project_path: str | None = None,
         ) -> dict[str, Any]:
-            return _call(crib, f, "list")(tainted, project)
+            return _call(crib, f, "list")(project, tainted=tainted)
 
         return tainted_list
 
     async def body(
         all: bool = False, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
-        return _call(crib, f, "list")(all, project)
+        return _call(crib, f, "list")(project, all=all)
 
     return body
 
