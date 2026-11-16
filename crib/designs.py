@@ -64,6 +64,7 @@ reindexes, hash-taint catches drift) cannot do.
 from __future__ import annotations
 
 import contextlib
+import functools
 import datetime
 import sys
 from dataclasses import dataclass, field, replace
@@ -1819,8 +1820,8 @@ class Designs:
             )
         return res
 
-    async def design_edit(
-        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_edit(
+        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None, *, facet: str) -> dict[str, Any]:
         """Replace a decision's body through the facet, answering with the
         dependents the change just tainted. `sources` replaces its citations."""
         return await self._write_body(
@@ -1907,19 +1908,6 @@ class Designs:
             out["revisit"] = row["revisit"]
             out["next"] = row["next"]
         return out
-
-    async def plan_edit(
-        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        """Replace a plan item's body through the facet, answering with the
-        dependents the change just tainted — the plan-side `design_edit`.
-        `sources` replaces its citations."""
-        return await self._write_body(
-            proj,
-            ref,
-            lambda _: (new_content or "").strip() + "\n",
-            sources,
-            kind=facet,
-        )
 
     async def plan_append(
         self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
@@ -2075,19 +2063,19 @@ class Designs:
             ],
         }
 
-    async def design_dep_add(
-        self, proj: str, ref: str, dep_ref: str, kind: str | None = None, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_dep_add(
+        self, proj: str, ref: str, dep_ref: str, kind: str | None = None, *, facet: str) -> dict[str, Any]:
         return await self._dep_add(proj, facet, ref, dep_ref, kind)
 
-    async def design_dep_remove(
-        self, proj: str, ref: str, dep_ref: str, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_dep_remove(
+        self, proj: str, ref: str, dep_ref: str, *, facet: str) -> dict[str, Any]:
         return await self._dep_remove(proj, facet, ref, dep_ref)
 
-    async def design_forget(
-        self, proj: str, ref: str, force: bool = False, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_forget(
+        self, proj: str, ref: str, force: bool = False, *, facet: str) -> dict[str, Any]:
         return await self._forget(proj, facet, ref, force)
 
-    def design_check(self, proj: str, ref: str | None = None, *, facet: str = "design") -> dict[str, Any]:
+    def graph_check(self, proj: str, ref: str | None = None, *, facet: str) -> dict[str, Any]:
         """Which decisions are out of date with what they build on, why, and what
         to do about each — every tainted row ends with its prescribed follow-up
         (`next`) so the flag is never a dead end."""
@@ -2135,7 +2123,7 @@ class Designs:
                 checked[dep_id] = dep.body_hash
         return checked, missing
 
-    async def design_reaffirm(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_reaffirm(self, proj: str, ref: str, *, facet: str) -> dict[str, Any]:
         """Re-record a decision's dep AND source hashes after a human re-read it —
         the ONLY thing that clears taint (short of editing the decision itself).
 
@@ -2146,34 +2134,6 @@ class Designs:
 
         Both edge families are re-recorded together, because both are what "I
         re-read this and it still holds" is a statement about."""
-        graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, facet)
-        checked, missing = self._recheck(graph, node)
-        sources, missing_sources = self._recapture(proj, node)
-        fm: dict[str, Any] = {"checked": checked}
-        if node.sources:
-            fm["sources"] = sources
-        out = await self._save(proj, node, fm)
-        return {
-            **out,
-            "verified": sorted(checked),
-            "missing": missing,
-            "sources": [source_label(s) for s in sources],
-            "missing_sources": missing_sources,
-        }
-
-    async def plan_reaffirm(self, proj: str, ref: str, *, facet: str = "plan") -> dict[str, Any]:
-        """Re-record a plan item's dep AND source hashes after a human re-read
-        what moved — the plan-side twin of `design_reaffirm`, and the missing
-        half of a symmetry: plan items carry design deps that taint when the
-        decision moves, but the only way to clear a benign taint used to be
-        `plan_dep_remove` + `plan_dep_add` per edge — a workaround wearing a verb
-        costume. Semantically this IS reaffirm: "I re-read the moved decision;
-        this item still stands against it; re-record the baseline."
-
-        Distinct from `plan_status` on purpose: a status write is a claim about
-        the WORK (and re-records source hashes as part of it); this is a claim
-        about the item's GROUND, made without pretending the work moved."""
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
         checked, missing = self._recheck(graph, node)
@@ -2214,8 +2174,8 @@ class Designs:
             raise CribUserError(f"{node.title!r} is already {to}")
         return await self.plan_status(proj, ref, to, facet=facet)
 
-    async def design_promote(
-        self, proj: str, ref: str, *, facet: str = "design", to: str | None = None
+    async def graph_promote(
+        self, proj: str, ref: str, *, facet: str, to: str | None = None
     ) -> dict[str, Any]:
         """proposed → active: the human act that turns an EXTRACTED decision into
         settled ground others may build on.
@@ -2258,8 +2218,8 @@ class Designs:
             ),
         }
 
-    def design_tree(
-        self, proj: str, ref: str | None = None, direction: str = "deps", depth: int = 6, *, facet: str = "design") -> dict[str, Any]:
+    def graph_tree(
+        self, proj: str, ref: str | None = None, direction: str = "deps", depth: int = 6, *, facet: str) -> dict[str, Any]:
         """The dependency tree around a decision — `deps` (what it builds on) or
         `dependents` (what builds on it) — every node taint-flagged."""
         if direction not in ("deps", "dependents"):
@@ -2448,8 +2408,8 @@ class Designs:
             ),
         }
 
-    async def design_supersede(
-        self, proj: str, ref: str, by_ref: str | None = None, *, facet: str = "design") -> dict[str, Any]:
+    async def graph_supersede(
+        self, proj: str, ref: str, by_ref: str | None = None, *, facet: str) -> dict[str, Any]:
         """Soft-delete a decision: mark it `superseded` (optionally naming its
         replacement) and taint everything that builds on it.
 
@@ -2603,7 +2563,7 @@ class Designs:
         head = rows[0] if len(rows) == 1 else {"project": proj}
         return {**head, "items": rows, "added": len(rows)}
 
-    async def plan_status(self, proj: str, ref: str, status: str, *, facet: str = "plan") -> dict[str, Any]:
+    async def graph_status(self, proj: str, ref: str, status: str, *, facet: str) -> dict[str, Any]:
         """Set an item's status, answering with what that just UNBLOCKED.
 
         The plan-side mirror of `design_edit`'s `newly_tainted`: finishing work is
@@ -2724,12 +2684,12 @@ class Designs:
             )
         return out
 
-    async def plan_park(
+    async def graph_park(
         self,
         proj: str,
         ref: str,
         triggers: list[str] | None = None,
-        why: str | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
+        why: str | None = None, *, facet: str, to: str | None = None) -> dict[str, Any]:
         """Park an item — not now, with a stated reason; optionally watching refs
         whose CHANGE surfaces it for re-evaluation.
 
@@ -2798,12 +2758,12 @@ class Designs:
             ),
         }
 
-    async def plan_decline(
+    async def graph_decline(
         self,
         proj: str,
         ref: str,
         why: str | None = None,
-        triggers: list[str] | None = None, *, facet: str = "plan", to: str | None = None) -> dict[str, Any]:
+        triggers: list[str] | None = None, *, facet: str, to: str | None = None) -> dict[str, Any]:
         """Decline an item — never scheduled, REMEMBERED with the why-not.
 
         Terminal-with-rationale, the plan-facet sibling of `design_supersede`:
@@ -2908,10 +2868,10 @@ class Designs:
                 .replace("this plan as a whole", f"these {_spec(facet).plural} as a whole")
                 .replace("may NEVER set `done`", f"may NEVER set `{done}`"))
 
-    async def plan_review(
+    async def graph_review(
         self,
         proj: str,
-        probe: Callable[[str, str, str], list[dict[str, Any]]] | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        probe: Callable[[str, str, str], list[dict[str, Any]]] | None = None, *, facet: str) -> dict[str, Any]:
         """The review EVIDENCE PACK — the state exam plus per-item evidence for a
         full-plan evaluation. Runs NO model and writes NOTHING (the
         `design_import` precedent): this hands the calling session everything a
@@ -2958,8 +2918,8 @@ class Designs:
             "instruction": self._review_contract(facet),
         }
 
-    async def plan_review_apply(
-        self, proj: str, batch: list[dict[str, Any]], *, facet: str = "plan") -> dict[str, Any]:
+    async def graph_review_apply(
+        self, proj: str, batch: list[dict[str, Any]], *, facet: str) -> dict[str, Any]:
         """Apply a JUDGED review batch, edge-aware, with per-op reports.
 
         Ops: retitle / move / park / decline / merge / edit (bodies). Refused,
@@ -3092,20 +3052,8 @@ class Designs:
             ) from e
         return {"merged": loser.relpath, "into": winner.relpath}
 
-    async def plan_dep_add(
-        self, proj: str, ref: str, dep_ref: str, kind: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
-        return await self._dep_add(proj, facet, ref, dep_ref, kind)
-
-    async def plan_dep_remove(
-        self, proj: str, ref: str, dep_ref: str, *, facet: str = "plan") -> dict[str, Any]:
-        return await self._dep_remove(proj, facet, ref, dep_ref)
-
-    async def plan_forget(
-        self, proj: str, ref: str, force: bool = False, *, facet: str = "plan") -> dict[str, Any]:
-        return await self._forget(proj, facet, ref, force)
-
-    async def plan_move(
-        self, proj: str, ref: str, after: str | None = None, before: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
+    async def graph_move(
+        self, proj: str, ref: str, after: str | None = None, before: str | None = None, *, facet: str) -> dict[str, Any]:
         """Re-rank an item. Deps are NOT touched: order is preference, deps are
         correctness (decision 5), so moving can never break the plan."""
         if not (after or before):
@@ -3326,7 +3274,7 @@ class Designs:
             "cycles": cycles,
         }
 
-    def plan_next(self, proj: str, k: int = 5, *, facet: str = "plan") -> dict[str, Any]:
+    def graph_next(self, proj: str, k: int = 5, *, facet: str) -> dict[str, Any]:
         """What is actually actionable now: `todo` items nothing blocks, in rank
         order. The 'what do I do next' read at the start of a session.
 
@@ -3447,7 +3395,7 @@ class Designs:
             ),
         }
 
-    def design_import(self, proj: str, relpath: str, *, facet: str = "design") -> dict[str, Any]:
+    def graph_import(self, proj: str, relpath: str, *, facet: str) -> dict[str, Any]:
         """Prepare a doc for extraction into the DESIGN graph: its sections with
         their current hashes, what already cites it, and the procedure to follow.
 
@@ -3458,7 +3406,30 @@ class Designs:
         checking will compare against, so that is what this hands it."""
         return self._import(proj, facet, relpath)
 
-    def plan_import(self, proj: str, relpath: str, *, facet: str = "plan") -> dict[str, Any]:
-        """The same for the PLAN facet: a doc's sections + the procedure for
-        turning its actionable passages into plan items that cite them."""
-        return self._import(proj, facet, relpath)
+    # crib's own facets' names for the graph operations: the same operation
+    # with the built-in facet filled in (every caller of these names, and the
+    # parity harness, sees no change).
+    design_dep_add = functools.partialmethod(graph_dep_add, facet="design")
+    plan_dep_add = functools.partialmethod(graph_dep_add, facet="plan")
+    design_dep_remove = functools.partialmethod(graph_dep_remove, facet="design")
+    plan_dep_remove = functools.partialmethod(graph_dep_remove, facet="plan")
+    design_forget = functools.partialmethod(graph_forget, facet="design")
+    plan_forget = functools.partialmethod(graph_forget, facet="plan")
+    design_import = functools.partialmethod(graph_import, facet="design")
+    plan_import = functools.partialmethod(graph_import, facet="plan")
+    design_reaffirm = functools.partialmethod(graph_reaffirm, facet="design")
+    plan_reaffirm = functools.partialmethod(graph_reaffirm, facet="plan")
+    design_edit = functools.partialmethod(graph_edit, facet="design")
+    plan_edit = functools.partialmethod(graph_edit, facet="plan")
+    design_check = functools.partialmethod(graph_check, facet="design")
+    design_tree = functools.partialmethod(graph_tree, facet="design")
+    design_supersede = functools.partialmethod(graph_supersede, facet="design")
+    design_promote = functools.partialmethod(graph_promote, facet="design")
+    plan_decline = functools.partialmethod(graph_decline, facet="plan")
+    plan_move = functools.partialmethod(graph_move, facet="plan")
+    plan_next = functools.partialmethod(graph_next, facet="plan")
+    plan_park = functools.partialmethod(graph_park, facet="plan")
+    plan_review = functools.partialmethod(graph_review, facet="plan")
+    plan_review_apply = functools.partialmethod(graph_review_apply, facet="plan")
+    plan_status = functools.partialmethod(graph_status, facet="plan")
+
