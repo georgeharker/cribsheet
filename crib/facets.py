@@ -385,7 +385,43 @@ def _ident(value: Any, what: str) -> str:
 
 
 def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetSpec:
-    """One `[<noun>]` table of a facets file as a spec, checked on its own."""
+    """One `[<noun>]` table of a facets file as a spec, checked on its own.
+
+    One helper per part of the table, in this order (the order is what a
+    broken spec reports first): its names, its aspects, its fields, its verbs
+    (renames, disables), its graph keys and flags, then the verbs it ends up
+    with, its wording, its title sources and its optional fields."""
+    plural, store = _parse_names(noun, raw)
+    have = _parse_aspects(noun, raw)
+    fields, params = _parse_fields(noun, raw, have, builtin)
+    legacy, verbs, disable = _parse_verb_keys(noun, raw, builtin)
+    graph = _graph_keys(noun, raw, have, builtin)
+    available = available_verbs(have, fields=bool(params),
+                                taint=bool(graph["flags"].get("report_taint")),
+                                transitions=graph.get("transitions", {}))
+    _check_disable(noun, disable, available)
+    about, when = _wording(noun, raw, [v for v in available if v not in disable])
+    return FacetSpec(
+        noun=noun,
+        plural=plural,
+        store=store,
+        aspects=frozenset(have),
+        fields=MappingProxyType(dict(fields)),
+        legacy_stores=tuple(legacy),
+        verb_names=MappingProxyType(dict(verbs)),
+        params=MappingProxyType(params),
+        disabled=frozenset(str(v) for v in disable),
+        about=about,
+        when=MappingProxyType(when),
+        title_from=_parse_title_from(noun, raw),
+        optional=_parse_optional(noun, raw, params),
+        **graph,
+        builtin=builtin,
+    )
+
+
+def _parse_names(noun: str, raw: Mapping[str, Any]) -> tuple[str, str]:
+    """The facet's name, its keys, its plural and its store directory."""
     _ident(noun, "a facet name")
     if "_" in noun:
         # tools are `<noun>_<verb>`, and verbs have underscores (dep_add): a
@@ -403,6 +439,11 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: store {store!r} is a directory crib keeps for itself "
             "in every project; name the store something else")
+    return plural, store
+
+
+def _parse_aspects(noun: str, raw: Mapping[str, Any]) -> set[str]:
+    """Its aspects (`core` implied), each with what it needs, as one shape."""
     aspects = raw.get("aspects", ["core"])
     if not isinstance(aspects, list) or not all(isinstance(a, str) for a in aspects):
         raise FacetSpecError(f"facet {noun!r}: aspects must be a list of names")
@@ -417,6 +458,13 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
                 f"facet {noun!r}: aspect {a!r} needs {sorted(missing)}"
             )
     _check_shape(noun, have, raw)
+    return have
+
+
+def _parse_fields(noun: str, raw: Mapping[str, Any], have: set[str],
+                  builtin: bool) -> tuple[dict[str, str], dict[str, str]]:
+    """`(fields, params)`: every store column (those its aspects bring, then
+    its own) and a declared facet's own typed fields (int | str | date)."""
     fields = raw.get("fields", {})
     if not isinstance(fields, dict):
         raise FacetSpecError(f"facet {noun!r}: fields must be a table of name = type")
@@ -452,7 +500,13 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: fields {sorted(clash)} come with its aspects; "
             "don't declare them")
-    fields = {**brought, **fields}
+    return {**brought, **fields}, params
+
+
+def _parse_verb_keys(noun: str, raw: Mapping[str, Any],
+                     builtin: bool) -> tuple[list[str], dict[str, str], list[str]]:
+    """`(legacy_stores, verbs, disable)`: the keys about its verbs and stores
+    that only crib's own facets (renames) or only declared ones (disables) use."""
     legacy = raw.get("legacy_stores", [])
     if not isinstance(legacy, list) or not all(
         isinstance(s, str) and s for s in legacy
@@ -473,16 +527,20 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(f"facet {noun!r}: a built-in facet's verbs can't be disabled")
     if not isinstance(disable, list) or not all(isinstance(v, str) for v in disable):
         raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
-    graph = _graph_keys(noun, raw, have, builtin)
-    available = available_verbs(have, fields=bool(params),
-                                taint=bool(graph["flags"].get("report_taint")),
-                                transitions=graph.get("transitions", {}))
+    return legacy, verbs, disable
+
+
+def _check_disable(noun: str, disable: list[str], available: tuple[str, ...]) -> None:
+    """Each disabled verb is one the facet has, and not all of them."""
     if not_its_own := sorted(set(disable) - set(available)):
         raise FacetSpecError(
             f"facet {noun!r}: can't disable {not_its_own}: its verbs are {list(available)}")
     if not set(available) - set(disable):
         raise FacetSpecError(f"facet {noun!r}: disables every one of its verbs")
-    about, when = _wording(noun, raw, [v for v in available if v not in disable])
+
+
+def _parse_title_from(noun: str, raw: Mapping[str, Any]) -> tuple[str, ...]:
+    """Where an item's title comes from (`title_from`, default the title)."""
     title_from = raw.get("title_from", ["title"])
     if isinstance(title_from, str):
         title_from = [title_from]
@@ -491,6 +549,11 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: title_from is a list of sources: \"title\", \"heading\", "
             "\"filename\" or a frontmatter key")
+    return tuple(t.strip() for t in title_from)
+
+
+def _parse_optional(noun: str, raw: Mapping[str, Any], params: Mapping[str, str]) -> frozenset[str]:
+    """The declared fields an item may leave out (the rest are required)."""
     optional = raw.get("optional", [])
     if not isinstance(optional, list) or not all(isinstance(o, str) for o in optional):
         raise FacetSpecError(f"facet {noun!r}: optional must be a list of field names")
@@ -498,23 +561,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: optional names {stray}, not among its fields "
             f"{sorted(params)}")
-    return FacetSpec(
-        noun=noun,
-        plural=plural,
-        store=store,
-        aspects=frozenset(have),
-        fields=MappingProxyType(dict(fields)),
-        legacy_stores=tuple(legacy),
-        verb_names=MappingProxyType(dict(verbs)),
-        params=MappingProxyType(params),
-        disabled=frozenset(str(v) for v in disable),
-        about=about,
-        when=MappingProxyType(when),
-        title_from=tuple(t.strip() for t in title_from),
-        optional=frozenset(optional),
-        **graph,
-        builtin=builtin,
-    )
+    return frozenset(optional)
 
 
 def item_title(spec: "FacetSpec | None", fm: Mapping[str, Any], body: str,
