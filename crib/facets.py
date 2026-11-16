@@ -896,6 +896,24 @@ def link_default(source: str | None, target: str | None) -> str:
     return table.get(target or "") or table.get("*") or "informed_by"
 
 
+# The roles whose items are finished business: a near-twin of one is answered
+# by that state ("already done"), not by "merge them".
+SETTLED_ROLES = frozenset({"done", "dropped", "paused", "retired"})
+
+
+def item_kinds() -> tuple[str, ...]:
+    """The facets whose items stand on their own (every one but the anchored,
+    whose items are about a code symbol): what near-duplicate and `similar`
+    checks compare, in registry order."""
+    return tuple(s.noun for s in FACETS if not s.has("anchored"))
+
+
+def settled(kind: str, status: str | None) -> bool:
+    """Is an item of `kind` with `status` finished business (SETTLED_ROLES)?"""
+    spec = _BY_NOUN.get(kind)
+    return spec is not None and spec.role(status) in SETTLED_ROLES
+
+
 def get(noun: str | None) -> FacetSpec | None:
     """The facet named `noun`, or None (a non-facet kind: doc, symbol, ...)."""
     return _BY_NOUN.get(noun or "")

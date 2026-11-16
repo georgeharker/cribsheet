@@ -312,8 +312,10 @@ def _duplicate_ids(crib: Crib, proj: str) -> list[dict[str, Any]]:
 def _near_duplicates(crib: Crib, proj: str) -> list[dict[str, Any]]:
     """Pairs of one kind whose stored body vectors are at least NEAR_DUPLICATE
     apart (exact, all pairs: a project's items fit one matrix)."""
+    from . import verbs
+
     out = []
-    for kind in ("note", "design", "plan"):
+    for kind in facets.item_kinds():
         items = [
             it
             for it in crib.store.items({"project": proj, "kind": kind}).values()
@@ -327,7 +329,8 @@ def _near_duplicates(crib: Crib, proj: str) -> list[dict[str, Any]]:
         rows, cols = np.nonzero(np.triu(S, 1) >= NEAR_DUPLICATE)
         for i, j in sorted(zip(rows.tolist(), cols.tolist()), key=lambda p: -S[p]):
             a, b = items[i], items[j]
-            verb = {"note": "note", "design": "design", "plan": "plan"}[kind]
+            spec = facets.by_noun(kind)
+            tool = verbs.view(spec).tool
             out.append(
                 {
                     "check": "near-duplicate",
@@ -336,9 +339,10 @@ def _near_duplicates(crib: Crib, proj: str) -> list[dict[str, Any]]:
                     "titles": [a.title, b.title],
                     "similarity": round(float(S[i, j]), 3),
                     "fix": (
-                        f"design_supersede {b.relpath} {a.relpath} if one replaces the other"
-                        if kind == "design"
-                        else f"merge into one ({verb}_append / {verb}_edit), then delete the other"
+                        f"{tool('supersede')} {b.relpath} {a.relpath} if one replaces the other"
+                        if spec.has("supersede")
+                        else f"merge into one ({tool('append')} / {tool('edit')}), then "
+                        "delete the other"
                     ),
                 }
             )

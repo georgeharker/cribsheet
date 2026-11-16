@@ -1409,6 +1409,17 @@ class Designs:
             f"{gone}"
         )
 
+    def tainted_items(self, proj: str) -> set[tuple[str, str]]:
+        """`(kind, relpath)` of each stale item whose facet reports staleness
+        (the same best-effort probe as `tainted_designs`, by facet)."""
+        try:
+            graph = self._load_graph(proj)
+            tainted = self._taint(graph)
+        except Exception:  # noqa: BLE001 — an ambient marker must never break a read
+            return set()
+        return {(n.kind, n.relpath) for n in graph.nodes.values()
+                if _spec(n.kind).report_taint and n.id in tainted}
+
     def tainted_designs(self, proj: str) -> set[str]:
         """Relpaths of this project's tainted design notes — the cheap ambient
         probe behind `status`'s `design_tainted` count and the `tainted: true`

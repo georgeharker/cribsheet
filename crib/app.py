@@ -1075,8 +1075,6 @@ class Crib:
                                 # a done/declined/parked/superseded item
     SIMILAR_DUPLICATE = 0.90    # body: the same thing again
     SIMILAR_CONFUSABLE = 0.85   # title, with the body below SIMILAR_SETTLED
-    _SETTLED_STATES = ("done", "verified", "declined", "parked", "superseded")
-    _SIMILAR_KINDS = ("note", "design", "plan")
 
     def _similar(self, proj: str, relpath: str, store: str = "notes") -> list[dict[str, Any]]:
         """What a just-written note / decision / plan item is close to, across
@@ -1116,7 +1114,8 @@ class Crib:
                    if e.kind == "dep" or e.kind in ("follows", "rests_on", "informed_by")}
         noun = kind if kind in self.designs._stores else None
         rows: list[dict[str, Any]] = []
-        for k in self._SIMILAR_KINDS:
+        for k in facets.item_kinds():
+            spec = facets.by_noun(k)
             for it in self.store.items({"project": proj, "kind": k}).values():
                 if it.id == me.id or not it.body_vec or not any(it.body_vec):
                     continue
@@ -1125,7 +1124,7 @@ class Crib:
                 status = it.facet.get("status")
                 # settled first: a twin of something done or declined is answered
                 # by that state, not by "merge them"
-                if status in self._SETTLED_STATES and (
+                if facets.settled(k, status) and (
                     b >= self.SIMILAR_SETTLED or t >= self.SIMILAR_CONFUSABLE
                 ):  # the same thing, or the same title, as finished work
                     verdict = "settled"
@@ -1142,8 +1141,11 @@ class Crib:
                        "score": round(b, 4), "title_score": round(t, 4),
                        "verdict": verdict,
                        "next": self._similar_next(verdict, k, it.relpath, status)}
-                if (noun and k == "design" and verdict in ("related", "duplicate")
-                        and status in ("active", "proposed")
+                # a graph item close to a LIVE item it would rest on (the link
+                # its facet takes toward that one by default), not yet linked
+                if (noun and verdict in ("related", "duplicate")
+                        and facets.link_default(noun, k) == "rests_on"
+                        and spec.role(status) in ("open", "gated")
                         and it.id not in my_deps):
                     row["link"] = (f"probably builds on it: {noun}_dep_add "
                                    f"{relpath} {it.relpath} (as rests_on)")
@@ -1154,17 +1156,19 @@ class Crib:
 
     @staticmethod
     def _similar_next(verdict: str, kind: str, relpath: str, status: str | None) -> str:
-        noun = {"note": "note", "design": "design", "plan": "plan"}[kind]
+        from . import verbs
+
+        tool = verbs.view(facets.by_noun(kind)).tool
         if verdict == "duplicate":
-            return (f"the same thing already exists: {noun}_append / {noun}_edit "
+            return (f"the same thing already exists: {tool('append')} / {tool('edit')} "
                     f"{relpath} instead, and delete this one")
         if verdict == "settled":
-            return (f"already {status}: read it ({noun}_read {relpath}) before "
+            return (f"already {status}: read it ({tool('read')} {relpath}) before "
                     f"keeping this one")
         if verdict == "confusable":
             return ("titles alike, contents not: retitle this one (or that one) so "
                     "the difference shows")
-        return f"related: {noun}_read {relpath}"
+        return f"related: {tool('read')} {relpath}"
 
     async def store_note(
         self,
@@ -1955,7 +1959,7 @@ class Crib:
         # Tainted design notes, loaded LAZILY and at most once per lookup — a
         # frontmatter-only graph scan, and only when a hit actually lands in the
         # design store, so the ambient marker costs nothing on the common query.
-        stale_designs: set[str] | None = None
+        stale_designs: set[tuple[str, str]] | None = None
         hits, seen = [], set()
         line_maps: dict[tuple[str, str], dict[str, tuple[int, int]]] = {}
         for h in raw:
@@ -1981,10 +1985,12 @@ class Crib:
             span = line_maps[(pillar, rp)].get(
                 section_key(heading, int(h.metadata.get("occurrence", 1) or 1))
             )
-            if pillar == "design":
+            # a hit on an item whose facet reports staleness carries the marker
+            spec = facets.by_store(pillar)
+            if spec is not None and spec.report_taint:
                 if stale_designs is None:
-                    stale_designs = self.designs.tainted_designs(proj)
-                stale = rp in stale_designs
+                    stale_designs = self.designs.tainted_items(proj)
+                stale = (spec.noun, rp) in stale_designs
             else:
                 stale = False
             hits.append(
