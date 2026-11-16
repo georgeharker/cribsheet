@@ -249,6 +249,12 @@ class Learnings:
                     "source": "code-note",
                 },
             )
+        if not existed:  # a new item carries its facet's required fields
+            from . import facets as _facets
+            from .fields import require
+
+            if (spec := _facets.get(self.noun)) is not None:
+                require(spec, fields)
         note.frontmatter.update(fields or {})  # a declared facet's own, coerced
         today = datetime.date.today().isoformat()
         note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"

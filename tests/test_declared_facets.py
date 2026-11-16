@@ -21,6 +21,7 @@ WIDGET = """
 [widget]
 plural = "widgets"
 aspects = ["enriched"]
+optional = ["color", "size"]
 
 [widget.fields]
 color = "str"
@@ -461,6 +462,7 @@ REVIEW = """
 [review]
 plural = "reviews"
 aspects = ["anchored"]
+optional = ["severity"]
 
 [review.fields]
 severity = "str"
@@ -565,6 +567,7 @@ def test_a_declared_anchored_facet_attaches_to_code_beside_learnings(tmp_path):
 TICKET = """
 [ticket]
 plural = "tickets"
+optional = ["changeset_id", "severity", "due"]
 
 [ticket.fields]
 changeset_id = "str"
@@ -1893,6 +1896,30 @@ def test_doctor_lists_untitled_items_when_the_facet_insists(tmp_path):
     )
     assert [i for i, _ in out["found"]] == ["a.md"]
     assert "title_from" in out["found"][0][1]
+
+
+def test_add_refuses_a_missing_required_field_and_doctor_names_files(tmp_path):
+    repo = _repo(tmp_path, "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+                 {"workflows/a.md": "---\nschedule: daily\n---\nno name here\n"})
+    out = _run(
+        tmp_path,
+        ROUTINE + '[routine.fields]\nname = "str"\nschedule = "str"\n',
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        from crib.doctor import diagnose
+        out["found"] = [(f["item"], f["field"]) for f in diagnose(crib, "p")["findings"]
+                        if f["check"] == "required field missing"]
+        out["refused"] = refused(lambda: asyncio.run(
+            crib.store_note("x", "X", "other", facet="routine", fields={"schedule": "d"})))
+        a = asyncio.run(crib.store_note("x", "X", "other", facet="routine",
+                                        fields={"name": "x", "schedule": "d"}))
+        out["edit"] = refused(lambda: asyncio.run(
+            crib.edit_note(a["relpath"], "changed", "other", facet="routine")))
+    """,
+    )
+    assert out["found"] == [["a.md", "name"]]
+    assert "needs `name`" in out["refused"]
+    assert out["edit"] is None
 
 
 def test_transitions_into_every_role_work(tmp_path):

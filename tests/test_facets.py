@@ -721,3 +721,20 @@ def test_title_from_round_trips_and_is_checked():
     assert parse("routine", {"plural": "routines"}).title_from == ("title",)
     with pytest.raises(FacetSpecError, match="title_from"):
         parse("routine", {"plural": "routines", "title_from": []})
+
+
+
+def test_declared_fields_are_required_unless_optional():
+    s = parse("routine", {"plural": "routines", "fields": {"name": "str", "timeout": "int"},
+                          "optional": ["timeout"]})
+    assert s.required == ("name",)
+    assert load(facets.to_toml([s]))[0].optional == {"timeout"}
+    with pytest.raises(FacetSpecError, match="not among its fields"):
+        parse("routine", {"plural": "routines", "fields": {"name": "str"}, "optional": ["nope"]})
+    from crib.errors import CribUserError
+    from crib.fields import require
+
+    with pytest.raises(CribUserError, match="needs `name`"):
+        require(s, {"timeout": 3})
+    require(s, {"name": "x"})
+    require(s, {}, have={"name": "x"})  # already on the item

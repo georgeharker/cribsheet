@@ -249,7 +249,7 @@ HOME = "note"
 _KEYS = frozenset(
     {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
      "status", "edges", "label", "requires_body", "extract", "report_taint",
-     "export_with_deps", "about", "when", "title_from"}
+     "export_with_deps", "about", "when", "title_from", "optional"}
 )
 
 
@@ -310,7 +310,15 @@ class FacetSpec:
     # frontmatter `title`, its first `heading`, its `filename`, or a named
     # frontmatter key (toucan's `name`). None found: no title (doctor says so).
     title_from: tuple[str, ...] = ("title",)
+    # A declared field is REQUIRED unless named here: `add` refuses an item
+    # without it, `crib project doctor` names files missing it.
+    optional: frozenset[str] = frozenset()
     builtin: bool = False
+
+    @property
+    def required(self) -> tuple[str, ...]:
+        """Its declared fields an item must carry (all but the optional ones)."""
+        return tuple(n for n in self.params if n not in self.optional)
 
     def has(self, aspect: str) -> bool:
         return aspect in self.aspects
@@ -429,6 +437,13 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: title_from is a list of sources: \"title\", \"heading\", "
             "\"filename\" or a frontmatter key")
+    optional = raw.get("optional", [])
+    if not isinstance(optional, list) or not all(isinstance(o, str) for o in optional):
+        raise FacetSpecError(f"facet {noun!r}: optional must be a list of field names")
+    if stray := sorted(set(optional) - set(params)):
+        raise FacetSpecError(
+            f"facet {noun!r}: optional names {stray}, not among its fields "
+            f"{sorted(params)}")
     return FacetSpec(
         noun=noun,
         plural=plural,
@@ -442,6 +457,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         about=about,
         when=MappingProxyType(when),
         title_from=tuple(t.strip() for t in title_from),
+        optional=frozenset(optional),
         **graph,
         builtin=builtin,
     )
@@ -725,6 +741,8 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"label = {q(s.label)}")
         if s.about:
             out.append(f"about = {q(s.about)}")
+        if s.optional:
+            out.append(f"optional = {arr([n for n in s.params if n in s.optional])}")
         if s.title_from != ("title",):
             out.append(f"title_from = {arr(s.title_from)}")
         if s.requires_body:

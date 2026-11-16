@@ -230,6 +230,14 @@ def _misfits(spec: Any, fm: dict[str, Any]) -> list[dict[str, Any]]:
     for name, kind in spec.params.items():
         value = fm.get(name)
         if value is None:
+            if name in spec.required:
+                out.append({
+                    "check": "required field missing",
+                    "kind": spec.noun,
+                    "field": name,
+                    "fix": f"give it `{name}:`, or mark the field optional in the "
+                    f"[{spec.noun}] spec (`optional = [\"{name}\"]`)",
+                })
             continue
         try:
             _fields.coerce(spec, name, value)

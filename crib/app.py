@@ -41,7 +41,7 @@ from .embed import build_embedder, embed_query_batch
 from .errors import CribUserError
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
-from .fields import conditions, matches, setting
+from .fields import conditions, matches, require, setting
 from .learnings import AnchoredSet, Learnings
 from .notes import Note, NoteParseError
 from .notestore import (
@@ -1189,6 +1189,7 @@ class Crib:
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
             fm["tags"] = tags
+        require(facets.by_noun(facet), fields)  # a new item: its required fields
         fm.update(setting(facets.by_noun(facet), fields))  # a declared facet's own
         note = Note(path=self.abspath(proj, relpath, facet), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note, facet)

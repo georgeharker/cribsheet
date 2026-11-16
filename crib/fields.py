@@ -63,6 +63,19 @@ def coerce(spec: FacetSpec, name: str, value: Any) -> int | str:
         ) from None
 
 
+def require(spec: FacetSpec, values: Mapping[str, Any] | None,
+            have: Mapping[str, Any] | None = None) -> None:
+    """Refuse a new item missing a required field (a declared field the spec
+    doesn't mark optional): not given now, and not already on the item."""
+    given = {k for k, v in (values or {}).items() if v is not None}
+    there = {k for k, v in (have or {}).items() if v is not None}
+    if missing := [n for n in spec.required if n not in given | there]:
+        names = ", ".join(f"`{n}`" for n in missing)
+        raise CribUserError(
+            f"a {spec.noun} needs {names} (required fields; the facet's spec can "
+            f"mark a field optional with `optional = [...]`)")
+
+
 def setting(spec: FacetSpec, values: Mapping[str, Any] | None) -> dict[str, Any]:
     """The fields a write sets: the given ones (None = leave alone), coerced."""
     return {k: coerce(spec, k, v) for k, v in (values or {}).items() if v is not None}
