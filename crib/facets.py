@@ -246,10 +246,44 @@ RESERVED_NAMES = frozenset(
 # store directory as a relpath prefix.
 HOME = "note"
 
+@dataclass(frozen=True)
+class Flag:
+    """A behaviour switch a facet spec may set: a key of the `[<noun>]` table
+    whose value changes how the engine treats the facet's items. Every flag is
+    declared here and nowhere else: its type, the aspects it needs (a flag on
+    a facet without them would do nothing, so it is refused), and what it
+    means. Adding a flag is one entry here plus the engine code that reads
+    `spec.flag(name)`; parse, validation, `to_toml` and `crib facets show`
+    follow from the entry."""
+
+    name: str
+    needs: frozenset[str]
+    meaning: str
+    type: str = "bool"  # "bool" | "str" | "choice"
+    choices: tuple[str, ...] = ()
+
+
+FLAGS: Mapping[str, Flag] = MappingProxyType({f.name: f for f in (
+    Flag("requires_body", frozenset({"links", "status"}),
+         "an item must have a body: add refuses a title alone (decisions)"),
+    Flag("report_taint", frozenset({"links"}),
+         "staleness is reported: a marker on hits and exports, the check and "
+         "tree verbs, a next step (decisions)"),
+    Flag("export_with_deps", frozenset({"links", "sources"}),
+         "its export includes the items its own depend on, from other facets "
+         "(plans)"),
+    Flag("label", frozenset({"sources"}), "the heading of its exported document",
+         type="str"),
+    Flag("extract", frozenset({"sources"}),
+         "the extraction procedure its extract verb hands an agent: decision-"
+         "style (proposed entries, confirmed one by one) or plan-style (one batch)",
+         type="choice", choices=("design", "plan")),
+)})
+
+
 _KEYS = frozenset(
     {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
-     "status", "edges", "label", "requires_body", "extract", "report_taint",
-     "export_with_deps", "about", "when", "title_from", "optional"}
+     "status", "edges", "about", "when", "title_from", "optional", *FLAGS}
 )
 
 
@@ -283,15 +317,35 @@ class FacetSpec:
     transitions: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     # The links aspect: the default link kind toward each target facet ("*").
     edges: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
-    label: str | None = None  # how a listing of these items is headed
-    requires_body: bool = False  # an item must say something (a decision)
-    extract: str | None = None  # the import procedure's prompt (design | plan)
-    # Its staleness is REPORTED (a `tainted` marker on hits and exports, rows in
-    # `check`, a next-step hint), not only felt through blocking (decisions).
-    report_taint: bool = False
-    # An export includes the items its own items depend on (a plan export
-    # carries the decisions it rests on).
-    export_with_deps: bool = False
+    # The flags it sets (FLAGS: name -> value); unset ones read as their
+    # default (False, or None for a string).
+    flags: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
+
+    def flag(self, name: str) -> Any:
+        """A flag's value on this facet (FLAGS[name]); unset: False / None."""
+        if name not in FLAGS:
+            raise KeyError(f"no such facet flag {name!r} (flags: {sorted(FLAGS)})")
+        return self.flags.get(name, False if FLAGS[name].type == "bool" else None)
+
+    @property
+    def requires_body(self) -> bool:
+        return bool(self.flag("requires_body"))
+
+    @property
+    def report_taint(self) -> bool:
+        return bool(self.flag("report_taint"))
+
+    @property
+    def export_with_deps(self) -> bool:
+        return bool(self.flag("export_with_deps"))
+
+    @property
+    def label(self) -> str | None:
+        return self.flag("label")
+
+    @property
+    def extract(self) -> str | None:
+        return self.flag("extract")
 
     def role(self, status: str | None) -> str | None:
         """The role `status` plays, or None (not one of this facet's)."""
@@ -421,7 +475,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
     graph = _graph_keys(noun, raw, have, builtin)
     available = available_verbs(have, fields=bool(params),
-                                taint=bool(graph.get("report_taint")),
+                                taint=bool(graph["flags"].get("report_taint")),
                                 transitions=graph.get("transitions", {}))
     if not_its_own := sorted(set(disable) - set(available)):
         raise FacetSpecError(
@@ -524,6 +578,32 @@ def _check_shape(noun: str, have: set[str], raw: Mapping[str, Any]) -> None:
             "and anchored facets")
 
 
+def _flags(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, Any]:
+    """The FLAGS a spec sets, each checked against its type and the aspects
+    it needs. A false bool is the same as not setting it."""
+    out: dict[str, Any] = {}
+    for name, f in FLAGS.items():
+        if (value := raw.get(name)) is None:
+            continue
+        if f.type == "bool":
+            if not isinstance(value, bool):
+                raise FacetSpecError(f"facet {noun!r}: {name} is true or false, not {value!r}")
+            if not value:
+                continue
+        elif f.type == "choice":
+            if value not in f.choices:
+                raise FacetSpecError(
+                    f"facet {noun!r}: {name} is {' or '.join(f.choices)}, not {value!r}")
+        elif not isinstance(value, str):
+            raise FacetSpecError(f"facet {noun!r}: {name} is a string, not {value!r}")
+        if missing := sorted(f.needs - have):
+            raise FacetSpecError(
+                f"facet {noun!r}: {name} needs the {', '.join(missing)} aspect"
+                f"{'s' if len(missing) > 1 else ''} ({f.meaning})")
+        out[name] = value
+    return out
+
+
 def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str],
                 builtin: bool = False) -> dict[str, Any]:
     """A spec's status / edges / label keys, checked against its aspects."""
@@ -575,19 +655,7 @@ def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str],
             raise FacetSpecError(
                 f"facet {noun!r}: edges are target = link kind (one of {list(LINK_KINDS)})")
         out["edges"] = MappingProxyType({str(k): str(v) for k, v in edges.items()})
-    if (label := raw.get("label")) is not None:
-        out["label"] = str(label)
-    if raw.get("requires_body"):
-        out["requires_body"] = True
-    for key in ("report_taint", "export_with_deps"):
-        if raw.get(key):
-            if "links" not in have:
-                raise FacetSpecError(f"facet {noun!r}: {key} needs the links aspect")
-            out[key] = True
-    if (ex := raw.get("extract")) is not None:
-        if ex not in ("design", "plan"):
-            raise FacetSpecError(f"facet {noun!r}: extract is design or plan, not {ex!r}")
-        out["extract"] = ex
+    out["flags"] = MappingProxyType(_flags(noun, raw, have))
     if "links" in have and "edges" not in out and not builtin:
         # No edges table: links toward its OWN items mean what the facet is
         # for: ordering when it tracks progress (wait until done), grounding
@@ -737,21 +805,16 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"legacy_stores = {arr(s.legacy_stores)}")
         if s.disabled:
             out.append(f"disable = {arr(sorted(s.disabled))}")
-        if s.label:
-            out.append(f"label = {q(s.label)}")
         if s.about:
             out.append(f"about = {q(s.about)}")
         if s.optional:
             out.append(f"optional = {arr([n for n in s.params if n in s.optional])}")
         if s.title_from != ("title",):
             out.append(f"title_from = {arr(s.title_from)}")
-        if s.requires_body:
-            out.append("requires_body = true")
-        if s.extract:
-            out.append(f"extract = {q(s.extract)}")
-        for key in ("report_taint", "export_with_deps"):
-            if getattr(s, key):
-                out.append(f"{key} = true")
+        for name, f in FLAGS.items():
+            if name in s.flags:
+                v = s.flags[name]
+                out.append(f"{name} = {'true' if f.type == 'bool' else q(str(v))}")
         own = dict(s.params) if s.params else {
             n: t for n, t in s.fields.items() if n not in brought}
         if own:

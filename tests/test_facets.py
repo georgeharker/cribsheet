@@ -736,3 +736,25 @@ def test_declared_fields_are_required_unless_optional():
         require(s, {"timeout": 3})
     require(s, {"name": "x"})
     require(s, {}, have={"name": "x"})  # already on the item
+
+
+
+def test_flags_are_declared_once_and_checked_from_the_registry():
+    """Tidy C: every flag a spec may set is a FLAGS entry (type, needed
+    aspects, meaning); parse and to_toml follow from it."""
+    assert set(facets.FLAGS) <= facets._KEYS
+    graph = {"plural": "ts", "aspects": ["links", "status", "sources"],
+             "status": {"values": {"o": "open", "d": "done"}}}
+    s = parse("t", {**graph, "report_taint": True, "label": "Ts", "extract": "plan"})
+    assert (s.report_taint, s.label, s.extract, s.requires_body) == (True, "Ts", "plan", False)
+    assert s.flag("export_with_deps") is False
+    assert load(facets.to_toml([s]))[0].flags == s.flags
+    with pytest.raises(FacetSpecError, match="needs the links aspect"):
+        parse("t", {"plural": "ts", "report_taint": True})
+    with pytest.raises(FacetSpecError, match="true or false"):
+        parse("t", {**graph, "report_taint": "yes"})
+    with pytest.raises(FacetSpecError, match="design or plan"):
+        parse("t", {**graph, "extract": "other"})
+    with pytest.raises(KeyError):
+        s.flag("nope")
+    assert all(f.meaning for f in facets.FLAGS.values())

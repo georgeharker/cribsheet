@@ -403,6 +403,14 @@ then falls back to the built-ins, and `crib facets show` says why).
 | `label` | string | `<Noun> items` | the heading of its exported document (`export`). |
 | `extract` | `"design" \| "plan"` | `"plan"` | which extraction procedure its `extract` verb hands an agent: decision-style (proposed entries, confirmed one by one) or plan-style (one batch of items in the doc's order). With `sources`. |
 
+**Flags** are the five keys above that switch an engine behaviour on for a
+facet: `requires_body`, `report_taint`, `export_with_deps`, `label` and
+`extract`. Each needs particular aspects (a flag on a facet without them
+would do nothing, so it is refused, saying which). They are declared in one
+place, `crib.facets.FLAGS`, with their type, needed aspects and meaning, so a
+new behaviour is one entry there plus the engine code that reads it;
+`crib facets show` lists the flags each facet sets.
+
 `legacy_stores` and `[<noun>.verbs]` (renaming a verb) exist for crib's own
 facets only; `crib facets show --toml` shows them in use.
 

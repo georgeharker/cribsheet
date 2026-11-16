@@ -3972,6 +3972,9 @@ def _facets_cmd(args: Any) -> int:
                 print("  fields " + ", ".join(f"{n} ({t})" for n, t in spec.params.items()))
             if spec.disabled:
                 print("  disabled " + ", ".join(sorted(spec.disabled)))
+            if spec.flags:
+                print("  flags " + ", ".join(
+                    k if v is True else f"{k}={v}" for k, v in spec.flags.items()))
         for noun, p in plan.items():
             if p["status"] == "removed":
                 print(f"{noun}  (removed from the facets file; still in the store)")
