@@ -610,3 +610,14 @@ def test_every_generated_verb_parameter_is_a_reserved_field():
 def test_a_field_cannot_take_a_frontmatter_key_or_parameter_crib_uses(name):
     with pytest.raises(FacetSpecError, match="reserved"):
         parse("routine", {"plural": "routines", "fields": {name: "str"}})
+
+
+
+def test_every_spec_key_is_documented():
+    """docs/facets.md's spec reference names every key a facets file may use."""
+    from pathlib import Path
+
+    doc = (Path(__file__).resolve().parent.parent / "docs" / "facets.md").read_text()
+    ref = doc.split("## Spec reference", 1)[1].split("\n## ", 1)[0]
+    missing = [k for k in sorted(facets._KEYS) if f"`{k}`" not in ref and f"<noun>.{k}" not in ref]
+    assert missing == [], f"document these in docs/facets.md's spec reference: {missing}"

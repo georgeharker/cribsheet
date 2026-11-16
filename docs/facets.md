@@ -24,6 +24,7 @@ declaring its own fields. crib's own facets are specs too (the shipped
 - [Tool sets](#tool-sets)
 - [How agents learn about your facets](#how-agents-learn-about-your-facets)
 - [Names crib keeps for itself](#names-crib-keeps-for-itself)
+- [Spec reference](#spec-reference)
 - [Examples](#examples)
 
 ## Quick start
@@ -93,6 +94,7 @@ One table per facet:
 | `about` | what one of these items is, and when to reach for this family rather than notes. Added to every one of its tool descriptions, after crib's own wording (an agent decides which tool to call from these). |
 | `[<noun>.when]` | `verb = "wording"`: extra wording for one verb's tool, e.g. `add = "Name the schedule in the title."` |
 
+Every key, with its type and default, is in the [spec reference](#spec-reference).
 crib's own facets can't be changed from this file yet (only declared ones).
 `about` and `when` change only what agents read: no `crib facets sync` is
 needed, just a daemon restart.
@@ -355,6 +357,32 @@ file, restart the daemon and start a new session.
 - **In a mapped file**, those frontmatter keys mean what crib says they mean;
   another tool reading the same files should leave them alone. crib folds a
   file's `type` into its tag filters.
+
+## Spec reference
+
+Everything a `[<noun>]` table can say. Unknown keys are refused (the whole file
+then falls back to the built-ins, and `crib facets show` says why).
+
+| key | type | default | meaning |
+|---|---|---|---|
+| `[<noun>]` | table name | (required) | the facet's name: a lowercase identifier without `_`, not a [reserved name](#names-crib-keeps-for-itself). The item kind, the CLI noun and the tools' prefix (`<noun>_add`). |
+| `plural` | identifier | (required) | its tool set's name (`--tools <plural>:ro`), and how it reads in prose. |
+| `store` | directory name | the plural | the directory its items live in, in each project (or at its mapping). Not one crib keeps for itself (`symbol_index`, `sources`, ...). |
+| `aspects` | list | `["core"]` | what it can do ([aspects](#aspects-what-a-facet-can-do)); `core` is implied. `links` and `status` come together (a graph facet); `progress`, `ordered`, `sources` and `supersede` need them; `anchored` and `enriched` don't mix with them. |
+| `about` | string | none | what one of these items is, and when to use this family rather than notes; added to every one of its tool descriptions and to the session section ([how agents learn](#how-agents-learn-about-your-facets)). |
+| `disable` | list of verbs | none | verbs it doesn't want; each must be one its aspects give it (a graph facet's include its transitions), and not all of them. |
+| `[<noun>.fields]` | `name = "int" \| "str" \| "date"` | none | its own typed fields ([fields](#typed-fields-and-queries)); not on a graph facet yet. |
+| `[<noun>.when]` | `verb = "wording"` | none | extra wording for one verb's tool description. |
+| `[<noun>.status]` | table | (required with `status`) | `values = { <status> = "<role>", ... }` (every status plays a [role](#graph-facets-statuses-transitions-links)); `initial` (default: the first value); `transitions = { <verb> = "<status>", ... }`, each a verb of its own, never a graph verb's name and never into a `retired` status. `progress` needs a `done` status, `supersede` a `retired` one. |
+| `[<noun>.edges]` | `target = "follows" \| "rests_on" \| "informed_by"` | see [links](#graph-facets-statuses-transitions-links) | the default link kind toward each target facet (`"*"` for the rest). |
+| `report_taint` | bool | false | it reports staleness: a marker on its search hits, and the `check` and `tree` verbs (as decisions do). Needs `links`. |
+| `export_with_deps` | bool | false | its export includes the items it depends on, from other facets (as plans' does). Needs `links`. |
+| `requires_body` | bool | false | an item must have a body: `add` refuses a title alone (as decisions do). |
+| `label` | string | `<Noun> items` | the heading of its exported document (`export`). |
+| `extract` | `"design" \| "plan"` | `"plan"` | which extraction procedure its `extract` verb hands an agent: decision-style (proposed entries, confirmed one by one) or plan-style (one batch of items in the doc's order). With `sources`. |
+
+`legacy_stores` and `[<noun>.verbs]` (renaming a verb) exist for crib's own
+facets only; `crib facets show --toml` shows them in use.
 
 ## Examples
 
