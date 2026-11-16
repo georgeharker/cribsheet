@@ -106,12 +106,24 @@ function onPath(cmd: string): boolean {
 // The directive above describes crib's own facets; a DECLARED facet (the user's
 // facets file) exists only on the machines that declare it, so its guidance is
 // generated where it runs: `crib facets instructions` (registry only, no store
-// opened; empty without any). Asked once per process, quietly: no crib, an
+// opened; empty without any). Asked at most once per process, and only when a
+// facets file exists (no file: no crib spawned at all); quietly: no crib, an
 // older crib without the subcommand, or a slow one just means no section.
+function facetsFile(env: NodeJS.ProcessEnv): string {
+    if (env.CRIB_FACETS_FILE) return env.CRIB_FACETS_FILE
+    if (env.CRIB_CONFIG_DIR) return join(env.CRIB_CONFIG_DIR, "facets.toml")
+    return join(env.XDG_CONFIG_HOME || join(homedir(), ".config"), "crib", "facets.toml")
+}
+
 let declaredFacets: string | undefined
-function declaredFacetsSection(cmd: Command | undefined, env: NodeJS.ProcessEnv): string {
+function declaredFacetsSection(
+    resolve: () => Command | undefined,
+    env: NodeJS.ProcessEnv,
+): string {
     if (declaredFacets !== undefined) return declaredFacets
     declaredFacets = ""
+    if (!existsSync(facetsFile(env))) return declaredFacets
+    const cmd = resolve()
     if (!cmd) return declaredFacets
     const r = spawnSync(cmd.cmd, [...cmd.args, "facets", "instructions"], {
         env,
@@ -189,7 +201,7 @@ export default function cribsheet(pi: ExtensionAPI): void {
     pi.on("before_agent_start", (event) => {
         if (!wantInstructions || !CRIB_DIRECTIVE) return
         if (DIRECTIVE_MARKER && event.systemPrompt.includes(DIRECTIVE_MARKER)) return
-        const extra = declaredFacetsSection(resolveCrib(), process.env)
+        const extra = declaredFacetsSection(resolveCrib, process.env)
         const directive = extra ? `${CRIB_DIRECTIVE}\n\n${extra}` : CRIB_DIRECTIVE
         return { systemPrompt: `${event.systemPrompt}\n\n${directive}` }
     })

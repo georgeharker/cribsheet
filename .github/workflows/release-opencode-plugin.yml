@@ -41,6 +41,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
+          TAG: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
         run: .github/scripts/wait-for-release-tests.sh
 
   publish:

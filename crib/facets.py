@@ -822,6 +822,9 @@ def instructions(specs: Iterable[FacetSpec] | None = None,
             line += (" Not ready in this store yet: it waits for "
                      "`crib facets sync --apply` (its tools refuse until then).")
         out.append(line)
+    out += ["", "A tool of one of these that refuses with \"isn't ready in this store\" "
+            "is waiting for `crib facets sync --apply`: say so rather than work "
+            "around it."]
     return "\n".join(out) + "\n"
 
 

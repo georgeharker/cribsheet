@@ -93,10 +93,20 @@ class Learnings:
             return rel
         # A note written before the case-hash slug keeps its old filename — those are
         # deliberately never renamed, since a human may have the path in hand.
-        for cand in (f"{ref_slug(binding)}.md", f"{legacy_ref_slug(binding)}.md"):
+        for cand in self._candidates(proj, binding):
             if self.store.abspath(proj, cand).exists():
                 return cand
         return None
+
+    def _candidates(self, proj: str, binding: str) -> tuple[str, ...]:
+        """The filenames a learning for `binding` may already have: the
+        canonical and legacy slugs, with this location's suffix (a mapped
+        facet's glob suffix, `.md` otherwise) and, beside it, plain `.md`."""
+        sfx = self.store.suffix(proj)
+        names = [f"{ref_slug(binding)}{sfx}", f"{legacy_ref_slug(binding)}{sfx}"]
+        if sfx != ".md":
+            names += [f"{ref_slug(binding)}.md", f"{legacy_ref_slug(binding)}.md"]
+        return tuple(names)
 
     def relpath(self, proj: str, entry: dict[str, Any]) -> str:
         """THE learning-note relpath for a symbol — the ONE function every verb uses.
@@ -111,7 +121,7 @@ class Learnings:
             rel = by_binding.get(b)
             if rel:
                 return rel
-            for cand in (f"{ref_slug(b)}.md", f"{legacy_ref_slug(b)}.md"):
+            for cand in self._candidates(proj, b):
                 if self.store.abspath(proj, cand).exists():
                     return cand
         # a new note's name ends as its location's glob wants (a mapped facet)
@@ -409,7 +419,7 @@ class Learnings:
                 rows["orphan"].append({"relpath": path.name, "binding": bound})
                 continue
             ref = symbol_key(entry)
-            target = f"{ref_slug(ref)}.md"
+            target = f"{ref_slug(ref)}{self.store.suffix(proj)}"
             if (
                 fm.get("symbol_ref") == ref
                 and "symbol" not in fm

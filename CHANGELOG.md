@@ -9,6 +9,29 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.24.0-dev2] - 2026-11-15
+
+### Fixed
+
+- Session start can no longer wait on a download: the Claude Code hook asks
+  for this machine's declared-facets section only when a facets file exists,
+  only from a `crib` it can run directly (never the plugin's `uvx`
+  fallback), and gives up after 5 seconds. The OpenCode and Pi plugins ask
+  at most once per process, and not at all without a facets file (0.24.0-dev1
+  ran `crib --version` on every turn).
+- `learning migrate`, new learnings and `import` name files to match a
+  mapping's glob suffix (`*.lrn.md`, `**/*.rt.md`).
+- A mapping repointed in `.crib` is followed only once every item has moved
+  to the new home (one moved file used to be enough).
+- A move that fails part-way across filesystems leaves no partial copy, and
+  says so if anything couldn't be put back.
+- While a facet waits for `crib project adopt`, items already committed into
+  its mapping (a teammate's) take part in dependencies and gating.
+- `crib facets sync` names a moved store's leftover files in repo-adopted
+  projects too.
+- Release workflows: a plugin release reads only this tag's release run, and
+  stops at once if that run ends without reaching its build.
+
 ## [0.24.0-dev1] - 2026-11-15
 
 ### Highlights

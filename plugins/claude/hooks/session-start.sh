@@ -39,13 +39,28 @@ warn() {
 # where a ../../ symlink dangles and this hook silently emits nothing.
 # This machine's DECLARED facets (its own facets file) aren't in the shipped
 # directive, which describes crib's own; `crib facets instructions` generates
-# their section here (registry only, no store opened). Only when crib resolves
-# without a fetch: a first-run `uvx` download must never stall session start
-# (the MCP server's own instructions carry the same section).
+# their section here (registry only, no store opened). It must never stall
+# session start: nothing without a facets file; only an executable $CRIB_BIN or
+# the `crib` on PATH, called DIRECTLY (bin/crib would fall back to a `uvx`
+# download when that crib is older than the plugin); capped at 5 s (macOS has no
+# timeout(1)). An older crib without the subcommand prints nothing. The MCP
+# server's own instructions carry the same section.
 _declared_facets() {
-  [[ -n "${CRIB_BIN:-}" || -n "${CRIBSHEET_DEV:-}" ]] || command -v crib >/dev/null 2>&1 \
-    || return 0
-  "$dir/bin/crib" facets instructions 2>/dev/null || true
+  local ff="${CRIB_FACETS_FILE:-${CRIB_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/crib}/facets.toml}"
+  [[ -f "$ff" ]] || return 0
+  local c="${CRIB_BIN:-}"
+  [[ -n "$c" && -x "$c" ]] || c="$(command -v crib 2>/dev/null || true)"
+  [[ -n "$c" && -x "$c" ]] || return 0
+  [[ "$c" -ef "$dir/bin/crib" ]] && return 0  # ourselves: that is the uvx path
+  local out pid killer
+  out="$(mktemp "${TMPDIR:-/tmp}/crib-facets.XXXXXX")" || return 0
+  "$c" facets instructions >"$out" 2>/dev/null &
+  pid=$!
+  ( sleep 5; kill "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  killer=$!
+  if wait "$pid" 2>/dev/null; then cat "$out"; fi
+  kill "$killer" 2>/dev/null || true
+  rm -f "$out"
 }
 
 _emit() {

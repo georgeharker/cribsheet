@@ -628,10 +628,15 @@ class Designs:
             if (why := store.pending_move(proj)) is not None:
                 graph.pending[kind] = why
                 home = store.project_paths(proj).home_dir(store.spec.segment)
-                for node in self._nodes_from_files(kind, home):
+                nodes = self._nodes_from_files(kind, home)
+                # and what is already in the mapping (a teammate's committed items)
+                loc = store.location(proj)
+                if loc is not None and loc.available:
+                    nodes += self._nodes_owned(kind, loc)
+                for node in nodes:
                     for src in node.sources:
                         src["current"] = self._section_hash(proj, src, docs)
-                    graph.nodes[node.id] = node
+                    graph.nodes.setdefault(node.id, node)
                 continue
             try:
                 d = store.root(proj)
@@ -740,6 +745,23 @@ class Designs:
                 continue  # one broken note must not blind the graph
             if fm.get("id"):
                 out.append(_node_from_file(kind, path.name, fm, body))
+        return out
+
+    @staticmethod
+    def _nodes_owned(kind: str, loc: Any) -> list[Node]:
+        """`kind`'s nodes parsed from the files a mapped location owns (its
+        glob), relpaths relative to the mapping."""
+        out: list[Node] = []
+        for path in sorted(loc.root.rglob("*.md")):
+            rel = str(path.relative_to(loc.root))
+            if not loc.owns(rel):
+                continue
+            try:
+                fm, body = notes.parse(path.read_text(), path)
+            except (OSError, UnicodeDecodeError, notes.NoteParseError):
+                continue
+            if fm.get("id"):
+                out.append(_node_from_file(kind, rel, fm, body))
         return out
 
     def _note_nodes(self, proj: str, ids: set[str]) -> dict[str, Node]:

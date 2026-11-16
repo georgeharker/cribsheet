@@ -22,7 +22,8 @@
 //   5. /crib command — register an OpenCode command mirroring commands/crib.md.
 
 import { spawnSync } from "node:child_process"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
+import { homedir } from "node:os"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import type { Plugin } from "@opencode-ai/plugin"
@@ -171,18 +172,28 @@ function splitArgs(value: string | undefined): string[] {
     return value.split(/\s+/).filter((s) => s.length > 0)
 }
 
-/** Resolve how to invoke crib: explicit option → env command → `crib` on PATH →
- *  `uv run --project <checkout> crib`. */
 // ── this machine's declared facets ────────────────────────────────
 // The directive above describes crib's own facets; a DECLARED facet (the user's
 // facets file) exists only on the machines that declare it, so its guidance is
 // generated where it runs: `crib facets instructions` (registry only, no store
-// opened; empty without any). Asked once per process, quietly: no crib, an
+// opened; empty without any). Asked at most once per process, and only when a
+// facets file exists (no file: no crib spawned at all); quietly: no crib, an
 // older crib without the subcommand, or a slow one just means no section.
+function facetsFile(env: NodeJS.ProcessEnv): string {
+    if (env.CRIB_FACETS_FILE) return env.CRIB_FACETS_FILE
+    if (env.CRIB_CONFIG_DIR) return join(env.CRIB_CONFIG_DIR, "facets.toml")
+    return join(env.XDG_CONFIG_HOME || join(homedir(), ".config"), "crib", "facets.toml")
+}
+
 let declaredFacets: string | undefined
-function declaredFacetsSection(cmd: Command | undefined, env: NodeJS.ProcessEnv): string {
+function declaredFacetsSection(
+    resolve: () => Command | undefined,
+    env: NodeJS.ProcessEnv,
+): string {
     if (declaredFacets !== undefined) return declaredFacets
     declaredFacets = ""
+    if (!existsSync(facetsFile(env))) return declaredFacets
+    const cmd = resolve()
     if (!cmd) return declaredFacets
     const r = spawnSync(cmd.cmd, [...cmd.args, "facets", "instructions"], {
         env,
@@ -193,6 +204,8 @@ function declaredFacetsSection(cmd: Command | undefined, env: NodeJS.ProcessEnv)
     return declaredFacets
 }
 
+/** Resolve how to invoke crib: explicit option → env command → `crib` on PATH →
+ *  `uv run --project <checkout> crib`. */
 function resolveCrib(opts: Options, env: NodeJS.ProcessEnv): Command | undefined {
     const extra = opts.args ?? []
     if (opts.crib) return { cmd: opts.crib, args: extra }
@@ -402,7 +415,7 @@ const CribsheetPlugin: Plugin = async ({ client }, options) => {
     const systemHook = async (_input: unknown, output: { system: string[] }) => {
         if (!wantInstructions || !CRIB_DIRECTIVE) return
         // the serve args (opts.args) are the backend's, not the CLI's
-        const extra = declaredFacetsSection(resolveCrib({ ...opts, args: [] }, env), env)
+        const extra = declaredFacetsSection(() => resolveCrib({ ...opts, args: [] }, env), env)
         output.system.push(extra ? `${CRIB_DIRECTIVE}\n\n${extra}` : CRIB_DIRECTIVE)
     }
 

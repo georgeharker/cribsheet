@@ -3980,13 +3980,18 @@ def _facets_cmd(args: Any) -> int:
               "--apply --shared once their facets files agree")
         return 1
     crib.store.facet_sync(drop=args.drop, shared=args.shared)
-    # M3: a facet whose store moved leaves its files in the old directories
+    # a facet whose store moved leaves its files in the old directories (unless
+    # another facet now has that store): in crib's data dir, and in each project
+    # adopted into a repo (`store:`)
     for p in todo:
         old = p.get("was_store")
         spec = facets.get(p["facet"])
-        if old and spec is not None and old != spec.store:
-            left = sorted(d for d in crib.paths.projects_dir.glob(f"*/{old}")
-                          if d.is_dir() and any(d.rglob("*.md")))
+        if old and spec is not None and old != spec.store and facets.by_store(old) is None:
+            roots = [crib.paths.projects_dir / n for n in crib.projects()]
+            roots += [pp.data_root for n in crib.projects()
+                      if (pp := crib.project_paths(n)).in_repo and pp.available]
+            left = sorted({d for r in roots if (d := r / old).is_dir()
+                           and any(d.rglob("*.md"))})
             for d in left:
                 print(f"  note: {p['facet']} items are still in {d}: move them to "
                       f"{d.parent / spec.store} (the store is now {spec.store!r})")

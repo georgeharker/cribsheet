@@ -489,12 +489,15 @@ class Crib:
                 found = self._stamped_ids(root, [r for r in scan(root, ".md", recursive=True)
                                                  if nloc.owns(r)]) \
                     if root is not None and nloc is not None and root.is_dir() else set()
-            if found & ids:
-                continue
+            if ids <= found:
+                continue  # every item is at the new home
             what = "removed" if new is None else "moved"
             where = link.root / ".crib" if link.root is not None else ".crib"
-            print(f"[crib] {where}: facets.{noun} was {what}, but its "
-                  f"{n} item(s) are still in {loc.root} and the new home is empty — "
+            missing = len(ids - found)
+            state = ("the new home is empty" if not found else
+                     f"the new home holds {len(found)} of the facet's items")
+            print(f"[crib] {where}: facets.{noun} was {what}, but {missing} of its "
+                  f"item(s) are still in {loc.root} and {state} — "
                   f"keeping the mapping until they move: `crib project release` "
                   f"(back to crib's data dir), move the files"
                   f"{'' if new is None else ' to the new dir'}, or remove them if the "
@@ -1021,6 +1024,19 @@ class Crib:
     def project_is_new(self, proj: str) -> bool:
         """True if `proj` has no notes dir yet (a write would create it)."""
         return not self.project_paths(proj).notes_dir.exists()
+
+    def _import_relpath(self, proj: str, facet: str, src: Path) -> str:
+        """Where an imported doc lands: `imported/<name>`, or under a mapped
+        location, a name its glob takes (the glob's suffix; no `imported/` dir
+        when the glob doesn't reach into subdirectories)."""
+        store = self._facet_store(facet)
+        loc = store.location(proj)
+        rel = f"imported/{src.name}"
+        if loc is None or loc.prefix is not None or loc.owns(rel):
+            return rel
+        stem = src.name[: -len(".md")] if src.name.endswith(".md") else src.stem
+        nested = f"imported/{stem}{loc.suffix}"
+        return nested if loc.owns(nested) else f"imported-{stem}{loc.suffix}"
 
     def _unique_relpath(self, proj: str, slug: str, facet: str = facets.HOME) -> str:
         """`<slug>.md`, with a numeric suffix only on collision — predictable and
@@ -2759,12 +2775,17 @@ class Crib:
         import shutil
 
         moved = 0
+        kept = 0
         for p, target in Crib._tree_pairs(src, dst):
             if target.exists():
+                kept += 1  # never overwritten; the source keeps it
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(p), str(target))
             moved += 1
+        if kept:
+            print(f"[crib] {kept} version stash(es) already in {dst} were kept; "
+                  f"the copies in {src} stay where they are", file=sys.stderr)
         return moved
 
     @staticmethod
@@ -2792,15 +2813,33 @@ class Crib:
                 f"({', '.join(taken[:3])}{', ...' if len(taken) > 3 else ''}): "
                 "nothing was moved. Move those aside and re-run")
         done: list[tuple[Path, Path]] = []
+        current: tuple[Path, Path] | None = None
         try:
             for src, dst in pairs:
+                current = (src, dst)
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.move(str(src), str(dst))
                 done.append((src, dst))
+            current = None
         except OSError as e:
-            for src, dst in reversed(done):
+            # across filesystems a move is copy + unlink: a copy that failed
+            # part-way leaves a partial file at the destination; the source is
+            # still whole, so the partial copy goes
+            if current is not None and current[0].exists() and current[1].exists():
                 with contextlib.suppress(OSError):
+                    current[1].unlink()
+            stuck: list[str] = []
+            for src, dst in reversed(done):
+                try:
                     shutil.move(str(dst), str(src))
+                except OSError:
+                    stuck.append(str(dst))
+            if stuck:
+                raise CribUserError(
+                    f"moving {what} failed at {e.filename or '?'} ({e.strerror or e}), "
+                    f"and {len(stuck)} file(s) that had moved could not be put back: "
+                    f"{', '.join(stuck[:5])}{', ...' if len(stuck) > 5 else ''} "
+                    "(they are whole, at the destination)") from e
             raise CribUserError(
                 f"moving {what} failed at {e.filename or '?'} ({e.strerror or e}); "
                 f"nothing was moved") from e
@@ -6426,7 +6465,7 @@ class Crib:
             src = src.resolve()
             if not src.is_file():
                 raise CribUserError(f"not a file: {p}")
-            relpath = f"imported/{src.name}"
+            relpath = self._import_relpath(proj, facet, src)
             sfm, sbody = notes.parse(src.read_text())
             tgt = self.abspath(proj, relpath, facet)
             prev = notes.load(tgt) if tgt.exists() else None

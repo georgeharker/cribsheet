@@ -1611,39 +1611,142 @@ def test_agents_are_told_about_this_machines_declared_facets(tmp_path):
     assert out["none"] == ""
 
 
-def test_the_claude_hook_adds_the_declared_facets_section(tmp_path):
-    """plugins/claude/hooks/session-start.sh: the shipped directive, then what
-    `bin/crib facets instructions` prints, in one SessionStart JSON."""
-    import json as _json
+def _hook_functions() -> str:
     import re
-    import shutil
 
-    hook = Path(__file__).resolve().parent.parent / "plugins" / "claude" / "hooks" / "session-start.sh"
-    src = hook.read_text()
-    funcs = "".join(m.group(0) for m in re.finditer(
-        r"^(warn|_declared_facets|_emit)\(\) \{.*?^\}\n", src, re.S | re.M))
+    hook = (Path(__file__).resolve().parent.parent / "plugins" / "claude" / "hooks"
+            / "session-start.sh")
+    return "".join(m.group(0) for m in re.finditer(
+        r"^(warn|_declared_facets|_emit)\(\) \{.*?^\}\n", hook.read_text(), re.S | re.M))
+
+
+def _run_hook(tmp_path: Path, crib_body: str | None, *, facets: bool = True,
+              via: str = "bin", extra_env: dict | None = None) -> tuple[str, float]:
+    """Run the hook's _emit (with _declared_facets) against a fake plugin dir;
+    `crib_body` is a fake crib's script (None: none), found on PATH (`via=path`),
+    as $CRIB_BIN (`via=bin`), or AS the plugin's own bin/crib (`via=self`)."""
+    import json as _json
+    import time
+
     plug = tmp_path / "plugin"
-    (plug / "bin").mkdir(parents=True)
+    (plug / "bin").mkdir(parents=True, exist_ok=True)
     (plug / "instructions.txt").write_text("# Memory (cribsheet)\nthe directive\n")
-    fake = plug / "bin" / "crib"
-    fake.write_text("#!/usr/bin/env bash\n[ \"$1 $2\" = 'facets instructions' ] && "
-                    "printf '### Declared facets on this machine\\n- routines\\n'\n")
-    fake.chmod(0o755)
-    script = f'set -euo pipefail\ndir={str(plug)!r}\n_warnings=""\n{funcs}_emit\n'
-    if shutil.which("bash") is None:
-        pytest.skip("no bash")
-    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
-                       env={**os.environ, "CRIB_BIN": str(fake)}, timeout=30)
+    fb = tmp_path / "fakebin"
+    fb.mkdir(exist_ok=True)
+    env = {k: v for k, v in os.environ.items() if k not in ("CRIB_BIN", "CRIBSHEET_DEV")}
+    env["PATH"] = f"{fb}:/usr/bin:/bin"
+    ff = tmp_path / "facets.toml"
+    if facets:
+        ff.write_text("[routine]\nplural = \"routines\"\n")
+    env["CRIB_FACETS_FILE"] = str(ff)
+    if crib_body is not None:
+        target = {"path": fb / "crib", "bin": tmp_path / "mycrib",
+                  "self": plug / "bin" / "crib"}[via]
+        target.write_text("#!/usr/bin/env bash\n" + crib_body)
+        target.chmod(0o755)
+        if via == "bin":
+            env["CRIB_BIN"] = str(target)
+        if via == "self":
+            env["CRIB_BIN"] = str(target)
+    env.update(extra_env or {})
+    script = f'set -euo pipefail\ndir={str(plug)!r}\n_warnings=""\n{_hook_functions()}_emit\n'
+    t0 = time.monotonic()
+    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True, env=env, timeout=60)
+    took = time.monotonic() - t0
     assert r.returncode == 0, r.stderr
-    ctx = _json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+    return _json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"], took
+
+
+_SECTION = ("[ \"$1 $2\" = 'facets instructions' ] && "
+            "printf '### Declared facets on this machine\\n- routines\\n'\n")
+
+
+@pytest.mark.parametrize("via", ["path", "bin"])
+def test_the_claude_hook_adds_the_declared_facets_section(tmp_path, via):
+    """plugins/claude/hooks/session-start.sh: the shipped directive, then what
+    the machine's crib prints for `facets instructions`, in one SessionStart
+    JSON."""
+    ctx, _ = _run_hook(tmp_path, _SECTION, via=via)
     assert ctx.startswith("# Memory (cribsheet)\nthe directive")
     assert ctx.endswith("### Declared facets on this machine\n- routines")
-    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
-                       env={k: v for k, v in os.environ.items()
-                            if k not in ("CRIB_BIN", "CRIBSHEET_DEV")} | {"PATH": "/usr/bin:/bin"},
-                       timeout=30)
-    ctx = _json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-    assert "Declared facets" not in ctx  # no crib without a fetch: nothing asked
+
+
+@pytest.mark.parametrize("case", ["no-facets-file", "old-crib", "self", "no-crib", "not-executable"])
+def test_the_claude_hook_never_waits_or_fetches_for_the_section(tmp_path, case):
+    """No facets file: crib isn't even asked. An old crib (no subcommand): no
+    section. The plugin's own bin/crib (its uvx fallback) is never used for it,
+    and a CRIB_BIN that isn't executable doesn't count (review 3 S1)."""
+    if case == "no-facets-file":
+        ctx, _ = _run_hook(tmp_path, "echo SHOULD-NOT-RUN\n", facets=False, via="path")
+    elif case == "old-crib":
+        ctx, _ = _run_hook(tmp_path, "echo 'usage: crib' >&2; exit 2\n", via="path")
+    elif case == "self":
+        ctx, _ = _run_hook(tmp_path, _SECTION, via="self")
+    elif case == "no-crib":
+        ctx, _ = _run_hook(tmp_path, None)
+    else:
+        ctx, _ = _run_hook(tmp_path, None, extra_env={"CRIB_BIN": str(tmp_path / "nope")})
+    assert ctx == "# Memory (cribsheet)\nthe directive"
+
+
+def test_a_slow_crib_is_cut_off(tmp_path):
+    ctx, took = _run_hook(tmp_path, "sleep 30\n", via="path")
+    assert ctx == "# Memory (cribsheet)\nthe directive"
+    assert took < 15
+
+
+def test_adds_and_imports_take_a_mappings_suffix(tmp_path):
+    """Under glob **/*.rt.md a declared note-like facet's new items and its
+    imports are named for the glob (review 3 S3)."""
+    repo = _repo(tmp_path, "{dir: workflows, glob: '**/*.rt.md'}", {"workflows/.keep": ""})
+    doc = tmp_path / "brief.md"
+    doc.write_text("# Brief\nmorning briefing\n")
+    top = _repo(tmp_path / "t", "{dir: wf, glob: '*.rt.md'}", {"wf/.keep": ""})
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        a = asyncio.run(crib.store_note("x", "Morning", "p", facet="routine"))
+        out["add"] = a["relpath"]
+        imp = asyncio.run(crib.import_files([DOC], project="p", facet="routine"))
+        out["import"] = sorted(str(r) for r in Path(REPO, "workflows").rglob("*.rt.md"))
+        asyncio.run(crib._sync_mappings("q", CribLink.find(Path(TOP))))
+        asyncio.run(crib.import_files([DOC], project="q", facet="routine"))
+        out["top"] = sorted(f.name for f in Path(TOP, "wf").glob("*.rt.md"))
+    """.replace("REPO", repr(str(repo))).replace("DOC", repr(str(doc))).replace(
+            "TOP", repr(str(top))),
+    )
+    assert out["add"] == "morning.rt.md"
+    assert str(repo / "workflows" / "imported" / "brief.rt.md") in out["import"]
+    assert out["top"] == ["imported-brief.rt.md"]
+
+
+def test_learnings_are_named_for_their_mappings_suffix(tmp_path):
+    """A learnings pillar mapped under **/*.lrn.md: a new learning's name and
+    migrate's canonical target end .lrn.md (review 3 S3)."""
+    out = _run(
+        tmp_path,
+        None,
+        """
+        import asyncio
+        from pathlib import Path
+        from crib.app import Crib
+        from crib.config import Config, CribLink
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        repo = Path(REPO)
+        (repo / "lrn").mkdir(parents=True)
+        (repo / ".crib").write_text("project: p\\nfacets:\\n  learning: {dir: lrn, glob: '**/*.lrn.md'}\\n")
+        asyncio.run(crib._sync_mappings("p", CribLink.find(repo)))
+        entry = {"symbol_ref": "python:pkg/mod.py:pkg.mod.fn"}
+        out["name"] = crib.learnings.relpath("p", entry)
+        out["suffix"] = crib.learnings.store.suffix("p")
+    """.replace("REPO", repr(str(tmp_path / "lrepo"))),
+    )
+    assert out["suffix"] == ".lrn.md"
+    assert out["name"].endswith(".lrn.md")
 
 
 def test_transitions_into_every_role_work(tmp_path):

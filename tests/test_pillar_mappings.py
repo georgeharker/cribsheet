@@ -411,3 +411,99 @@ def test_a_store_adopt_moves_all_or_nothing(crib, tmp_path):
         run(crib.project_adopt(cwd=repo))
     assert (home / note["relpath"]).exists()
     assert (repo / "crib-store" / "notes" / "pic.png").read_bytes() == b"theirs"
+
+
+
+# ── review 3 ─────────────────────────────────────────────────────────────────
+
+
+def test_a_repoint_waits_for_every_item(crib, tmp_path, capsys):
+    """M1: one of two decisions moved to the new dir isn't enough: the move is
+    held, saying how many are still behind."""
+    from crib.config import CribLink
+
+    a = _decision(crib)
+    b = run(crib.design_add("Second", "Another decision.", project="p"))
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    run(crib.project_adopt(cwd=repo))
+    (repo / "new").mkdir()
+    (repo / "decisions" / a["relpath"]).rename(repo / "new" / a["relpath"])
+    (repo / ".crib").write_text("project: p\nfacets:\n  design: {dir: new}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    err = capsys.readouterr().err
+    assert "1 of its item(s) are still in" in err and "the new home holds 1" in err
+    assert crib.project_paths("p").mappings["design"].root == repo / "decisions"
+    (repo / "decisions" / b["relpath"]).rename(repo / "new" / b["relpath"])
+    run(crib._sync_mappings("p", link))
+    assert crib.project_paths("p").mappings["design"].root == repo / "new"
+
+
+def test_a_failed_move_leaves_no_partial_copy(tmp_path, monkeypatch):
+    """M2: a cross-filesystem move that fails part-way (copy, then unlink)
+    leaves no partial file; what moved is put back."""
+    import shutil
+    from pathlib import Path
+
+    from crib.app import Crib as _C
+
+    for n in ("a", "b"):
+        (tmp_path / n).write_text(n * 100)
+    (tmp_path / "x").mkdir()
+    real = shutil.move
+
+    def flaky(src, dst):
+        if src.endswith("/b"):
+            Path(dst).write_text("partial")  # the copy got this far
+            raise OSError(28, "No space left on device", dst)
+        return real(src, dst)
+
+    monkeypatch.setattr(shutil, "move", flaky)
+    with pytest.raises(Exception, match="nothing was moved"):
+        _C._move_files([(tmp_path / "a", tmp_path / "x" / "a"),
+                        (tmp_path / "b", tmp_path / "x" / "b")], "things")
+    assert not (tmp_path / "x" / "b").exists()
+    assert (tmp_path / "a").read_text() == "a" * 100 and not (tmp_path / "x" / "a").exists()
+
+
+def test_a_rollback_that_fails_says_so(tmp_path, monkeypatch):
+    import shutil
+
+    from crib.app import Crib as _C
+
+    for n in ("a", "b"):
+        (tmp_path / n).write_text(n)
+    (tmp_path / "x").mkdir()
+    real = shutil.move
+    calls = {"n": 0}
+
+    def flaky(src, dst):
+        calls["n"] += 1
+        if calls["n"] >= 2:  # b's move, and every move back
+            raise OSError(13, "Permission denied", dst)
+        return real(src, dst)
+
+    monkeypatch.setattr(shutil, "move", flaky)
+    with pytest.raises(Exception, match="could not be put back"):
+        _C._move_files([(tmp_path / "a", tmp_path / "x" / "a"),
+                        (tmp_path / "b", tmp_path / "x" / "b")], "things")
+    assert (tmp_path / "x" / "a").exists()  # whole, at the destination
+
+
+def test_a_pending_facet_includes_items_already_in_its_mapping(crib, tmp_path):
+    """M7: a teammate's decision committed into the mapping dir takes part in
+    the graph while ours still wait to be moved (a plan item can rest on it)."""
+    from crib.config import CribLink
+
+    _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    (repo / "decisions").mkdir()
+    (repo / "decisions" / "theirs.md").write_text(
+        "---\nid: 01M7EZZZZZZZZZZZZZZZZZZZZY\ntitle: Theirs\nstatus: proposed\n---\nx\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    item = run(crib.plan_add("On theirs", rests_on=["01M7EZZZZZZZZZZZZZZZZZZZZY"], project="p"))
+    rd = crib.plan_read(item["items"][0]["relpath"], "p")
+    assert rd["blocked"] and not rd["missing_deps"]  # gated by their proposal
