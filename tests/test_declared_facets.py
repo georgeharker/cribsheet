@@ -1966,6 +1966,35 @@ def test_a_declared_graph_facets_cli_runs_in_process(tmp_path):
     assert "Failover" in out["list"][1]
 
 
+def test_a_declared_graph_facet_gets_similar_with_its_own_roles_and_tools(tmp_path):
+    """Tidy B: `similar` compares declared facets too; a twin of a resolved
+    incident is `settled` (a done role, not the word "done"), and the hint
+    names incident_read, not a built-in tool."""
+    out = _run(
+        tmp_path,
+        INCIDENT,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        text = "the primary database failed over to the replica at noon"
+        a = asyncio.run(crib.plan_add("Failover", text, project="p", facet="incident"))
+        rel = a["items"][0]["relpath"]
+        asyncio.run(crib.plan_status(rel, "resolved", project="p", facet="incident"))
+        b = asyncio.run(crib.plan_add("Failover again", text, project="p", facet="incident"))
+        out["similar"] = [(r["relpath"], r["verdict"], r["next"])
+                          for r in b["items"][0].get("similar", []) or b.get("similar", [])]
+        out["rel"] = rel
+    """,
+    )
+    hit = [x for x in out["similar"] if x[0] == out["rel"]]
+    assert hit and hit[0][1] == "settled"
+    assert "incident_read" in hit[0][2]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
