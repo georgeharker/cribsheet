@@ -34,10 +34,16 @@ if TYPE_CHECKING:
 # test plans, a decision stored twice, near-identical notes).
 NEAR_DUPLICATE = 0.90
 
-_PILLAR_VERB = {"design": "design", "plan": "plan"}
-# An item in one of these states is history: what it depends on no longer
-# needs keeping current.
-_SETTLED = ("superseded", "declined", "done", "verified")
+# An item whose status plays one of these roles is history: what it depends on
+# no longer needs keeping current (a decision superseded, a plan item declined
+# or finished, or any facet's equivalent).
+_SETTLED_ROLES = ("retired", "dropped", "done")
+
+
+def _role_of(kind: str, status: str | None) -> str | None:
+    """The role `status` plays in facet `kind` (None: not a facet's, or none)."""
+    spec = facets.get(kind)
+    return spec.role(status) if spec is not None else None
 
 
 def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
@@ -60,9 +66,12 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     except PendingMove:  # reported above; the graph checks wait for the move
         graph = Graph(proj=proj)
 
+    from . import verbs
+
     for node in graph.nodes.values():
-        verb = _PILLAR_VERB[node.kind]
-        if node.status in _SETTLED:
+        spec = facets.by_noun(node.kind)
+        tool = verbs.view(spec).tool  # the item's own facet's verbs
+        if spec.role(node.status) in _SETTLED_ROLES:
             continue
         for dep in node.deps:
             target = graph.target(dep)
@@ -73,18 +82,18 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
                         "item": node.relpath,
                         "kind": node.kind,
                         "dep": dep,
-                        "fix": f"{verb}_dep_remove {node.relpath} {dep} (or restore the target)",
+                        "fix": f"{tool('dep_remove')} {node.relpath} {dep} (or restore the target)",
                     }
                 )
-            elif target.status in ("superseded", "declined"):
+            elif (t_role := _role_of(target.kind, target.status)) in ("retired", "dropped"):
                 by = graph.nodes.get(target.superseded_by)
                 to = by.relpath if by is not None else "<the replacement>"
                 fix = (
-                    f"re-point it: {verb}_dep_add {node.relpath} {to}, then "
-                    f"{verb}_dep_remove {node.relpath} {target.relpath}"
-                    if target.status == "superseded"
-                    else f"{verb}_dep_remove {node.relpath} {target.relpath} "
-                    f"(a declined plan will not happen)"
+                    f"re-point it: {tool('dep_add')} {node.relpath} {to}, then "
+                    f"{tool('dep_remove')} {node.relpath} {target.relpath}"
+                    if t_role == "retired"
+                    else f"{tool('dep_remove')} {node.relpath} {target.relpath} "
+                    f"(a {target.status} {target.kind} will not happen)"
                 )
                 findings.append(
                     {
@@ -110,9 +119,9 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
                     "kind": node.kind,
                     "source": cite,
                     "fix": (
-                        f"read {cite}, then {verb}_reaffirm {node.relpath}"
+                        f"read {cite}, then {tool('reaffirm')} {node.relpath}"
                         if not gone
-                        else f"{verb}_read {node.relpath} and re-cite or drop the source"
+                        else f"{tool('read')} {node.relpath} and re-cite or drop the source"
                     ),
                 }
             )
@@ -330,7 +339,9 @@ def _near_duplicates(crib: Crib, proj: str) -> list[dict[str, Any]]:
         for i, j in sorted(zip(rows.tolist(), cols.tolist()), key=lambda p: -S[p]):
             a, b = items[i], items[j]
             spec = facets.by_noun(kind)
-            tool = verbs.view(spec).tool
+            view = verbs.view(spec)
+            tool = view.tool
+            change = " / ".join(tool(v) for v in ("append", "edit") if view.verb(v))
             out.append(
                 {
                     "check": "near-duplicate",
@@ -340,9 +351,8 @@ def _near_duplicates(crib: Crib, proj: str) -> list[dict[str, Any]]:
                     "similarity": round(float(S[i, j]), 3),
                     "fix": (
                         f"{tool('supersede')} {b.relpath} {a.relpath} if one replaces the other"
-                        if spec.has("supersede")
-                        else f"merge into one ({tool('append')} / {tool('edit')}), then "
-                        "delete the other"
+                        if spec.has("supersede") and view.verb("supersede")
+                        else f"merge into one ({change}), then delete the other"
                     ),
                 }
             )

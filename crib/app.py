@@ -1159,9 +1159,11 @@ class Crib:
     def _similar_next(verdict: str, kind: str, relpath: str, status: str | None) -> str:
         from . import verbs
 
-        tool = verbs.view(facets.by_noun(kind)).tool
+        view = verbs.view(facets.by_noun(kind))
+        tool = view.tool
         if verdict == "duplicate":
-            return (f"the same thing already exists: {tool('append')} / {tool('edit')} "
+            change = " / ".join(tool(v) for v in ("append", "edit") if view.verb(v))
+            return (f"the same thing already exists: {change} "
                     f"{relpath} instead, and delete this one")
         if verdict == "settled":
             return (f"already {status}: read it ({tool('read')} {relpath}) before "

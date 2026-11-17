@@ -2018,12 +2018,15 @@ def test_graph_verbs_are_one_operation_each_and_the_builtin_names_alias_them(tmp
             async with Client(build_server(crib)) as c:
                 await c.call_tool("task_add", {"title": "One", "content": "x", "project": "p"})
                 r = (await c.call_tool("task_list", {"tainted": True, "project": "p"})).data
+                out["stale"] = [i["title"] for i in r["items"]]
+                r = (await c.call_tool("task_list", {"all": True, "project": "p"})).data
                 out["listed"] = [i["title"] for i in r["items"]]
         asyncio.run(main())
     """,
     )
     assert all(op.startswith("graph_") for op in out["ops"])
     assert out["alias"] == ["graph_dep_add", "graph_status"]
+    assert out["stale"] == []  # nothing is stale: tainted filters, it isn't `all`
     assert out["listed"] == ["One"]
 
 
@@ -2085,6 +2088,151 @@ values = { open = "open", closed = "done" }
                    "memo_next", "memo_tree", "promote"):
         assert absent not in text, absent
     assert "`memo_list`" in text and "`memo_lookup`" in text
+
+
+def test_review_apply_touches_only_its_own_facets_items(tmp_path):
+    """A declared progress facet's review_apply used to edit/park/decline/
+    move/forget the PLAN item with the same relpath (final review blocker)."""
+    out = _run(
+        tmp_path,
+        INCIDENT,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        inc = asyncio.run(crib.graph_add("Same title", "incident body", project="p",
+                                         facet="incident"))["items"][0]["relpath"]
+        other = asyncio.run(crib.graph_add("Other", "second", project="p",
+                                           facet="incident"))["items"][0]["relpath"]
+        plan = asyncio.run(crib.plan_add("Same title", "plan body", project="p"))["items"][0]["relpath"]
+        assert inc == plan
+        res = asyncio.run(crib.graph_review_apply("p", [
+            {"op": "edit", "ref": inc, "content": "edited by review"},
+            {"op": "park", "ref": inc, "why": "later"},
+            {"op": "move", "ref": other, "before": inc},
+        ], facet="incident"))
+        out["errors"] = [r.get("error") for r in res["results"] if r.get("error")]
+        out["inc"] = crib.graph_read(inc, "p", facet="incident")
+        out["plan"] = crib.plan_read(plan, "p")
+        dec = asyncio.run(crib.graph_review_apply("p", [
+            {"op": "decline", "ref": other, "why": "noise"}], facet="incident"))
+        out["declined"] = crib.graph_read(other, "p", facet="incident")["status"]
+    """,
+    )
+    assert out["errors"] == []
+    assert "edited by review" in out["inc"]["body"] and out["inc"]["status"] == "shelved"
+    assert out["plan"]["body"] == "plan body" and out["plan"]["status"] == "todo"
+    assert out["declined"] == "wontfix"
+
+
+def test_doctor_runs_on_a_declared_graph_facet(tmp_path):
+    """diagnose() crashed (KeyError) on any declared graph facet item; its
+    findings now name the facet's own tools (final review B2)."""
+    out = _run(
+        tmp_path,
+        INCIDENT,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.doctor import diagnose
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        a = asyncio.run(crib.graph_add("Root", "x", project="p", facet="incident"))
+        rel = a["items"][0]["relpath"]
+        b = asyncio.run(crib.graph_add("On root", "y", deps=[rel], project="p",
+                                       facet="incident"))
+        asyncio.run(crib.graph_decline(rel, "noise", project="p", facet="incident",
+                                       to="wontfix"))
+        out["found"] = [(f["check"], f["fix"]) for f in diagnose(crib, "p")["findings"]
+                        if f.get("kind") == "incident"]
+    """,
+    )
+    assert out["found"], out
+    check, fix = out["found"][0]
+    assert check == "depends on a wontfix incident"
+    assert fix.startswith("incident_dep_remove ") and "will not happen" in fix
+
+
+def test_every_tool_an_extract_procedure_names_is_one_the_facet_has(tmp_path):
+    """Over gated / ordered / progress / report_taint / a promoting transition /
+    disabled lookup and append: the procedure names only the facet's own,
+    enabled tools, and asks for proposed=True only when its add takes it."""
+    import itertools
+
+    specs, nouns = [], []
+    for i, (gated, ordered, progress, taint, promote, disable) in enumerate(
+            itertools.product((0, 1), repeat=6)):
+        noun = f"f{chr(97 + i // 26)}{chr(97 + i % 26)}"
+        values = {"open": "open", "done": "done"}
+        if gated:
+            values = {"draft": "gated", **values}
+        aspects = ["links", "status", "sources"] + (["ordered"] if ordered else []) + (
+            ["progress"] if progress else [])
+        lines = [f"[{noun}]", f'plural = "{noun}s"', f"aspects = {aspects!r}".replace("'", '"')]
+        if taint:
+            lines.append("report_taint = true")
+        if disable:
+            lines.append('disable = ["lookup", "append"]')
+        vals = ", ".join(f'{k} = "{v}"' for k, v in values.items())
+        lines += [f"[{noun}.status]", f"values = {{ {vals} }}",
+                  f'initial = "{"draft" if gated else "open"}"']
+        if gated and promote:
+            lines.append('transitions = { accept = "open" }')
+        specs.append("\n".join(lines))
+        nouns.append(noun)
+    out = _run(tmp_path, "\n\n".join(specs), """
+        import inspect
+        from crib import designs, facets, verbs
+        bad = []
+        for spec in facets.FACETS:
+            if spec.builtin:
+                continue
+            text = designs._procedure(spec.noun, "docs/X.md")
+            v = verbs.view(spec)
+            have = set(v.tools)
+            named = set(__import__("re").findall(r"`(" + spec.noun + r"_[a-z_]+)", text))
+            if named - have:
+                bad.append((spec.noun, sorted(named - have)))
+            add_params = inspect.signature(v.verb("add").make(None, spec)).parameters
+            if "proposed=True" in text and "proposed" not in add_params:
+                bad.append((spec.noun, "proposed not accepted"))
+        out["bad"] = bad
+    """)
+    assert out["bad"] == []
+
+
+def test_a_gated_ordered_facet_proposes_and_a_tainting_working_set_filters(tmp_path):
+    spec = """
+[rfc]
+plural = "rfcs"
+aspects = ["links", "status", "ordered", "progress", "sources"]
+report_taint = true
+
+[rfc.status]
+values = { draft = "gated", open = "open", done = "done" }
+initial = "open"
+"""
+    out = _run(tmp_path, spec, """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        a = asyncio.run(crib.graph_add("Base", "x", project="p", facet="rfc", proposed=True))
+        out["status"] = a["items"][0]["status"]
+        b = asyncio.run(crib.graph_add("On base", "y", project="p", facet="rfc",
+                                       rests_on=[a["items"][0]["relpath"]]))
+        out["all"] = len(crib.graph_list("p", facet="rfc", all=True)["items"])
+        out["tainted"] = len(crib.graph_list("p", facet="rfc", tainted=True)["items"])
+    """)
+    assert out["status"] == "draft"
+    assert out["all"] == 2 and out["tainted"] == 0
 
 
 def test_transitions_into_every_role_work(tmp_path):

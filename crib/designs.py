@@ -192,6 +192,19 @@ def _word(kind: str) -> str:
     return {"design": "decision", "plan": "plan item"}.get(kind, kind)
 
 
+def _deferral_status(kind: str, role: str) -> str:
+    """The status a park (`paused`) or decline (`dropped`) moves an item of
+    `kind` to: its first status playing that role; a facet without one can't
+    do it, and says so."""
+    statuses = _spec(kind).with_role(role)
+    if not statuses:
+        verb = "park" if role == "paused" else "decline"
+        raise CribUserError(
+            f"a {kind} can't be {verb}d: its facet has no status playing the "
+            f"{role} role")
+    return statuses[0]
+
+
 def _graph_kinds() -> tuple[str, ...]:
     """The facets this engine serves: links and statuses."""
     return tuple(s.noun for s in _facets.FACETS if s.has("links") and s.has("status"))
@@ -245,11 +258,17 @@ def _procedure(kind: str, relpath: str) -> str:
         return view.verb(verb) is not None
 
     word = _word(kind)
+    words = f"{word}s" if spec.builtin else spec.plural  # crib's own: their prose
     own = wording.cli(kind, "extract.item") if spec.builtin else None
     what = own if own is not None else (
         f" What one {word} is: {spec.about}" if spec.about else "")
     read = (f"1. READ {relpath} in full (`note_read {relpath}`, or open the `path` "
             f"above)")
+    # every tool a step names is one the facet has (a disabled one is worded
+    # around: a facet that drops lookup checks `existing`, one without append
+    # rewrites the entry)
+    find = f"`{t('lookup')}`" if has("lookup") else "check `existing`"
+    extend = f"`{t('append')}`" if has("append") else f"`{t('edit')}` it to add"
     if spec.with_role("gated"):
         promote = _to_role_tool(kind, "open")
         confirm = (f"Promotion is\n   the human act: `{promote} <ref>` per entry that is "
@@ -258,15 +277,15 @@ def _procedure(kind: str, relpath: str) -> str:
                  else "anything that rests on it")
         report = t("tree") if has("tree") else t("list")
         return (
-            f"Extract the {word.upper()}S this doc settles into the {kind} graph. "
+            f"Extract the {words.upper()} this doc settles into the {kind} graph. "
             "You do the reading\nand the judgement — this verb ran no model.\n\n"
             f"{read}.{what}\n"
-            f"2. DEDUPE FIRST. `existing` lists what already cites this doc; `{t('lookup')}`\n"
-            f"   each candidate before adding it. If the graph already holds it, `{t('append')}`\n"
+            f"2. DEDUPE FIRST. `existing` lists what already cites this doc; {find}\n"
+            f"   each candidate before adding it. If the graph already holds it, {extend}\n"
             f"   the new detail onto that entry (or `{t('dep_add')}` an edge) — a near-duplicate\n"
             f"   {word} forks the graph and splits its dependents between two records.\n"
             f"3. ADD THEM IN ONE PASS. Each `{t('add')}` carries:\n"
-            f"   - `deps`: the {word}s it builds on, including ones you added a moment ago in\n"
+            f"   - `deps`: the {words} it builds on, including ones you added a moment ago in\n"
             "     this same pass (they resolve by title);\n"
             "   - `sources`: the `source` string of the EXACT section(s) it was drawn from,\n"
             "     COPIED VERBATIM from `sections` below (several if it draws on several), so\n"
@@ -295,10 +314,10 @@ def _procedure(kind: str, relpath: str) -> str:
               if not spec.requires_body else "")
     nxt = (f" (and `{t('next')}` if you are picking work up\n   now)" if has("next") else "")
     return (
-        f"Turn this doc's ACTIONABLE work into {word}s. You do the reading and the\n"
+        f"Turn this doc's ACTIONABLE work into {words}. You do the reading and the\n"
         "judgement — this verb ran no model.\n\n"
         f"{read}{what if own is not None else '.' + what}\n"
-        f"2. DEDUPE FIRST. `existing` lists items already citing this doc; `{t('lookup')}`\n"
+        f"2. DEDUPE FIRST. `existing` lists items already citing this doc; {find}\n"
         f"   each candidate. Work already tracked takes {tracked}, not a\n"
         "   second item for the same thing.\n"
         + add +
@@ -2199,14 +2218,14 @@ class Designs:
         to = spec.transitions[verb]
         node = self._resolve_ref(self._load_graph(proj), ref, facet)
         if _is(node, "gated") and spec.role(to) != "gated":
-            return await self.design_promote(proj, ref, facet=facet, to=to)
+            return await self.graph_promote(proj, ref, facet=facet, to=to)
         if _is(node, "retired"):
             raise CribUserError(
                 f"{node.title!r} is {node.status}: it was replaced, so it doesn't "
                 f"move (read what replaced it)")
         if node.status == to:
             raise CribUserError(f"{node.title!r} is already {to}")
-        return await self.plan_status(proj, ref, to, facet=facet)
+        return await self.graph_status(proj, ref, to, facet=facet)
 
     async def graph_promote(
         self, proj: str, ref: str, *, facet: str, to: str | None = None
@@ -2514,8 +2533,10 @@ class Designs:
         before: str | None = None,
         items: list[dict[str, Any]] | None = None,
         sources: list[Any] | None = None,
-        kinded: dict[str, list[str]] | None = None, *, facet: str) -> dict[str, Any]:
+        kinded: dict[str, list[str]] | None = None, *, facet: str,
+        proposed: bool = False) -> dict[str, Any]:
         """Add plan items (default: at the end; `after`/`before` place them).
+        `proposed` lands them in the facet's gated status (its import tier).
 
         Takes ONE item (`title`/`content`/`deps`/`sources`) or a BATCH (`items`),
         because planning happens in batches: writing five items is one thought, and
@@ -2529,6 +2550,10 @@ class Designs:
         A plan item's BODY IS OPTIONAL: a title is a legitimate whole item
         ("wire up the emitter"). A design decision's body is not optional — there
         the rationale IS the artifact."""
+        if proposed and not _spec(facet).with_role("gated"):
+            raise CribUserError(
+                f"a {facet} can't be proposed: its facet has no gated status")
+        gated = {"status": _status_for(facet, "gated")} if proposed else {}
         batch = (
             items
             if items is not None
@@ -2585,7 +2610,7 @@ class Designs:
                 str(item.get("title") or ""),
                 str(item.get("content") or ""),
                 item_deps,
-                {"rank": rank},
+                {"rank": rank, **gated},
                 item.get("sources"),
                 item_kinded,
             )
@@ -2740,7 +2765,7 @@ class Designs:
         deferral semantically searchable (`plan_lookup` hits carry it)."""
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
-        parked = to or _spec(node.kind).transitions["park"]  # the status it moves to
+        parked = to or _deferral_status(node.kind, "paused")  # the status it moves to
         if _is(node, "done"):
             raise CribUserError(
                 f"{node.title!r} is {node.status} — that is not a deferral; "
@@ -2818,7 +2843,7 @@ class Designs:
             )
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, facet)
-        declined = to or _spec(node.kind).transitions["decline"]  # the status it moves to
+        declined = to or _deferral_status(node.kind, "dropped")  # the status it moves to
         if _is(node, "done"):
             raise CribUserError(
                 f"{node.title!r} is {node.status} — the work happened; declining "
@@ -2985,26 +3010,27 @@ class Designs:
                     entry["result"] = f"retitled {node.relpath} → {op['title']!r}"
                     applied_rels.append(node.relpath)
                 elif kind == "move":
-                    out = await self.plan_move(
-                        proj, ref, after=op.get("after"), before=op.get("before")
+                    out = await self.graph_move(
+                        proj, ref, after=op.get("after"), before=op.get("before"),
+                        facet=facet,
                     )
                     entry["result"] = f"moved {out['title']} (rank updated)"
                     applied_rels.append(out["relpath"])
                 elif kind == "park":
-                    out = await self.plan_park(
-                        proj, ref, op.get("triggers"), op.get("why")
+                    out = await self.graph_park(
+                        proj, ref, op.get("triggers"), op.get("why"), facet=facet
                     )
                     entry["result"] = f"parked {out['relpath']}"
                     applied_rels.append(out["relpath"])
                 elif kind == "decline":
-                    out = await self.plan_decline(
-                        proj, ref, op.get("why"), op.get("triggers")
+                    out = await self.graph_decline(
+                        proj, ref, op.get("why"), op.get("triggers"), facet=facet
                     )
                     entry["result"] = f"declined {out['relpath']}"
                     applied_rels.append(out["relpath"])
                 elif kind == "edit":
                     content = op.get("content") or ""
-                    out = await self.plan_edit(proj, ref, content)
+                    out = await self.graph_edit(proj, ref, content, facet=facet)
                     entry["result"] = f"edited {out['relpath']}"
                     applied_rels.append(out["relpath"])
                 elif kind == "merge":
@@ -3078,7 +3104,7 @@ class Designs:
                 kind=facet,
             )
         try:
-            await self.plan_forget(proj, loser.relpath)
+            await self.graph_forget(proj, loser.relpath, facet=facet)
         except CribUserError as e:
             raise CribUserError(
                 f"merged the body into {winner.relpath} but could not forget "
@@ -3486,7 +3512,12 @@ class Designs:
         """The working set (progress; `all` shows finished and declined too), or
         the inventory (`tainted`: only the stale ones)."""
         if _spec(facet).has("progress"):
-            return self._list_working(proj, all, facet=facet)
+            out = self._list_working(proj, all, facet=facet)
+            if tainted:  # a working set that reports staleness: just the stale ones
+                stale = {rel for k, rel in self.tainted_items(proj) if k == facet}
+                out = {**out, "items": [r for r in out["items"] if r["relpath"] in stale],
+                       "filtered": True}
+            return out
         return self._list_inventory(proj, tainted, facet=facet)
 
     async def graph_add(
@@ -3500,7 +3531,8 @@ class Designs:
         or one at a time (`proposed`: in its gated status)."""
         if _spec(facet).has("ordered"):
             return await self._add_ordered(proj, title, content, deps, after, before,
-                                           items, sources, kinded, facet=facet)
+                                           items, sources, kinded, facet=facet,
+                                           proposed=proposed)
         return await self._add_single(proj, title or "", content, deps, sources,
                                       proposed, kinded, facet=facet)
 

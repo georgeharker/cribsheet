@@ -399,9 +399,9 @@ then falls back to the built-ins, and `crib facets show` says why).
 | `[<noun>.bands]` | `band = "name"` | the plan's names | a progress facet's own names for the groups its `list` shows: `claimed` (`in-progress`), `ready`, `blocked`, `paused` (`parked`), `dropped` (`declined`), `done`. Unnamed bands keep the plan's names; two can't share one. |
 | `[<noun>.edges]` | `target = "follows" \| "rests_on" \| "informed_by"` | see [links](#graph-facets-statuses-transitions-links) | the default link kind toward each target facet (`"*"` for the rest). |
 | `report_taint` | bool | false | it reports staleness: a marker on its search hits, and the `check` and `tree` verbs (as decisions do). Needs `links`. |
-| `export_with_deps` | bool | false | its export includes the items it depends on, from other facets (as plans' does). Needs `links`. |
-| `requires_body` | bool | false | an item must have a body: `add` refuses a title alone (as decisions do). |
-| `label` | string | `<Noun> items` | the heading of its exported document (`export`). |
+| `export_with_deps` | bool | false | its export includes the items it depends on, from other facets (as plans' does). Needs `links` and `sources`. |
+| `requires_body` | bool | false | an item must have a body: `add` refuses a title alone (as decisions do). Needs `links` and `status`. |
+| `label` | string | `<Noun> items` | the heading of its exported document (`export`). Needs `sources`. |
 
 **Flags** are the four keys above that switch an engine behaviour on for a
 facet: `requires_body`, `report_taint`, `export_with_deps` and `label`. Each needs particular aspects (a flag on a facet without them

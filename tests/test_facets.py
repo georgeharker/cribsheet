@@ -775,3 +775,18 @@ def test_a_progress_facet_names_its_own_bands():
     with pytest.raises(FacetSpecError, match="share a name"):
         parse("incident", {"plural": "incidents", "aspects": ["links", "status", "progress"],
                            "status": st, "bands": {"claimed": "ready"}})
+
+
+
+def test_the_spec_reference_states_each_flags_needed_aspects():
+    """docs/facets.md's row for each flag names exactly the aspects FLAGS says
+    it needs."""
+    import re
+    from pathlib import Path
+
+    doc = (Path(__file__).resolve().parent.parent / "docs" / "facets.md").read_text()
+    for name, f in facets.FLAGS.items():
+        row = next(line for line in doc.splitlines() if line.startswith(f"| `{name}` |"))
+        m = re.search(r"Needs ([^.|]+)\.", row)
+        stated = set(re.findall(r"`([a-z_]+)`", m.group(1))) if m else set()
+        assert stated == set(f.needs), (name, stated, set(f.needs))

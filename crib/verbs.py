@@ -1079,7 +1079,30 @@ def _g_add(crib, f):
                 informed_by, after=after, before=before, items=items,
             )
 
-        return ordered
+        if not f.with_role("gated"):
+            return ordered
+
+        async def ordered_gated(  # an ordered facet with an import tier
+            title: str | None = None,
+            content: str = "",
+            deps: list[str] | None = None,
+            after: str | None = None,
+            before: str | None = None,
+            items: list[dict[str, Any]] | None = None,
+            project: str | None = None,
+            sources: list[str] | None = None,
+            proposed: bool = False,
+            project_path: str | None = None,
+            follows: list[str] | None = None,
+            rests_on: list[str] | None = None,
+            informed_by: list[str] | None = None,
+        ) -> dict[str, Any]:
+            return await _call(crib, f, "add")(
+                title, content, deps, project, sources, None, follows, rests_on,
+                informed_by, after=after, before=before, items=items, proposed=proposed,
+            )
+
+        return ordered_gated
 
     if not f.with_role("gated"):  # nothing to propose: no import tier
         async def plain(
@@ -1121,6 +1144,17 @@ def _g_add(crib, f):
 
 
 def _g_list(crib, f):
+    if f.has("progress") and f.report_taint:  # its working set, or just the stale
+        async def working_list(
+            all: bool = False,
+            tainted: bool = False,
+            project: str | None = None,
+            project_path: str | None = None,
+        ) -> dict[str, Any]:
+            return _call(crib, f, "list")(project, all=all, tainted=tainted)
+
+        return working_list
+
     if f.report_taint:  # the stale ones, on request
         async def tainted_list(
             tainted: bool = False,
