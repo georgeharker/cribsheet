@@ -9,6 +9,40 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.25.0-dev3] - 2026-11-16
+
+### Added
+
+- **Band names per facet.** A progress facet's `[<noun>.bands]` names the
+  groups its `list` shows (`claimed = "investigating"`); unnamed bands keep
+  the plan's names, so plan output is unchanged.
+- **Flags are a defined registry** (`crib.facets.FLAGS`: type, needed
+  aspects, meaning), checked evenly; `crib facets show` lists each facet's.
+
+### Changed
+
+- **The `extract` procedure is built from what the facet can do**: proposed
+  entries only with a gated status, one batch only when ordered (else one
+  add per item), and only tools the facet has. The `extract` spec key is
+  gone: a facets file that sets it is refused (remove the line).
+- A declared facet now gets `similar` on its writes, `settled` verdicts and
+  stale markers, read from roles instead of crib's own status names.
+
+### Fixed
+
+- Every CLI verb on a declared graph facet works with `--no-daemon` (it
+  raised `AttributeError`), and a graph facet waiting for `crib facets sync`
+  refuses with "isn't ready" over MCP too (it listed as empty).
+- A progress facet that reports staleness lists correctly (`tainted` was
+  passed as `all`).
+
+### Internal
+
+- One `graph_*` operation per graph verb (crib's own `design_*`/`plan_*`
+  names are aliases); the built-ins' wording is one file
+  (`crib/wording.toml`); CLI verb orders derive from the verb catalogue;
+  `facets.parse` is split into helpers.
+
 ## [0.25.0-dev2] - 2026-11-15
 
 ### Changed
