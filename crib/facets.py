@@ -281,9 +281,18 @@ FLAGS: Mapping[str, Flag] = MappingProxyType({f.name: f for f in (
 )})
 
 
+# The working-set bands a progress facet's list groups its items into, in
+# their rendering order, and the names crib has always shown for them (the
+# plan's). A facet may name its own (`[<noun>.bands]`); the rest keep these.
+BANDS = ("claimed", "ready", "blocked", "paused", "dropped", "done")
+BAND_NAMES: Mapping[str, str] = MappingProxyType({
+    "claimed": "in-progress", "ready": "ready", "blocked": "blocked",
+    "paused": "parked", "dropped": "declined", "done": "done",
+})
+
 _KEYS = frozenset(
     {"plural", "store", "aspects", "fields", "legacy_stores", "verbs", "disable",
-     "status", "edges", "about", "when", "title_from", "optional", *FLAGS}
+     "status", "edges", "about", "when", "title_from", "optional", "bands", *FLAGS}
 )
 
 
@@ -367,7 +376,13 @@ class FacetSpec:
     # A declared field is REQUIRED unless named here: `add` refuses an item
     # without it, `crib project doctor` names files missing it.
     optional: frozenset[str] = frozenset()
+    # Its own names for working-set bands (BANDS -> name); unnamed: BAND_NAMES.
+    bands: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     builtin: bool = False
+
+    def band_name(self, band: str) -> str:
+        """What this facet calls working-set `band` (BANDS)."""
+        return self.bands.get(band, BAND_NAMES[band])
 
     @property
     def required(self) -> tuple[str, ...]:
@@ -415,6 +430,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         when=MappingProxyType(when),
         title_from=_parse_title_from(noun, raw),
         optional=_parse_optional(noun, raw, params),
+        bands=MappingProxyType(_parse_bands(noun, raw, have)),
         **graph,
         builtin=builtin,
     )
@@ -550,6 +566,26 @@ def _parse_title_from(noun: str, raw: Mapping[str, Any]) -> tuple[str, ...]:
             f"facet {noun!r}: title_from is a list of sources: \"title\", \"heading\", "
             "\"filename\" or a frontmatter key")
     return tuple(t.strip() for t in title_from)
+
+
+def _parse_bands(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, str]:
+    """Its own names for working-set bands (`[<noun>.bands]`): a progress
+    facet's, each a known band, every effective name distinct."""
+    bands = raw.get("bands")
+    if bands is None:
+        return {}
+    if "progress" not in have:
+        raise FacetSpecError(f"facet {noun!r}: bands needs the progress aspect")
+    if not isinstance(bands, dict) or not all(
+            isinstance(v, str) and v.strip() for v in bands.values()):
+        raise FacetSpecError(f"facet {noun!r}: bands is a table of band = name")
+    if stray := sorted(set(bands) - set(BANDS)):
+        raise FacetSpecError(
+            f"facet {noun!r}: no such band {stray} (bands: {list(BANDS)})")
+    names = [str(bands.get(b, BAND_NAMES[b])).strip() for b in BANDS]
+    if len(set(names)) != len(names):
+        raise FacetSpecError(f"facet {noun!r}: two bands can't share a name ({names})")
+    return {b: str(v).strip() for b, v in bands.items()}
 
 
 def _parse_optional(noun: str, raw: Mapping[str, Any], params: Mapping[str, str]) -> frozenset[str]:
@@ -882,6 +918,9 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
             out.append(f"initial = {q(s.initial or '')}")
             if s.transitions:
                 out.append(f"transitions = {inline(s.transitions)}")
+        if s.bands:
+            out.append(f"\n[{s.noun}.bands]")
+            out += [f"{b} = {q(n)}" for b, n in s.bands.items()]
         if s.edges:
             out.append(f"\n[{s.noun}.edges]")
             out += [f"{q(t)} = {q(k)}" for t, k in s.edges.items()]

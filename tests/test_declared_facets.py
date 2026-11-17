@@ -2027,6 +2027,29 @@ def test_graph_verbs_are_one_operation_each_and_the_builtin_names_alias_them(tmp
     assert out["listed"] == ["One"]
 
 
+def test_a_facets_own_band_names_group_its_list(tmp_path):
+    out = _run(
+        tmp_path,
+        INCIDENT + '\n[incident.bands]\nclaimed = "investigating"\npaused = "on hold"\n',
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        a = asyncio.run(crib.graph_add("Failover", "x", project="p", facet="incident"))
+        b = asyncio.run(crib.graph_add("Alert", "y", project="p", facet="incident"))
+        asyncio.run(crib.graph_status(a["items"][0]["relpath"], "mitigated", project="p",
+                                      facet="incident"))
+        asyncio.run(crib.graph_park(b["items"][0]["relpath"], project="p", why="later",
+                                    facet="incident", to="shelved"))
+        out["groups"] = crib.graph_list(project="p", facet="incident")["groups"]
+    """,
+    )
+    assert out["groups"] == {"investigating": 1, "on hold": 1}
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

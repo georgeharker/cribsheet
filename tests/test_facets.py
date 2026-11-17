@@ -758,3 +758,21 @@ def test_flags_are_declared_once_and_checked_from_the_registry():
     with pytest.raises(KeyError):
         s.flag("nope")
     assert all(f.meaning for f in facets.FLAGS.values())
+
+
+
+def test_a_progress_facet_names_its_own_bands():
+    st = {"values": {"o": "open", "c": "claimed", "d": "done"}}
+    s = parse("incident", {"plural": "incidents", "aspects": ["links", "status", "progress"],
+                           "status": st, "bands": {"claimed": "investigating"}})
+    assert s.band_name("claimed") == "investigating" and s.band_name("paused") == "parked"
+    assert load(facets.to_toml([s]))[0].bands == s.bands
+    assert facets.by_noun("plan").band_name("claimed") == "in-progress"  # plan unchanged
+    with pytest.raises(FacetSpecError, match="needs the progress aspect"):
+        parse("t", {"plural": "ts", "bands": {"claimed": "x"}})
+    with pytest.raises(FacetSpecError, match="no such band"):
+        parse("incident", {"plural": "incidents", "aspects": ["links", "status", "progress"],
+                           "status": st, "bands": {"working": "x"}})
+    with pytest.raises(FacetSpecError, match="share a name"):
+        parse("incident", {"plural": "incidents", "aspects": ["links", "status", "progress"],
+                           "status": st, "bands": {"claimed": "ready"}})

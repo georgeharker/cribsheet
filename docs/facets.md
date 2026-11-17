@@ -396,6 +396,7 @@ then falls back to the built-ins, and `crib facets show` says why).
 | `[<noun>.fields]` | `name = "int" \| "str" \| "date"` | none | its own typed fields ([fields](#typed-fields-and-queries)); not on a graph facet yet. |
 | `[<noun>.when]` | `verb = "wording"` | none | extra wording for one verb's tool description. |
 | `[<noun>.status]` | table | (required with `status`) | `values = { <status> = "<role>", ... }` (every status plays a [role](#graph-facets-statuses-transitions-links)); `initial` (default: the first value); `transitions = { <verb> = "<status>", ... }`, each a verb of its own, never a graph verb's name and never into a `retired` status. `progress` needs a `done` status, `supersede` a `retired` one. |
+| `[<noun>.bands]` | `band = "name"` | the plan's names | a progress facet's own names for the groups its `list` shows: `claimed` (`in-progress`), `ready`, `blocked`, `paused` (`parked`), `dropped` (`declined`), `done`. Unnamed bands keep the plan's names; two can't share one. |
 | `[<noun>.edges]` | `target = "follows" \| "rests_on" \| "informed_by"` | see [links](#graph-facets-statuses-transitions-links) | the default link kind toward each target facet (`"*"` for the rest). |
 | `report_taint` | bool | false | it reports staleness: a marker on its search hits, and the `check` and `tree` verbs (as decisions do). Needs `links`. |
 | `export_with_deps` | bool | false | its export includes the items it depends on, from other facets (as plans' does). Needs `links`. |

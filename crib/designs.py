@@ -214,7 +214,7 @@ CHANGE_KINDS = (
 
 # How `plan_list` presents the plan: the working set first, the graph second.
 # The order of this tuple IS the rendering order.
-_GROUPS = ("in-progress", "ready", "blocked", "parked", "declined", "done")
+_GROUPS = _facets.BANDS  # rendering order; each facet names them (band_name)
 
 # The EXTRACTION PROCEDURES the import verbs return as their `instruction`. They
 # are the payload, not documentation of it: `design_import` runs no model, so the
@@ -274,17 +274,13 @@ judgement — this verb ran no model.
 
 
 def _group(node: Node, blocked: bool) -> str:
-    """Which working-set band an item belongs to (see `_GROUPS`)."""
+    """Which working-set band an item is in, by its facet's name for it (see
+    `_GROUPS`: claimed first even when blocked; paused visible but never "pick
+    me"; dropped hidden by default (--all), settled, not clutter)."""
     role = _role(node)
-    if role == "done":
-        return "done"
-    if role == "claimed":
-        return "in-progress"  # claimed: shown first even when blocked
-    if role == "paused":
-        return "parked"  # visible state, not hidden — but never "pick me"
-    if role == "dropped":
-        return "declined"  # hidden by default (--all); settled, not clutter
-    return "blocked" if blocked else "ready"
+    band = (role if role in ("done", "claimed", "paused", "dropped")
+            else "blocked" if blocked else "ready")
+    return _spec(node.kind).band_name(band)
 
 
 def _today() -> str:
@@ -3257,7 +3253,8 @@ class Designs:
         rows = self._rows(
             proj, graph, [n for n in order if all or not _is(n, "done", "dropped")]
         )
-        rows.sort(key=lambda r: _GROUPS.index(r["group"]))  # stable: topo+rank kept
+        rank = {_spec(facet).band_name(b): i for i, b in enumerate(_GROUPS)}
+        rows.sort(key=lambda r: rank[r["group"]])  # stable: topo+rank kept
         groups: dict[str, int] = {}
         for row in rows:
             groups[row["group"]] = groups.get(row["group"], 0) + 1
