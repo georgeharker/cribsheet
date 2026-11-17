@@ -9,6 +9,79 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.25.0] - 2026-11-17
+
+Everything since 0.23.1, collected from the 0.24.0 and 0.25.0 dev releases
+below. **Requires Python 3.14.**
+
+### Highlights
+
+- **Custom facets.** Declare your own kinds of item in a system facets file
+  (`~/.config/crib/facets.toml`; `crib facets init` writes a commented
+  starter, `docs/facets.md` has the full spec reference). Each gets the verbs
+  of its aspects as MCP tools and CLI commands (`routine_add`, `crib routine
+  lookup`, ...), its own store, search scope and tool set. Three kinds:
+  note-like (optionally enriched with summaries and keywords), anchored to
+  code like learnings (shown on `code_dossier`), and graph facets like
+  decisions and plans, with their own statuses (each playing a role: open,
+  claimed, gated, paused, dropped, done, retired), transitions, link
+  defaults and working set, and their own names for its bands
+  (`[<noun>.bands]`).
+- **Typed fields you can query.** `int`, `str` and `date` fields are
+  parameters on add/edit and filters on lookup and `list` (equality, or
+  `where` with comparisons and `re`). Declared fields are required unless the
+  spec lists them under `optional`; `add` refuses a new item without one.
+- **Agents learn your facets.** A facet's `about` and `[<noun>.when]` wording
+  join crib's own in its tool descriptions, and each session's instructions
+  list this machine's declared facets (the MCP server and the Claude Code,
+  OpenCode and Pi plugins add them). Engine hints and the `extract`
+  procedure name the facet's own tools, statuses and abilities.
+- **Facets mapped from a repo, and storage per pillar.** A repo's `.crib`
+  `facets:` maps a facet onto a directory of its own, writable or read-only,
+  ids stamped or derived from the path (a read-only, derived mapping never
+  writes a byte; `docs:` is now the notes facet mapped that way). A repo can
+  keep one pillar, say its decisions, in the repo while the rest stay where
+  they are: `crib project adopt` moves the items (merging when nothing would
+  be overwritten, refusing before moving anything), `release` moves them back.
+  `title_from` names items without a title (heading, filename, any key), and
+  `crib project doctor` flags a missing required field, a value that doesn't
+  fit its type, and an untitled item.
+- **Explicit conformance.** A new or changed facet waits for `crib facets
+  sync --apply` (a plan first); a removed one is dropped only with `--drop`;
+  sync refuses while the facets file fails to load and, on a shared store,
+  without `--shared`.
+- **Releases test themselves.** Every release tag runs the full suite once
+  on the tagged commit; PyPI and the plugins publish only if it passed.
+
+### Changed
+
+- **Python 3.14 or newer** (was 3.13).
+- crib's own notes, decisions, plans and learnings are specs in the same
+  registry, their tools and commands generated from the same templates; their
+  names, parameters, descriptions and `--help` are unchanged (held to the byte
+  by a snapshot test), apart from the subcommand order in `crib note -h`,
+  `crib design -h` and `crib plan -h`.
+- `read`/`locate` find an item named without its suffix and report a missing
+  one with suggestions; `crib project index` reports each facet mapping.
+
+### Fixed
+
+- Declared graph facets work in-process (`--no-daemon`), refuse while waiting
+  for `crib facets sync`, and their `review_apply` and `crib project doctor`
+  act on their own items.
+
+### Upgrading
+
+- **On Python 3.13**, pip and uv keep you on 0.23.1; `uvx` and the plugins
+  fetch a 3.14 for crib on their own.
+- **Otherwise nothing to do:** crib's own facets and the store layout are
+  unchanged, so the first start rebuilds nothing. A facet you declare waits
+  for `crib facets sync --apply`, then a daemon restart.
+- **If you tried the dev releases:** remove an `extract = ...` line from a
+  facet spec (it is derived now, and a file that sets it is refused, leaving
+  only the built-ins), and list in `optional = [...]` any declared field your
+  items may leave out.
+
 ## [0.25.0-dev3] - 2026-11-16
 
 ### Added
