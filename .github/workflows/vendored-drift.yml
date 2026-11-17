@@ -30,6 +30,8 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Re-sync vendored files
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # an authenticated release lookup
         run: scripts/sync-vendored.sh
 
       - name: Check for vendored drift (stamp-only lag warns, code drift fails)

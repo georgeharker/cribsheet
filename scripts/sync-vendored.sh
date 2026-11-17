@@ -35,7 +35,12 @@ command -v curl >/dev/null 2>&1 || die "curl is required to sync vendored files"
 
 # Resolve the latest release tag. Failing here is deliberate: silently skipping would
 # tag a release with a stale vendored file, which is the exact thing this prevents.
-tag="$(curl -sSfL "https://api.github.com/repos/${UPSTREAM_REPO}/releases/latest" 2>/dev/null \
+# Authenticated when a token is at hand (CI passes the job's GITHUB_TOKEN): the
+# anonymous API limit is 60 requests an hour per IP, shared across GitHub's
+# runners, and a release's burst of workflows can exhaust it.
+auth=()
+[ -n "${GITHUB_TOKEN:-}" ] && auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+tag="$(curl -sSfL ${auth[@]+"${auth[@]}"} "https://api.github.com/repos/${UPSTREAM_REPO}/releases/latest" 2>/dev/null \
   | python3 -c 'import json,sys; print(json.load(sys.stdin).get("tag_name",""))' 2>/dev/null || true)"
 [ -n "$tag" ] || die "could not resolve the latest ${UPSTREAM_REPO} release (offline, or no releases yet)"
 
