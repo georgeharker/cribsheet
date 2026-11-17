@@ -221,56 +221,94 @@ _GROUPS = _facets.BANDS  # rendering order; each facet names them (band_name)
 # only thing that turns a doc into graph entries is the session LLM following
 # this — and a procedure that arrives WITH the sections and hashes it refers to
 # is one the reader can execute without holding anything in its head.
-_DESIGN_IMPORT = """\
-Extract the DECISIONS this doc settles into the design graph. You do the reading
-and the judgement — this verb ran no model.
+def _procedure(kind: str, relpath: str) -> str:
+    """The extraction procedure the `extract` verb hands an agent for `kind`,
+    built from what the facet can do, so every step is one it can carry out:
 
-1. READ {relpath} in full (`note_read {relpath}`, or open the `path` above). A
-   decision is a choice with consequences: what was chosen, why, and what was
-   rejected. Prose that only describes how something works is not one.
-2. DEDUPE FIRST. `existing` lists what already cites this doc; `{lookup}`
-   each candidate before adding it. If the graph already holds it, `{append}`
-   the new detail onto that entry (or `{dep_add}` an edge) — a near-duplicate
-   decision forks the graph and splits its dependents between two records.
-3. ADD THEM IN ONE PASS. Each `{add}` carries:
-   - `deps`: the decisions it builds on, including ones you added a moment ago in
-     this same pass (they resolve by title);
-   - `sources`: the `source` string of the EXACT section(s) it was drawn from,
-     COPIED VERBATIM from `sections` below (several if it draws on several), so
-     the entry re-checks when that section moves. Never cite the doc as a whole —
-     that is refused, and it would re-check this entry on any edit anywhere in the
-     file;
-   - `proposed=True`: extraction lands in the quarantine tier, because an
-     LLM-extracted decision must not carry the authority of a hand-recorded one.
-   Each add answers with `similar` — a hit there means step 2 missed one.
-4. REPORT the subgraph with `{tree}`, and list what you added. Promotion is
-   the human act: `{promote} <ref>` per entry that is confirmed. Until then a
-   proposed entry taints nothing and gates any plan item that depends on it.
-"""
+    - a facet with a gated status (where proposals land) gets the decision
+      style: added one by one with `proposed=True`, then confirmed by a human
+      (with its promoting transition, when it has one);
+    - any other gets the plan style: one batch (`items=[...]`, `#N` deps) when
+      it is ordered, else one add per item;
+    - steps name the facet's own tools, and only ones it has (`tree` only if
+      it reports staleness, `status`/`next` only with progress).
 
-_PLAN_IMPORT = """\
-Turn this doc's ACTIONABLE work into plan items. You do the reading and the
-judgement — this verb ran no model.
+    What one item IS comes from crib/wording.toml for crib's own facets (their
+    texts come out exactly as they always have), else the facet's `about`."""
+    from . import verbs, wording
 
-1. READ {relpath} in full (`note_read {relpath}`, or open the `path` above) and
-   pull out what someone would actually DO — each item one discrete piece of work,
-   in the order the doc implies.
-2. DEDUPE FIRST. `existing` lists items already citing this doc; `{lookup}`
-   each candidate. Work already tracked takes `{dep_add}`/`{status}`, not a
-   second item for the same thing.
-3. ADD THEM AS ONE BATCH — `{add}(items=[...])`, in doc order. Each item
-   carries:
-   - `deps`: must-precede constraints, naming EARLIER items of this same batch by
-     position ("#1") or any existing ref, plus the design decisions the work rests
-     on;
-   - `sources`: the `source` string of the EXACT section it came from, COPIED
-     VERBATIM from `sections` below (never the doc as a whole — that is refused),
-     so a finished item flags `revisit` if the passage it was done against later
-     changes.
-   A title is a legitimate whole item; write a body only where the detail matters.
-4. REPORT the result with `{list}` (and `{next}` if you are picking work up
-   now).
-"""
+    spec = _spec(kind)
+    view = verbs.view(spec)
+    t = view.tool
+
+    def has(verb: str) -> bool:
+        return view.verb(verb) is not None
+
+    word = _word(kind)
+    own = wording.cli(kind, "extract.item") if spec.builtin else None
+    what = own if own is not None else (
+        f" What one {word} is: {spec.about}" if spec.about else "")
+    read = (f"1. READ {relpath} in full (`note_read {relpath}`, or open the `path` "
+            f"above)")
+    if spec.with_role("gated"):
+        promote = _to_role_tool(kind, "open")
+        confirm = (f"Promotion is\n   the human act: `{promote} <ref>` per entry that is "
+                   "confirmed." if promote else "Confirming each is the human act.")
+        gates = ("any plan item that depends on it" if spec.builtin
+                 else "anything that rests on it")
+        report = t("tree") if has("tree") else t("list")
+        return (
+            f"Extract the {word.upper()}S this doc settles into the {kind} graph. "
+            "You do the reading\nand the judgement — this verb ran no model.\n\n"
+            f"{read}.{what}\n"
+            f"2. DEDUPE FIRST. `existing` lists what already cites this doc; `{t('lookup')}`\n"
+            f"   each candidate before adding it. If the graph already holds it, `{t('append')}`\n"
+            f"   the new detail onto that entry (or `{t('dep_add')}` an edge) — a near-duplicate\n"
+            f"   {word} forks the graph and splits its dependents between two records.\n"
+            f"3. ADD THEM IN ONE PASS. Each `{t('add')}` carries:\n"
+            f"   - `deps`: the {word}s it builds on, including ones you added a moment ago in\n"
+            "     this same pass (they resolve by title);\n"
+            "   - `sources`: the `source` string of the EXACT section(s) it was drawn from,\n"
+            "     COPIED VERBATIM from `sections` below (several if it draws on several), so\n"
+            "     the entry re-checks when that section moves. Never cite the doc as a whole —\n"
+            "     that is refused, and it would re-check this entry on any edit anywhere in the\n"
+            "     file;\n"
+            "   - `proposed=True`: extraction lands in the quarantine tier, because an\n"
+            f"     LLM-extracted {word} must not carry the authority of a hand-recorded one.\n"
+            "   Each add answers with `similar` — a hit there means step 2 missed one.\n"
+            f"4. REPORT the subgraph with `{report}`, and list what you added. {confirm} Until then a\n"
+            f"   proposed entry taints nothing and gates {gates}.\n"
+        )
+    tracked = f"`{t('dep_add')}`/`{t('status')}`" if has("status") else f"`{t('dep_add')}`/`{t('edit')}`"
+    if spec.has("ordered"):
+        add = (f"3. ADD THEM AS ONE BATCH — `{t('add')}(items=[...])`, in doc order. Each item\n"
+               "   carries:\n"
+               "   - `deps`: must-precede constraints, naming EARLIER items of this same batch by\n"
+               "     position (\"#1\") or any existing ref, plus the design decisions the work rests\n"
+               "     on;\n")
+    else:
+        add = (f"3. ADD THEM ONE BY ONE — one `{t('add')}` per {word}, in doc order. Each\n"
+               "   carries:\n"
+               "   - `deps`: what it depends on: refs or titles, including ones you added a\n"
+               "     moment ago;\n")
+    titled = ("   A title is a legitimate whole item; write a body only where the detail matters.\n"
+              if not spec.requires_body else "")
+    nxt = (f" (and `{t('next')}` if you are picking work up\n   now)" if has("next") else "")
+    return (
+        f"Turn this doc's ACTIONABLE work into {word}s. You do the reading and the\n"
+        "judgement — this verb ran no model.\n\n"
+        f"{read}{what if own is not None else '.' + what}\n"
+        f"2. DEDUPE FIRST. `existing` lists items already citing this doc; `{t('lookup')}`\n"
+        f"   each candidate. Work already tracked takes {tracked}, not a\n"
+        "   second item for the same thing.\n"
+        + add +
+        "   - `sources`: the `source` string of the EXACT section it came from, COPIED\n"
+        "     VERBATIM from `sections` below (never the doc as a whole — that is refused),\n"
+        "     so a finished item flags `revisit` if the passage it was done against later\n"
+        "     changes.\n"
+        + titled +
+        f"4. REPORT the result with `{t('list')}`{nxt}.\n"
+    )
 
 
 def _group(node: Node, blocked: bool) -> str:
@@ -3380,12 +3418,7 @@ class Designs:
             "path": path,
             "sections": sections,
             "existing": existing,
-            "instruction": (
-                _DESIGN_IMPORT if _spec(kind).extract == "design" else _PLAN_IMPORT
-            ).format(relpath=doc, **{
-                v: _tool(kind, v) for v in (
-                    "lookup", "append", "dep_add", "add", "tree", "status", "list", "next")
-            }, promote=_to_role_tool(kind, "open") or f"{kind}_promote"),
+            "instruction": _procedure(kind, doc),
             "next": (
                 f"read {doc}, then follow `instruction` — nothing has been "
                 f"written yet; this verb only prepared the citations"

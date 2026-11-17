@@ -34,7 +34,6 @@ store = "design"
 aspects = ["core", "links", "status", "supersede", "sources"]
 label = "Design decisions"
 requires_body = true
-extract = "design"
 report_taint = true
 
 [plan]
@@ -42,7 +41,6 @@ plural = "plans"
 store = "plans"
 aspects = ["core", "links", "status", "progress", "ordered", "sources"]
 label = "Plan items"
-extract = "plan"
 export_with_deps = true
 
 # A graph facet's statuses each play an engine ROLE (crib/facets.py ROLES);

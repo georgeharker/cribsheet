@@ -350,7 +350,6 @@ def test_the_builtin_graph_specs_reproduce_the_old_constants():
     assert design.requires_body and not plan.requires_body
     assert design.report_taint and not plan.report_taint
     assert plan.export_with_deps and not design.export_with_deps
-    assert (design.extract, plan.extract) == ("design", "plan")
 
 
 def test_default_link_kinds_follow_the_source_facets_edges():
@@ -745,16 +744,16 @@ def test_flags_are_declared_once_and_checked_from_the_registry():
     assert set(facets.FLAGS) <= facets._KEYS
     graph = {"plural": "ts", "aspects": ["links", "status", "sources"],
              "status": {"values": {"o": "open", "d": "done"}}}
-    s = parse("t", {**graph, "report_taint": True, "label": "Ts", "extract": "plan"})
-    assert (s.report_taint, s.label, s.extract, s.requires_body) == (True, "Ts", "plan", False)
+    s = parse("t", {**graph, "report_taint": True, "label": "Ts"})
+    assert (s.report_taint, s.label, s.requires_body) == (True, "Ts", False)
     assert s.flag("export_with_deps") is False
     assert load(facets.to_toml([s]))[0].flags == s.flags
     with pytest.raises(FacetSpecError, match="needs the links aspect"):
         parse("t", {"plural": "ts", "report_taint": True})
     with pytest.raises(FacetSpecError, match="true or false"):
         parse("t", {**graph, "report_taint": "yes"})
-    with pytest.raises(FacetSpecError, match="design or plan"):
-        parse("t", {**graph, "extract": "other"})
+    with pytest.raises(FacetSpecError, match="unknown keys"):
+        parse("t", {**graph, "extract": "plan"})  # derived from the facet now
     with pytest.raises(KeyError):
         s.flag("nope")
     assert all(f.meaning for f in facets.FLAGS.values())

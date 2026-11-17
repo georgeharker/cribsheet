@@ -259,8 +259,7 @@ class Flag:
     name: str
     needs: frozenset[str]
     meaning: str
-    type: str = "bool"  # "bool" | "str" | "choice"
-    choices: tuple[str, ...] = ()
+    type: str = "bool"  # "bool" | "str"
 
 
 FLAGS: Mapping[str, Flag] = MappingProxyType({f.name: f for f in (
@@ -274,10 +273,6 @@ FLAGS: Mapping[str, Flag] = MappingProxyType({f.name: f for f in (
          "(plans)"),
     Flag("label", frozenset({"sources"}), "the heading of its exported document",
          type="str"),
-    Flag("extract", frozenset({"sources"}),
-         "the extraction procedure its extract verb hands an agent: decision-"
-         "style (proposed entries, confirmed one by one) or plan-style (one batch)",
-         type="choice", choices=("design", "plan")),
 )})
 
 
@@ -351,10 +346,6 @@ class FacetSpec:
     @property
     def label(self) -> str | None:
         return self.flag("label")
-
-    @property
-    def extract(self) -> str | None:
-        return self.flag("extract")
 
     def role(self, status: str | None) -> str | None:
         """The role `status` plays, or None (not one of this facet's)."""
@@ -673,10 +664,6 @@ def _flags(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, Any]:
                 raise FacetSpecError(f"facet {noun!r}: {name} is true or false, not {value!r}")
             if not value:
                 continue
-        elif f.type == "choice":
-            if value not in f.choices:
-                raise FacetSpecError(
-                    f"facet {noun!r}: {name} is {' or '.join(f.choices)}, not {value!r}")
         elif not isinstance(value, str):
             raise FacetSpecError(f"facet {noun!r}: {name} is a string, not {value!r}")
         if missing := sorted(f.needs - have):

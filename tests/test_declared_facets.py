@@ -2050,6 +2050,43 @@ def test_a_facets_own_band_names_group_its_list(tmp_path):
     assert out["groups"] == {"investigating": 1, "on hold": 1}
 
 
+def test_the_builtin_extract_procedures_are_unchanged():
+    """crib's own extraction procedures, built from their facets' abilities
+    now, read exactly as they always have (tests/goldens/extract_procedures.json)."""
+    import json as _json
+
+    from crib import designs
+
+    golden = _json.loads((Path(__file__).parent / "goldens" / "extract_procedures.json").read_text())
+    for kind in ("design", "plan"):
+        assert designs._procedure(kind, "docs/X.md") == golden[kind], kind
+
+
+def test_a_declared_facets_extract_procedure_asks_only_what_it_can_do(tmp_path):
+    """No gated status, not ordered, no progress: one add per item, its own
+    tools, no proposed=True, no items=[...], no status/next/tree/promote."""
+    spec = """
+[memo]
+plural = "memos"
+aspects = ["links", "status", "sources"]
+about = "A memo records a finding from a doc."
+
+[memo.status]
+values = { open = "open", closed = "done" }
+"""
+    out = _run(tmp_path, spec, """
+        from crib import designs
+        out["text"] = designs._procedure("memo", "docs/X.md")
+    """)
+    text = out["text"]
+    assert "one `memo_add` per memo" in text
+    assert "What one memo is: A memo records a finding from a doc." in text
+    for absent in ("proposed=True", "items=[", "plan_", "design_", "memo_status",
+                   "memo_next", "memo_tree", "promote"):
+        assert absent not in text, absent
+    assert "`memo_list`" in text and "`memo_lookup`" in text
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

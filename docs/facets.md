@@ -113,7 +113,7 @@ and verbs.
 | `progress` (needs `status`) | a working set: what's done, what's ready | `status`, `next`, `review`, `review_apply` |
 | `ordered` | a rank among the facet's items | `move` (and `add` takes `after`/`before`/`items`) |
 | `supersede` (needs `status`, `links`) | an item replaced by another; what rested on it goes stale | `supersede` |
-| `sources` | citations of doc sections, and the extraction procedure | `export`, `extract` |
+| `sources` | citations of doc sections, and the extraction procedure | `export`, `extract` (it hands an agent a procedure built from the facet's own abilities: with a gated status, add each with `proposed=True` for a human to confirm; else, if `ordered`, one batch with `#N` deps, otherwise one add per item; it names only the facet's own tools) |
 
 A facet with declared fields also gets `list` (filter by fields, no query).
 
@@ -402,11 +402,9 @@ then falls back to the built-ins, and `crib facets show` says why).
 | `export_with_deps` | bool | false | its export includes the items it depends on, from other facets (as plans' does). Needs `links`. |
 | `requires_body` | bool | false | an item must have a body: `add` refuses a title alone (as decisions do). |
 | `label` | string | `<Noun> items` | the heading of its exported document (`export`). |
-| `extract` | `"design" \| "plan"` | `"plan"` | which extraction procedure its `extract` verb hands an agent: decision-style (proposed entries, confirmed one by one) or plan-style (one batch of items in the doc's order). With `sources`. |
 
-**Flags** are the five keys above that switch an engine behaviour on for a
-facet: `requires_body`, `report_taint`, `export_with_deps`, `label` and
-`extract`. Each needs particular aspects (a flag on a facet without them
+**Flags** are the four keys above that switch an engine behaviour on for a
+facet: `requires_body`, `report_taint`, `export_with_deps` and `label`. Each needs particular aspects (a flag on a facet without them
 would do nothing, so it is refused, saying which). They are declared in one
 place, `crib.facets.FLAGS`, with their type, needed aspects and meaning, so a
 new behaviour is one entry there plus the engine code that reads it;

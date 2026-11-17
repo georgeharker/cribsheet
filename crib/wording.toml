@@ -136,6 +136,9 @@ the same doc to a file for git-diffing.)'''
 cli_out = "write the markdown here (e.g. docs/STATE-designs.md) instead of stdout"
 
 [design.extract]
+cli_item = """ A
+   decision is a choice with consequences: what was chosen, why, and what was
+   rejected. Prose that only describes how something works is not one."""
 cli = "prepare a doc for extraction into decisions (writes nothing)"
 mcp = '''
 Capture a DESIGN DOC into the decision graph — the doc split into
@@ -367,6 +370,9 @@ not a work queue (`plan_list` is that).'''
 cli_out = "write the file (e.g. docs/STATE-plans.md) instead of stdout"
 
 [plan.extract]
+cli_item = """ and
+   pull out what someone would actually DO — each item one discrete piece of work,
+   in the order the doc implies."""
 cli = "prepare a doc for extraction into actionable work (writes nothing)"
 mcp = '''
 Capture a PLAN DOC into the plan facet — the same shape as
