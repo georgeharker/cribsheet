@@ -111,3 +111,28 @@ def test_an_empty_extract_is_recorded_and_doctor_names_it(crib, tmp_path, monkey
     monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: [dict(sym)])
     crib._index_code_file_tracked(root, "new.zsh", proj, False, describe_mode="none")
     assert emptyextract.load(crib.paths.index_dir, proj) == {}
+
+
+@pytest.mark.parametrize("version, chosen", [("Version 7.0.2", "typescript-go"),
+                                             ("Version 5.9.3", "next"),
+                                             ("garbage", "next")])
+def test_a_spec_with_min_version_is_used_only_when_the_binary_is_new_enough(
+        tmp_path, version, chosen):
+    """typescript-go needs TypeScript 7's `tsc --lsp`; a TS 5/6 tsc on PATH has no
+    --lsp, so the version gate falls through to the next spec."""
+    tsc = tmp_path / f"tsc-{abs(hash(version))}"
+    tsc.write_text(f"#!/bin/sh\necho '{version}'\n")
+    tsc.chmod(0o755)
+    nxt = tmp_path / "next-ls"
+    nxt.write_text("#!/bin/sh\n")
+    nxt.chmod(0o755)
+    specs = {
+        "typescript-go": {"command": str(tsc), "args": ["--lsp", "--stdio"],
+                          "min_version": "7", "extensionToLanguage": {".ts": "typescript"}},
+        "next": {"command": str(nxt), "args": [], "extensionToLanguage": {".ts": "typescript"}},
+    }
+    sel = ci.server_for("a.ts", specs=specs)
+    assert sel is not None and sel[0] == chosen
+    assert ci.DEFAULT_LSP_SPECS["typescript-go"]["min_version"] == "7"
+    assert list(ci.DEFAULT_LSP_SPECS).index("typescript-go") < list(
+        ci.DEFAULT_LSP_SPECS).index("typescript-language-server")

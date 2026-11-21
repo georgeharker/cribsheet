@@ -103,6 +103,26 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     # TypeScript/JavaScript: typescript-language-server (tsserver over LSP —
     # documentSymbol + references + callHierarchy, all verified) first; vtsls
     # (the VSCode-flavoured tsserver wrapper, same capabilities) as the fallback.
+    # TypeScript / JavaScript: TypeScript 7's own server FIRST (`tsc --lsp`, the
+    # Go port: documentSymbol, callHierarchy, references). TS 7 ships no
+    # tsserver.js, so typescript-language-server returns NOTHING where a global
+    # TS 7 is all it can find; a TS 5/6 `tsc` has no --lsp, hence the version
+    # gate (`min_version`): an older tsc falls through to the next entry.
+    "typescript-go": {
+        "command": "tsc",
+        "args": ["--lsp", "--stdio"],
+        "min_version": "7",
+        "extensionToLanguage": {
+            ".ts": "typescript",
+            ".tsx": "typescriptreact",
+            ".mts": "typescript",
+            ".cts": "typescript",
+            ".js": "javascript",
+            ".jsx": "javascriptreact",
+            ".mjs": "javascript",
+            ".cjs": "javascript",
+        },
+    },
     "typescript-language-server": {
         "command": "typescript-language-server",
         "args": ["--stdio"],
@@ -216,16 +236,50 @@ def load_specs() -> dict[str, dict[str, Any]]:
 
 
 def resolve_command(spec: dict) -> list[str] | None:
-    """Portable `command` → argv, or None if the binary isn't on this machine.
-    Expands `${ENV}` (incl. `${CLAUDE_PLUGIN_ROOT}`); a bare name is `which`-resolved."""
+    """Portable `command` → argv, or None if the binary isn't on this machine (or
+    is older than the spec's `min_version`). Expands `${ENV}` (incl.
+    `${CLAUDE_PLUGIN_ROOT}`); a bare name is `which`-resolved."""
     cmd = os.path.expandvars(spec.get("command", ""))
     args = list(spec.get("args", []))
     if not cmd:
         return None
     if os.sep in cmd:  # explicit / expanded path
-        return [cmd, *args] if Path(cmd).exists() else None
-    resolved = shutil.which(cmd)
-    return [resolved, *args] if resolved else None
+        found = cmd if Path(cmd).exists() else None
+    else:
+        found = shutil.which(cmd)
+    if not found:
+        return None
+    if (need := spec.get("min_version")) is not None and not _meets_version(
+            found, str(need), list(spec.get("version_args") or ["--version"])):
+        return None
+    return [found, *args]
+
+
+_VERSIONS: dict[tuple[str, float], tuple[int, ...] | None] = {}
+
+
+def _meets_version(binary: str, need: str, version_args: list[str]) -> bool:
+    """Is `binary` at least version `need`? Its `version_args` output's first
+    dotted number, compared numerically (`Version 7.0.2` >= `7`); unreadable =
+    no. Cached per binary path and mtime: one probe per binary per change."""
+    import re
+    import subprocess
+
+    try:
+        key = (binary, Path(binary).stat().st_mtime)
+    except OSError:
+        return False
+    if key not in _VERSIONS:
+        try:
+            out = subprocess.run([binary, *version_args], capture_output=True,
+                                 text=True, timeout=10)
+            m = re.search(r"(\d+(?:\.\d+)*)", (out.stdout or "") + (out.stderr or ""))
+            _VERSIONS[key] = tuple(int(x) for x in m.group(1).split(".")) if m else None
+        except (OSError, subprocess.SubprocessError):
+            _VERSIONS[key] = None
+    have = _VERSIONS[key]
+    want = tuple(int(x) for x in need.split(".") if x.isdigit())
+    return have is not None and have >= want
 
 
 # Grammar map — how a file's language is inferred BEYOND its extension, so
