@@ -18,6 +18,28 @@ def _warn(msg: str) -> None:
     print(f"[crib] {msg}", file=sys.stderr)
 
 
+# Per-machine generation choice without editing config: these override
+# [generate] profile / provider (a set, non-empty value wins). Setting the
+# profile also clears a provider forced in config.toml, which would otherwise
+# win over it silently. The daemon reads them from ITS environment (whatever
+# launched it: the combiner, sharedserver, a shell).
+GENERATE_PROFILE_ENV = "CRIB_GENERATE_PROFILE"
+GENERATE_PROVIDER_ENV = "CRIB_GENERATE_PROVIDER"
+
+
+def _generate_from_env(gen: GenerateConfig) -> None:
+    """Apply $CRIB_GENERATE_PROFILE / $CRIB_GENERATE_PROVIDER to `gen`, noting
+    which values came from the environment (`gen.from_env`)."""
+    import os
+
+    if profile := (os.environ.get(GENERATE_PROFILE_ENV) or "").strip():
+        gen.profile, gen.provider = profile, None
+        gen.from_env = (*gen.from_env, "profile")
+    if provider := (os.environ.get(GENERATE_PROVIDER_ENV) or "").strip():
+        gen.provider = provider
+        gen.from_env = (*gen.from_env, "provider")
+
+
 def _warn_unknown(config_file: Path, table: str, data: dict, known: set[str]) -> None:
     """One line naming the file, the table and every key we're ignoring — the
     only way a typo is ever noticed once it stops being fatal."""
@@ -206,6 +228,9 @@ class GenerateConfig:
     config: str | None = None
     profile: str | None = None  # profile whose widget keys map purpose→provider
     provider: str | None = None  # force a named provider (wins over profile)
+    # which of profile/provider came from $CRIB_GENERATE_PROFILE/_PROVIDER (set
+    # by Config.load, never read from the file)
+    from_env: tuple[str, ...] = ()
     # inline single-provider fallback (used only when `config` is unset)
     adapter: str = "claude_code"  # claude_code | openai-compatible | anthropic | google
     model: str | None = None
@@ -364,6 +389,7 @@ class Config:
         warning that names file, table and key."""
         cfg = cls()
         if not config_file.exists():
+            _generate_from_env(cfg.generate)
             return cfg
         try:
             data = tomllib.loads(config_file.read_text())
@@ -417,6 +443,7 @@ class Config:
             }
         if isinstance(loc := data.get("locations"), dict):
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
+        _generate_from_env(cfg.generate)
         return cfg
 
 

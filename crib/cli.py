@@ -3995,8 +3995,11 @@ def _generate_cmd(args: Any) -> int:
             pick=args.provider, model=args.model, mode=args.mode)
     cfg = Config.load(paths.config_file).generate
     print(f"generation mode: {cfg.resolved_mode()}"
-          + (f" · providers: {cfg.config} (profile {cfg.profile})" if cfg.config
-             else " · no models config: the inline [generate] provider"))
+          + (f" · providers: {cfg.config} (" + ", ".join(
+              f"{k} {getattr(cfg, k)}"
+              + (" from $CRIB_GENERATE_" + k.upper() if k in cfg.from_env else "")
+              for k in ("profile", "provider") if getattr(cfg, k)) + ")"
+             if cfg.config else " · no models config: the inline [generate] provider"))
     rows = gensetup.test_purposes(cfg)
     for r in rows:
         mark = "ok  " if r["ok"] else "FAIL"

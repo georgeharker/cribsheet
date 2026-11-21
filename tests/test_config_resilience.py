@@ -194,3 +194,31 @@ def test_ring_warns_once_per_dir(tmp_path, capsys):
     ring.stash("ID2", "v2")
     ring.stash("ID2", "v3")
     assert capsys.readouterr().err.count("version ring") == 1
+
+
+@pytest.mark.parametrize("env, want", [
+    ({}, ("crib-bulk", "zai", ())),
+    ({"CRIB_GENERATE_PROFILE": "cloud"}, ("cloud", None, ("profile",))),
+    ({"CRIB_GENERATE_PROVIDER": "claude"}, ("crib-bulk", "claude", ("provider",))),
+    ({"CRIB_GENERATE_PROFILE": "cloud", "CRIB_GENERATE_PROVIDER": "claude"},
+     ("cloud", "claude", ("profile", "provider"))),
+    ({"CRIB_GENERATE_PROFILE": "  "}, ("crib-bulk", "zai", ())),  # blank: ignored
+])
+def test_the_generation_profile_and_provider_come_from_the_environment(
+        tmp_path, monkeypatch, env, want):
+    """Per-machine generation without editing config: $CRIB_GENERATE_PROFILE /
+    _PROVIDER override [generate]; a profile from the environment clears a
+    provider forced in config.toml (it would otherwise win silently)."""
+    for k in ("CRIB_GENERATE_PROFILE", "CRIB_GENERATE_PROVIDER"):
+        monkeypatch.delenv(k, raising=False)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    f = _cfg(tmp_path, '[generate]\nconfig = "m.toml"\nprofile = "crib-bulk"\nprovider = "zai"\n')
+    g = Config.load(f).generate
+    assert (g.profile, g.provider, g.from_env) == want
+
+
+def test_the_environment_applies_without_a_config_file(tmp_path, monkeypatch):
+    monkeypatch.setenv("CRIB_GENERATE_PROFILE", "cloud")
+    monkeypatch.delenv("CRIB_GENERATE_PROVIDER", raising=False)
+    assert Config.load(tmp_path / "missing.toml").generate.profile == "cloud"

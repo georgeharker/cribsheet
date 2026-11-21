@@ -5051,8 +5051,13 @@ class Crib:
     def _generation_state(self, projects: list[dict[str, Any]]) -> dict[str, Any]:
         """[generate] mode, and, unless it is "on", the symbols whose description
         is waiting for an explicit index (structure saved, description blank)."""
-        mode = self.config.generate.resolved_mode()
+        gen = self.config.generate
+        mode = gen.resolved_mode()
         out: dict[str, Any] = {"mode": mode}
+        for key in ("profile", "provider"):
+            if value := getattr(gen, key):
+                out[key] = value + (" (from $CRIB_GENERATE_" + key.upper() + ")"
+                                    if key in gen.from_env else "")
         if mode != "on":
             pending: dict[str, int] = {}
             for row in projects:

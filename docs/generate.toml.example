@@ -18,6 +18,11 @@
 #   profile = "crib"
 #   mode    = "on"        # generate in the background as code and notes change;
 #                         # "explicit" = only when a verb asks; "off" = never.
+#
+# Per machine, without editing either file: $CRIB_GENERATE_PROFILE picks the
+# profile (and clears a [generate] provider), $CRIB_GENERATE_PROVIDER forces a
+# provider. The daemon reads them from its own environment (whatever launched
+# it), so set them where it starts. `crib generate test` shows which applied.
 #                         # Unset: "on" with a providers file, else "explicit".
 #
 # Each adapter needs its llmkit extra: openai-compatible → polyllmkit[bridge],
