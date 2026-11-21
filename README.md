@@ -169,6 +169,15 @@ wait for a description until you configure one and run `crib project index`.
 `crib status` counts what is waiting. Details:
 [docs/generate.toml.example](docs/generate.toml.example).
 
+To pick the profile per machine without editing either file, set
+`CRIB_GENERATE_PROFILE` (a profile in `models.toml`; it also clears any
+`[generate] provider`) or `CRIB_GENERATE_PROVIDER` (one named provider). They
+override `config.toml` when set and not blank. Set them where the crib daemon is
+launched (your MCP client's or combiner's server environment, or the shell
+profile it inherits), then restart the daemon: config is read once at
+startup. `crib generate test` and `crib status` show the values in use and
+say which came from the environment.
+
 **4 — Use it.** The CLI verbs mirror the MCP tools, so anything Claude does you can
 do too:
 

@@ -22,7 +22,9 @@
 # Per machine, without editing either file: $CRIB_GENERATE_PROFILE picks the
 # profile (and clears a [generate] provider), $CRIB_GENERATE_PROVIDER forces a
 # provider. The daemon reads them from its own environment (whatever launched
-# it), so set them where it starts. `crib generate test` shows which applied.
+# it) once at startup, so set them where it starts and restart it. A CLI
+# command reads your shell's environment instead: `crib generate test` shows
+# what applies there, `crib status` what the daemon uses.
 #                         # Unset: "on" with a providers file, else "explicit".
 #
 # Each adapter needs its llmkit extra: openai-compatible → polyllmkit[bridge],

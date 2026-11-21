@@ -17,6 +17,10 @@ index. Commands are copy-pasteable; adjust paths if your checkout layout differs
     `~/.config/zsh-ai/models.toml`. On a machine without the dotfiles,
     `crib generate setup` writes both this and the `[generate]` block, and
     `crib generate test` checks them.
+  - To generate with a different profile on this machine without touching the
+    synced config, set `CRIB_GENERATE_PROFILE=<profile>` (or
+    `CRIB_GENERATE_PROVIDER=<provider>`) in the environment the crib daemon
+    starts in, and restart it. `crib status` says when the environment chose.
 - **`export OPENCODE_API_KEY=…`** in the shell (zen auth; crib holds no key).
 - **Shared store:** config uses `[duckdb] mode = "shared"`, which needs the
   `sharedserver` binary on `PATH`. If it isn't installed on the new box, either
