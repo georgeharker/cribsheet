@@ -80,3 +80,34 @@ def test_genuinely_empty_file_still_prunes(crib, tmp_path, monkeypatch):
     monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: [])
     crib._index_code_file_tracked(root, "gone.zsh", proj, False)
     assert not SymbolIndex(crib.paths.project_dir(proj)).by_fqname("gone.old")
+
+
+def test_an_empty_extract_is_recorded_and_doctor_names_it(crib, tmp_path, monkeypatch):
+    """A code file the server returns NO symbols for (a server that couldn't load
+    its runtime: typescript-language-server with no tsserver) is retried once,
+    then recorded, reported by doctor, and cleared when it extracts again."""
+    from crib import emptyextract
+    from crib.doctor import diagnose
+
+    proj = "p"
+    root = tmp_path / "repo"; root.mkdir()
+    (root / "new.zsh").write_text("function a() {\n  echo 1\n  echo 2\n  echo 3\n}\n")
+    calls = []
+    monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: calls.append(k) or [])
+    monkeypatch.setattr(ci, "server_for", lambda rel, **k: ("fake-ls", ["fake"], "zsh", {}))
+    res = crib._index_code_file_tracked(root, "new.zsh", proj, False)
+    assert res.get("skipped") == "empty-extract" and res.get("server") == "fake-ls"
+    assert any(k.get("settle") == 3.0 for k in calls)  # one slow retry first
+    assert emptyextract.load(crib.paths.index_dir, proj) == {
+        "new.zsh": {"server": "fake-ls", "kept_prior": 0}}
+    found = [f for f in diagnose(crib, proj)["findings"]
+             if f["check"] == "no symbols from the language server"]
+    assert found and found[0]["server"] == "fake-ls" and found[0]["files"] == ["new.zsh"]
+
+    sym = {"fqname": "new.a", "name": "a", "kind": "function", "lang": "zsh",
+           "module": "new", "parent": "", "content_hash": "h", "file": "new.zsh",
+           "line": 1, "signature": "function a()", "container": [], "calls": [],
+           "called_by": [], "name_terms": ["a"]}
+    monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: [dict(sym)])
+    crib._index_code_file_tracked(root, "new.zsh", proj, False, describe_mode="none")
+    assert emptyextract.load(crib.paths.index_dir, proj) == {}

@@ -148,6 +148,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     findings += _duplicate_ids(crib, proj)
     findings += _near_duplicates(crib, proj)
     findings += _unstamped(crib, proj)
+    findings += _empty_extracts(crib, proj)
     findings += _mistyped_fields(crib, proj)
     findings += _untitled(crib, proj)
 
@@ -260,6 +261,33 @@ def _misfits(spec: Any, fm: dict[str, Any]) -> list[dict[str, Any]]:
                 "fix": f"`{name}` takes {takes}: correct it in the file (until then "
                 f"the item has no value for it, so filters on `{name}` miss it)",
             })
+    return out
+
+
+def _empty_extracts(crib: Crib, proj: str) -> list[dict[str, Any]]:
+    """Code files whose language server returned no symbols (crib.emptyextract),
+    grouped by server: usually the server couldn't load its language's runtime
+    (typescript-language-server without a usable tsserver), so every file of
+    that language is missing from the index, or serving old records."""
+    from . import emptyextract
+
+    by_server: dict[str, list[str]] = {}
+    kept = 0
+    for rel, info in sorted(emptyextract.load(crib.paths.index_dir, proj).items()):
+        by_server.setdefault(str(info.get("server") or "?"), []).append(rel)
+        kept += int(info.get("kept_prior") or 0)
+    out = []
+    for server, files in by_server.items():
+        out.append({
+            "check": "no symbols from the language server",
+            "kind": "code",
+            "server": server,
+            "files": files,
+            **({"stale_records": kept} if kept else {}),
+            "fix": f"{server} returned nothing for {len(files)} code file(s): check it "
+            "can load its language's runtime (for TypeScript, a tsserver: or use "
+            "TypeScript 7's `tsc --lsp`), then `crib code index <file>` each",
+        })
     return out
 
 

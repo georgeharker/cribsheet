@@ -624,6 +624,10 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     errs = d.get("errors") or []
     if errs:
         print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")
+    if empty := d.get("empty_extracts") or []:
+        servers = ", ".join(sorted({str(e.get("server")) for e in empty}))
+        print(f"  {len(empty)} code file(s) got NO symbols from {servers} "
+              f"(first: {empty[0].get('file', '')}): see `crib project doctor`")
 
 
 def _emit_code_dossier(d: Any, as_json: bool) -> None:

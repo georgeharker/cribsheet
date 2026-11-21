@@ -217,6 +217,7 @@ class CodeIndexer:
             describe_file,
             describe_symbols,
             extract_file,
+            server_for,
             match_meta,
         )
 
@@ -292,12 +293,18 @@ class CodeIndexer:
         # spelled — and therefore cannot miss against a half-converted store.
         by_parts = {_parts(e): e for e in prior}
         old_in_file = set(by_parts)
-        # KEEP-PRIOR-ON-EMPTY: a still-present, non-trivial file that extracts to ZERO
-        # symbols is almost always a flaky LSP pass (empty documentSymbol from an init
-        # race / short settle — shuck does this on zsh), not a real emptying. Pruning
-        # here would silently delete real symbols until the next good reindex, so skip
-        # it. A genuinely-emptied file (no code left) still prunes.
-        if not entries and old_in_file:
+        # EMPTY EXTRACT: a still-present, non-trivial file that extracts to ZERO
+        # symbols is a flaky pass (an init race / short settle: shuck on zsh) or a
+        # server that can't load its language's runtime (typescript-language-server
+        # with no usable tsserver: every file empty, fast, no error). One slow
+        # re-extract settles the first; what is still empty is RECORDED
+        # (crib.emptyextract), reported by the sweep, doctor and code_dossier,
+        # never silent. Prior records are kept (pruning would delete real symbols
+        # on a flaky pass) and flagged as possibly stale. A genuinely-emptied file
+        # (no code left) still prunes.
+        from . import emptyextract
+
+        if not entries:
             try:
                 body = (root / rel).read_text(errors="ignore")
             except OSError:
@@ -305,16 +312,29 @@ class CodeIndexer:
             codeish = [
                 ln
                 for ln in body.splitlines()
-                if ln.strip() and not ln.lstrip().startswith("#")
+                if ln.strip() and not ln.lstrip().startswith(("#", "//"))
             ]
             if len(codeish) > 3:
+                try:
+                    entries = extract_file(root, rel, settle=3.0, ref_projects=ref_ctx)
+                except Exception:  # noqa: BLE001 — still empty
+                    entries = []
+            if not entries and len(codeish) > 3:
+                sel = server_for(rel, abspath=(root / rel).resolve())
+                emptyextract.record(self.paths.index_dir, proj, rel,
+                                    sel[0] if sel else None, len(old_in_file))
                 return {
                     "project": proj,
                     "root": str(root),
                     "file": rel,
                     "symbols": len(old_in_file),
-                    "skipped": "empty-extract-kept-prior",
+                    "skipped": ("empty-extract-kept-prior" if old_in_file
+                                else "empty-extract"),
+                    "skipped_kind": "empty",
+                    "server": sel[0] if sel else None,
                 }
+        if entries:
+            emptyextract.clear(self.paths.index_dir, proj, rel)
         # PARTIAL-extract guard — the empty guard's unguarded cousin. A server
         # answering mid-settle (esp. on the short warm-session settle) can return a
         # partial documentSymbol. Signature of partial: strictly FEWER symbols and
@@ -656,6 +676,8 @@ class CodeIndexer:
         # ordinary self-skip of a non-code file (no LSP server), which is expected
         # and silent — these are reported so a hole in the index is never invisible.
         skipped: list[dict[str, str]] = []
+        # Code files the server returned NO symbols for (crib.emptyextract).
+        empty: list[dict[str, Any]] = []
         with self.code.indexing_lock:
             entry: dict[str, float | None] = {
                 "done": 0,
@@ -676,6 +698,9 @@ class CodeIndexer:
                 elif isinstance(r, dict) and r.get("skipped"):
                     if r.get("skipped_kind") == "unreadable":
                         skipped.append({"file": str(f), "error": r["skipped"]})
+                    elif r.get("skipped_kind") == "empty":
+                        empty.append({"file": str(f), "server": r.get("server"),
+                                      "kept_prior": r.get("symbols", 0)})
                 else:
                     indexed += 1
                     syms += (r or {}).get("symbols", 0)
@@ -722,6 +747,16 @@ class CodeIndexer:
             print(
                 f"[crib] code index {proj}: {len(skipped)} unreadable file(s) "
                 f"skipped (first: {skipped[0]['file']})",
+                file=sys.stderr,
+            )
+        if empty:
+            out["empty_extracts"] = empty
+            servers = sorted({str(e["server"]) for e in empty})
+            print(
+                f"[crib] code index {proj}: {len(empty)} code file(s) got NO symbols "
+                f"from {', '.join(servers)} (first: {empty[0]['file']}): the server "
+                "may not have loaded its language's runtime; `crib project doctor` "
+                "has the list",
                 file=sys.stderr,
             )
         return out
