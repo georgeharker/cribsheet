@@ -1,10 +1,14 @@
-"""Resident code-index cache + watcher coalescing + reindex lock.
+"""Code-index freshness + watcher coalescing + reindex lock.
 
-The cache keeps parsed symbols and description embeddings resident so a `code_*`
-query need not re-parse every TOML or re-embed every description; it invalidates
-by an in-process epoch (`trust`) or the symbol_index dir signature (`scan`). The
-code watcher coalesces bursts per project; `_index_code_file_tracked`/`_drop_file` bump
-the epoch under a per-project lock.
+Symbols live in the store, not in memory: `CodeStore.refresh` maps the symbol
+record files (TOML) that changed into `symbol` items, with each description's
+vector stored alongside, and every `code_*` query reads a fresh `StoreCode` view
+(nothing held between calls). So a query re-parses only changed records and
+re-embeds only changed descriptions. `CodeStore.ensure` decides when to refresh:
+on every query (`scan`, a directory diff) or on first touch and after an
+in-process write moved the epoch (`trust`). The code watcher coalesces bursts
+per project; `_index_code_file_tracked`/`_drop_file` bump the epoch under a
+per-project lock.
 """
 
 from __future__ import annotations
@@ -41,7 +45,7 @@ def _write(crib, project, fqname, description, content_hash):
         "container": [], "calls": [], "called_by": [], "name_terms": [fqname.split(".")[-1]]})
 
 
-# ── Resident cache: parse + embed reuse ───────────────────────────────────────
+# ── Store refresh: parse + embed reuse ───────────────────────────────────────
 _DESCRIPTIONS = {"computes the alpha metric", "renders the beta view",
                  "summarises the gamma path"}
 
