@@ -407,12 +407,19 @@ class CodeQuery:
             gnorm = {i: (gated.get(i, 0.0) - lo) / rng for i in pool}
         else:
             gnorm = {i: 0.0 for i in pool}
-        score = {i: dense[i] + gnorm[i] for i in pool if i in dense}
+        # A candidate with NO description vector (not described yet: a file just
+        # indexed, a describe that failed) has no cosine (None). Its dense side is
+        # neutral (0.0), so its name match alone ranks it: an exact name still
+        # surfaces it, a weak one stays below described symbols. A described
+        # symbol keeps its real cosine, however low.
+        def dense_side(c: float | None) -> float:
+            return 0.0 if c is None else c
+
+        score = {i: dense_side(dense[i]) + gnorm[i] for i in pool if i in dense}
         # a sparse-only candidate outside the dense candidates: score its vector
-        # directly, or -1.0 if it has none
         missing = [i for i in pool if i not in dense]
         for i, c in code.cosines(missing, qv).items() if missing else ():
-            score[i] = c + gnorm[i]
+            score[i] = dense_side(c) + gnorm[i]
         order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
         # `id` and `lang` ride along: a hit that omits the current identity cannot be
         # matched to its learning note, and cannot render its language-native name

@@ -100,13 +100,14 @@ class StoreCode:
             if cov.get(i, 0.0) * s > 0
         }
 
-    def dense(self, qv: Any, k: int) -> tuple[dict[str, float], list[str]]:
+    def dense(self, qv: Any, k: int) -> tuple[dict[str, float | None], list[str]]:
         """Raw cosine against the description vectors: ({id: cosine} for every
         candidate scored, the exact top `k` ids). Two-phase: the store's SQL
         top-n is the coarse pass, the exact pass re-scores those with the
         float32 dot product, ties in record order. A candidate with no
-        description scores -1.0, below any real cosine, so it fills the top k
-        only when fewer than k have one."""
+        description vector scores None (no score, not a low one); for the top-k
+        ORDER only it ranks below any real cosine, so it fills the top k only
+        when fewer than k have one."""
         from .codequery import _topk
 
         coarse = [
@@ -128,14 +129,16 @@ class StoreCode:
             sub[with_vec] = (
                 np.asarray([vecs[cand[j]] for j in with_vec], dtype=np.float32) @ qv
             )
-        scores = {cand[j]: float(sub[j]) for j in range(len(cand))}
+        has_vec = set(with_vec)
+        scores: dict[str, float | None] = {
+            cand[j]: float(sub[j]) if j in has_vec else None for j in range(len(cand))}
         return scores, ([cand[j] for j in _topk(sub, k)] if cand else [])
 
-    def cosines(self, ids: list[str], qv: Any) -> dict[str, float]:
-        """The cosine of each of `ids` (-1.0 for one with no vector)."""
+    def cosines(self, ids: list[str], qv: Any) -> dict[str, float | None]:
+        """The cosine of each of `ids` (None for one with no vector)."""
         vecs = self._store.body_vectors(ids)
         return {
-            i: float(np.asarray(vecs[i], dtype=np.float32) @ qv) if i in vecs else -1.0
+            i: float(np.asarray(vecs[i], dtype=np.float32) @ qv) if i in vecs else None
             for i in ids
         }
 

@@ -297,3 +297,36 @@ def _generation_on() -> Config:
     cfg = Config()
     cfg.generate.mode = "on"
     return cfg
+
+
+def test_an_undescribed_symbol_is_found_by_its_exact_name(crib):
+    """A symbol with no description has no vector: its name match alone must
+    rank it (it used to score cosine -1.0 + the name match, below every
+    described symbol, so code_lookup 'CombinerProcess' never found it)."""
+    # described neighbours that share the query's words score a POSITIVE cosine,
+    # which beat the vectorless exact match when it counted -1.0
+    for i in range(12):
+        _write(crib, "p", f"pkg.mod.helper_{i}",
+               f"combinerprocess combiner process helper number {i}", f"h{i}")
+    _write(crib, "p", "pkg.mod.CombinerProcess", "", "hx")  # not described yet
+    hits = crib.code_lookup("CombinerProcess", project="p", k=5)
+    assert hits and hits[0]["symbol_ref"].endswith("CombinerProcess"), [
+        h["symbol_ref"] for h in hits]
+
+
+def test_no_vector_is_reported_as_none_not_as_a_low_cosine(crib):
+    """`dense`/`cosines` say "no description vector" as None, so the blend can
+    tell it from a real cosine (a described symbol keeps its own, however low)."""
+    import numpy as np
+
+    from crib.codestore import StoreCode
+
+    _write(crib, "p", "pkg.mod.described", "renders the beta view", "h1")
+    _write(crib, "p", "pkg.mod.bare", "", "h2")
+    crib.code_lookup("beta", project="p")  # syncs the records into the store
+    sc = StoreCode(crib.store, "p")
+    qv = np.asarray(crib.code.embedder.embed_query(["beta view"])[0], dtype=np.float32)
+    scores, _ = sc.dense(qv, 5)
+    assert sorted(type(v).__name__ for v in scores.values()) == ["NoneType", "float"]
+    assert sorted(type(v).__name__ for v in sc.cosines(list(scores), qv).values()) == [
+        "NoneType", "float"]
