@@ -9,6 +9,43 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.26.0] - 2026-11-21
+
+### Added
+
+- **Pick the generation profile per machine without editing config.**
+  `$CRIB_GENERATE_PROFILE` overrides `[generate] profile` (and clears a
+  `[generate] provider`, which would otherwise win silently);
+  `$CRIB_GENERATE_PROVIDER` forces a provider. The daemon reads them from
+  its own environment, so set them wherever it is launched. `crib generate
+  test` and `crib status` say when a value came from the environment.
+- **TypeScript 7 support.** `typescript-go` (`tsc --lsp --stdio`) is now
+  the first built-in TypeScript/JavaScript language server. TypeScript 7
+  ships no `tsserver.js`, so `typescript-language-server` returned no
+  symbols wherever a global TypeScript 7 was all it could find. Server
+  specs gain `min_version` (and `version_args`): a `tsc` older than 7 has
+  no `--lsp`, so it falls through to `typescript-language-server` as
+  before.
+- **Empty extracts are reported.** A non-empty code file whose language
+  server returns no symbols is retried once more slowly, then recorded:
+  the index sweep lists it, and `crib project doctor` reports "no symbols
+  from the language server". Its existing symbols are kept, and the record
+  clears when the file yields symbols again.
+
+### Fixed
+
+- **`code_lookup` finds symbols that have no description yet** by their
+  name. A symbol without a description vector used to score the lowest
+  possible cosine, so even an exact name match ranked below every described
+  symbol. It now ranks on its name match alone until its description
+  arrives; described symbols score exactly as before.
+
+### Known issues
+
+- `typescript-go` reports import bindings (`import { X } from ...`) as
+  symbols, so an imported name can be ambiguous in `code_dossier`; name the
+  file to pick the definition.
+
 ## [0.25.0] - 2026-11-17
 
 Everything since 0.23.1, collected from the 0.24.0 and 0.25.0 dev releases
