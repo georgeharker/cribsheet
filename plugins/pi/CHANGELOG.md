@@ -9,6 +9,21 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.26.3] - 2026-11-21
+
+### Fixed
+
+- **Describe (and other structured generation) retries an unusable reply
+  once, and says why a call failed.** A model that intermittently returns an
+  empty reply, or JSON that doesn't fit the schema (`sections[0].keywords:
+  expected array, got str`), now gets one more try after a short pause. The
+  error reports llmkit's reason ("…: empty reply") instead of "exited 1", so
+  `descriptions_error` explains itself. A call that fails before replying
+  (auth, endpoint) is not retried. Rate limits reported by an
+  openai-compatible provider now back off and retry as intended: llmkit
+  returned them as a failed result rather than an exception, which crib's
+  backoff never saw. Requires polyllmkit 0.2.5.
+
 ## [0.26.2] - 2026-11-21
 
 ### Changed
