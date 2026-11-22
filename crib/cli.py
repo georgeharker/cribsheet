@@ -241,7 +241,7 @@ def _emit_write_result(item: dict) -> None:
         verb = "removed" if item.get("removed") else "→ stored in"
         link = None if item.get("removed") else _item_link(proj, rel, item.get("store"))
         print(f"{verb}  {_st.paint('path', f'{proj}/{rel}', link)}")
-    if item.get("created"):
+    if item.get("project_created"):
         print(_st.paint("meta", "  (created project "
                         f"'{item.get('project') or item['to']['project']}')"))
     for s in item.get("similar") or []:

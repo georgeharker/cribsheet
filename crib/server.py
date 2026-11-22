@@ -427,7 +427,7 @@ def _switch_if_created(result: dict) -> dict:
     one (a one-off `project` arg) does not (DESIGN §15). The switch is the ONE
     anchor gate (`adopt_into_session`): on the stateless era nothing anchors,
     so say so instead of silently pretending."""
-    if isinstance(result, dict) and result.get("created"):
+    if isinstance(result, dict) and result.get("project_created"):
         if not adopt_into_session(result.get("project")):
             result["anchored"] = False
             result["note"] = STATELESS_HINT

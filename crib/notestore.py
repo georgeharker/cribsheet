@@ -427,7 +427,7 @@ class NoteStore:
                                     store=self.spec.name)
         return {"from": {"project": project, "relpath": relpath},
                 "to": {"project": dst_proj, "relpath": dst_relpath},
-                "id": note.id, "created": created}
+                "id": note.id, **({"project_created": True} if created else {})}
 
     async def reindex(self, project: str, relpath: str | None = None,
                       full: bool = True) -> dict[str, Any]:

@@ -1242,7 +1242,9 @@ class Crib:
             "project": proj,
             "relpath": relpath,
             "indexed": res.upserted,
-            "created": created,
+            # only when this write also created the PROJECT (never about the
+            # note: every add writes a new file)
+            **({"project_created": True} if created else {}),
             "similar": similar,
         }
 
@@ -2555,7 +2557,7 @@ class Crib:
             "project": proj,
             "root": str(link.root),
             "crib_created": created,
-            "created": new_project,
+            **({"project_created": True} if new_project else {}),
             "docs_indexed": docs.get("docs", 0),
             **({"facets_mapped": mapped} if mapped else {}),
             **({"facets": fs} if (fs := self._mapping_summary(proj)) else {}),
@@ -2715,7 +2717,7 @@ class Crib:
             "project": proj,
             "root": str(link.root),
             "crib_created": created,
-            "created": new_project,
+            **({"project_created": True} if new_project else {}),
             "docs_indexed": docs.get("docs", 0),
             **({"facets": fs} if (fs := self._mapping_summary(proj)) else {}),
             **code,
@@ -6381,7 +6383,7 @@ class Crib:
             "project": proj,
             "imported": len(imported),
             "files": imported,
-            "created": created,
+            **({"project_created": True} if created else {}),
         }
 
     # --- claude harness memory mirror (DESIGN §13) -------------------------
@@ -6470,7 +6472,7 @@ class Crib:
             "synced": len(synced),
             "removed": removed,
             "files": synced,
-            "created": created,
+            **({"project_created": True} if created else {}),
         }
 
     async def _reconcile_memory_dir(

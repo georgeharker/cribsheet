@@ -156,7 +156,11 @@ def _d_add(f: FacetSpec) -> str:
         "current project: pass `project=` (the subject's project — often `default` or a\n"
         "tool's own project for cross-cutting knowledge like a CLI/editor/convention),\n"
         "or `project_path=` a path in that repo. If you omit both, you'll be ASKED which\n"
-        "project (elicitation). Then tell the user which project it landed in."
+        "project (elicitation). Then tell the user which project it landed in.\n"
+        "\n"
+        f"Every add writes a NEW file (a same-titled {n} gets a `-2` suffix, never\n"
+        "overwritten). `project_created: true` appears only when this write also\n"
+        "created the project."
     )
 
 

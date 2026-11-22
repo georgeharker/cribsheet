@@ -81,7 +81,7 @@ def test_write_policy_unchanged_implicit_creation(crib):
     # Never-created projects still materialize on first write — the doorway
     # is optional (the back-compat half of the write-policy decision).
     out = run(crib.store_note("fact", title="t", project="implicit-born"))
-    assert out["created"] is True
+    assert out["project_created"] is True
     assert "implicit-born" in crib.projects()
 
 

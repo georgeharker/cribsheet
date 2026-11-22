@@ -24,6 +24,14 @@ version has no heading here.
 
 ### Changed
 
+- **`created` in write results is now `project_created`,** and appears only
+  when true. It always meant "this write also created the project", never
+  "this note is new", but agents read `created: false` as "the note already
+  existed". Affects note (and note-like facet) add, move, import,
+  import-memory, `project setup` and `project index`. `project create` and
+  `project use` keep `created`, where the project is the subject; a
+  learning's `created` (the learning note is new) is unchanged. The add
+  tool's description now says that every add writes a new file.
 - `<noun> list` output for declared facets is now one readable line per item
   (title, linked path, then tags and fields) instead of a raw key=value dump.
 

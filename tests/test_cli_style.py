@@ -374,7 +374,7 @@ def test_an_item_path_links_to_its_file_under_the_configured_root(
 _NODE = {"fqn": "a.f", "kind": "function", "file": "a.py", "line": 3, "project": "p"}
 _SECOND_PASS = [
     ("write result", lambda: cli._emit_write_result(
-        {"project": "p", "relpath": "n.md", "created": True,
+        {"project": "p", "relpath": "n.md", "project_created": True,
          "similar": [{"score": 0.9, "relpath": "m.md", "heading": "H"}]})),
     ("move result", lambda: cli._emit_write_result(
         {"from": {"project": "p", "relpath": "a.md"},

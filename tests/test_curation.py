@@ -31,11 +31,20 @@ def test_relpath_is_predictable_then_collision_suffixed(crib):
     assert b["relpath"] == "setup-notes-2.md"           # suffix only on collision
 
 
-def test_store_reports_created_for_new_project(crib):
+def test_store_reports_project_created_only_for_a_new_project(crib):
+    """`project_created` is about the PROJECT, and present only when true: an
+    agent read the old `created: false` as "this note already existed"."""
     first = run(crib.store_note("x", title="t", project="fresh"))
-    assert first["created"] is True
+    assert first["project_created"] is True and "created" not in first
     second = run(crib.store_note("y", title="u", project="fresh"))
-    assert second["created"] is False                   # project already existed
+    assert "project_created" not in second and "created" not in second
+
+
+def test_an_add_never_overwrites_a_note_with_the_same_title(crib):
+    a = run(crib.store_note("first body", title="Watch PRs", project="p"))
+    b = run(crib.store_note("second body", title="Watch PRs", project="p"))
+    assert (a["relpath"], b["relpath"]) == ("watch-prs.md", "watch-prs-2.md")
+    assert "first body" in crib.abspath("p", a["relpath"]).read_text()
 
 
 def test_move_across_projects_preserves_id(crib):
@@ -44,7 +53,7 @@ def test_move_across_projects_preserves_id(crib):
     id_before = notes.load(crib.abspath("src", out["relpath"])).id
 
     res = run(crib.move_note(out["relpath"], to_project="dst", project="src"))
-    assert res["to"]["project"] == "dst" and res["created"] is True
+    assert res["to"]["project"] == "dst" and res["project_created"] is True
     assert not crib.abspath("src", out["relpath"]).exists()      # source gone
     moved = crib.abspath("dst", out["relpath"])
     assert moved.exists()
