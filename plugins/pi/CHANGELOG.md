@@ -9,6 +9,54 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.27.0] - 2026-11-22
+
+**Breaking for agents:** `project_use` and `project_current` are gone; name the
+project (`project=` or `project_path=`) on every call. The updated plugin
+instructions say so.
+
+### Removed
+
+- **`project_use` / `project_current` (and `crib project use` / `crib project
+  current`) and the per-connection current project.** Every call names its
+  project (`project=` or `project_path=`); nothing carries over between calls,
+  on every protocol era. A first `project_path` call no longer adopts its repo,
+  an answer to "which project?" applies to that call only, and creating a project
+  no longer switches anything. A repo-scoped call (`project_index`,
+  `project_status` ...) that names no project or repo is refused rather than
+  answered from the default project. Design: "Retire use_project and implicit
+  anchoring (all eras)".
+
+### Added
+
+- **Per-call asks on the 2026-07-28 protocol era.** A read naming no project,
+  a write naming no target, and a destructive confirmation are now asked by
+  returning the question (`InputRequiredResult`, answered on the client's
+  retry) instead of being refused; the handshake era asks as before. The
+  daemon still advertises only the handshake era; lifting that is a separate
+  step.
+
+- **List without a query, on every facet.** `note list` and `learning list`
+  (MCP `note_list`, `learning_list`) join `design list`, `plan list` and
+  declared facets' `list`: every item by title and path, with `-k` and
+  `--tag`; a facet with declared fields can still filter by them.
+- **`crib project items`** (MCP `project_items`): a project's items across
+  every facet at once, each with its kind (and a decision's or plan's
+  status); `--kind` and `--tag` narrow it.
+- **`crib facets list`** is an alias of `crib facets show`.
+
+### Changed
+
+- **`created` in results is now `project_created`.** It always meant "this
+  also created the project", never "this note is new", but agents read
+  `created: false` as "the note already existed". In note (and note-like
+  facet) add, move, import, import-memory, `project setup` and `project index`
+  it appears only when true; `project create` always reports it. A
+  learning's `created` (the learning note is new) is unchanged. The add
+  tool's description now says that every add writes a new file.
+- `<noun> list` output for declared facets is now one readable line per item
+  (title, linked path, then tags and fields) instead of a raw key=value dump.
+
 ## [0.26.3] - 2026-11-21
 
 ### Fixed
