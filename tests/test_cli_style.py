@@ -7,6 +7,7 @@ so stripping them gives exactly the unstyled output, and unstyled output (piped,
 
 from __future__ import annotations
 
+import argparse
 import io
 import re
 from types import SimpleNamespace
@@ -368,3 +369,87 @@ def test_an_item_path_links_to_its_file_under_the_configured_root(
     assert cli._item_link("p", "t.md", "design") is None  # another facet's dir
     style.configure("never")
     assert cli._item_link("p", "t.md", "plans") is None  # no link while unstyled
+
+
+_NODE = {"fqn": "a.f", "kind": "function", "file": "a.py", "line": 3, "project": "p"}
+_SECOND_PASS = [
+    ("write result", lambda: cli._emit_write_result(
+        {"project": "p", "relpath": "n.md", "created": True,
+         "similar": [{"score": 0.9, "relpath": "m.md", "heading": "H"}]})),
+    ("move result", lambda: cli._emit_write_result(
+        {"from": {"project": "p", "relpath": "a.md"},
+         "to": {"project": "q", "relpath": "a.md"}})),
+    ("design write", lambda: cli._emit_design_write(
+        {"project": "p", "relpath": "t.md", "title": "T", "status": "active",
+         "deps": ["d"], "warnings": ["w"],
+         "newly_tainted": [{"title": "U", "relpath": "u.md", "via": ["x"]}],
+         "unblocked": [{"title": "V", "ref": "v.md"}],
+         "similar": [{"score": 0.8, "relpath": "s.md"}], "missing": ["m"],
+         "next": "n"}, _DESIGN_ARGS)),
+    ("design forget", lambda: cli._emit_design_write(
+        {"project": "p", "relpath": "t.md", "removed": True,
+         "dependents": [{"title": "U", "relpath": "u.md"}]}, _DESIGN_ARGS)),
+    ("plan batch", lambda: cli._emit_design_write(
+        {"project": "p", "added": 2, "items": [{"title": "A", "relpath": "a.md"},
+                                               {"title": "B", "relpath": "b.md"}]},
+        _PLAN_ARGS)),
+    ("design tree", lambda: cli._emit_design_tree(
+        {"project": "p", "direction": "deps", "roots": [
+            {"title": "R", "relpath": "r.md", "status": "active", "children": [
+                {"title": "C", "relpath": "c.md", "status": "proposed", "tainted": True},
+                {"title": "X", "missing": True}]}]},
+        SimpleNamespace(cmd="design", json=False, ascii=False))),
+    ("design check", lambda: cli._emit_design_check(
+        {"project": "p", "designs": 3, "cycles": [["a", "b"]],
+         "proposed": [{"title": "P", "relpath": "p.md", "next": "promote"}],
+         "tainted": [{"title": "T", "relpath": "t.md", "next": "read",
+                      "causes": [{"change_kind": "edit", "reason": "r"}],
+                      "paths": [{"chain": ["a", "b"]}]}]}, _DESIGN_ARGS)),
+    ("design import", lambda: cli._emit_design_import(
+        {"relpath": "DESIGN.md", "path": "/tmp/DESIGN.md", "instruction": "do",
+         "existing": [{"title": "E", "relpath": "e.md", "cites": ["DESIGN.md#1"]}],
+         "sections": [{"words": 12, "source": "DESIGN.md#1", "preview": "p"}]},
+        _DESIGN_ARGS)),
+    ("code graph", lambda: cli._emit_code_graph(
+        {**_NODE, "resolved": {"query": "f", "fqn": "a.f", "via": "name"},
+         "children": [{**_NODE, "fqn": "a.g", "repeat": True}]},
+        SimpleNamespace(json=False, ascii=False, callers=False, references=False))),
+    ("code edges", lambda: cli._emit_code_edges(
+        {"root": "a.f", "direction": "callees", "depth": 2,
+         "nodes": [{**_NODE, "depth": 0}, {**_NODE, "fqn": "a.g", "depth": 1}],
+         "edges": [{"from": "a.f", "to": "a.g"}, {"from": "a.h", "to": "a.g"}]},
+        argparse.Namespace(ascii=False))),
+    ("rehome", lambda: cli._emit_code_rehome(
+        {"old": "a.f", "candidates": [{**_NODE, "score": 0.7}]}, False)),
+    ("projects", lambda: cli._emit_projects(
+        [{"project": "p", "store_root": "$DEV/p", "unavailable": True}], False)),
+    ("project status", lambda: cli._emit_project(
+        {"project": "p", "indexed": False, "symbols": 1, "files": 1,
+         "kinds": {"function": 1}}, "status", False)),
+    ("project index", lambda: cli._emit_project(
+        {"project": "p", "files_indexed": 1, "files_seen": 2,
+         "errors": [{"file": "x.py"}],
+         "empty_extracts": [{"file": "y.ts", "server": "tsgo"}],
+         "facets": {"routine": {"dir": "w", "glob": "*.md", "items": 3,
+                                "read_only": True}}}, "index", False)),
+    ("ops", lambda: cli._emit_ops(
+        {"sweeps": {}, "generation": {"inflight": 1}, "indexing": {"p": ["a"]}},
+        False)),
+    ("doctor", lambda: cli._emit_doctor(
+        {"project": "p", "counts": {"stale": 1},
+         "findings": [{"check": "stale", "item": "t.md", "fix": "read it",
+                       "similarity": 0.9}]}, False)),
+    ("related", lambda: cli._emit_related(
+        {"item": {"kind": "plan", "title": "T", "status": "todo", "relpath": "t.md",
+                  "project": "p", "store": "plans"},
+         "links_out": [{"link": "rests_on", "kind": "design", "title": "D"}],
+         "links_in": [],
+         "similar": {"note": [{"similarity": 0.5, "kind": "note", "title": "N"}]}},
+        False)),
+]
+
+
+@pytest.mark.parametrize("name, emit", _SECOND_PASS)
+def test_second_pass_styling_adds_escape_codes_and_nothing_else(
+        name, emit, tmp_path, monkeypatch):
+    test_styling_adds_escape_codes_and_nothing_else(name, emit, tmp_path, monkeypatch)

@@ -232,17 +232,23 @@ def _emit_write_result(item: dict) -> None:
     """Echo a write/move result so the target namespace is never silent."""
     if "from" in item:  # move
         f, t = item["from"], item["to"]
-        print(f"moved  {f['project']}/{f['relpath']}  →  {t['project']}/{t['relpath']}")
+        src = _st.paint("path", f"{f['project']}/{f['relpath']}")
+        dst = _st.paint("path", f"{t['project']}/{t['relpath']}",
+                        _item_link(t["project"], t["relpath"], item.get("store")))
+        print(f"moved  {src}  →  {dst}")
     else:  # store/append/edit/forget
         proj, rel = item.get("project", "?"), item.get("relpath", "")
         verb = "removed" if item.get("removed") else "→ stored in"
-        print(f"{verb}  {proj}/{rel}")
+        link = None if item.get("removed") else _item_link(proj, rel, item.get("store"))
+        print(f"{verb}  {_st.paint('path', f'{proj}/{rel}', link)}")
     if item.get("created"):
-        print(f"  (created project '{item.get('project') or item['to']['project']}')")
+        print(_st.paint("meta", "  (created project "
+                        f"'{item.get('project') or item['to']['project']}')"))
     for s in item.get("similar") or []:
         print(
-            f"  ⚠︎ similar [{s['score']:.3f}]: {s['relpath']}"
-            + (f" — {s['heading']}" if s.get("heading") else "")
+            _st.paint("warn", f"  ⚠︎ similar [{s['score']:.3f}]:") + " "
+            + _st.paint("path", s["relpath"])
+            + (f" — {_st.paint('heading', s['heading'])}" if s.get("heading") else "")
         )
 
 
@@ -506,11 +512,11 @@ def _emit_ops(d: Any, as_json: bool) -> None:
 
     sweeps = d.get("sweeps") or {}
     if sweeps:
-        print("sweeps:")
+        print(_st.paint("header", "sweeps:"))
         for proj, sw in sweeps.items():
-            print(f"  {proj}: {format_sweep(sw)}")
+            print(f"  {_st.paint('name', proj)}: {format_sweep(sw)}")
     else:
-        print("sweeps: (none running)")
+        print(_st.paint("header", "sweeps:") + _st.paint("meta", " (none running)"))
     g = d.get("generation") or {}
     bits = [
         f"in-flight {g.get('inflight', 0)}",
@@ -519,9 +525,9 @@ def _emit_ops(d: Any, as_json: bool) -> None:
     ]
     if g.get("cooldown_s"):
         bits.append(f"cooldown {g['cooldown_s']}s")
-    print("generation: " + " · ".join(bits))
+    print(_st.paint("header", "generation:") + " " + " · ".join(bits))
     for proj, files in (d.get("indexing") or {}).items():
-        print(f"  indexing {proj}: {len(files)} file(s) in flight")
+        print(f"  indexing {_st.paint('name', proj)}: {len(files)} file(s) in flight")
 
 
 def _emit_projects(rows: Any, as_json: bool) -> None:
@@ -535,11 +541,11 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
         if not isinstance(r, dict):
             print(r)
             continue
-        line = r.get("project", "")
+        line = _st.paint("name", r.get("project", ""))
         if r.get("store_root"):
-            line += f"   in-repo: {r['store_root']}"
+            line += _st.paint("meta", f"   in-repo: {r['store_root']}")
         if r.get("unavailable"):
-            line += "   ⚠︎ UNAVAILABLE (repo not on this machine)"
+            line += _st.paint("warn", "   ⚠︎ UNAVAILABLE (repo not on this machine)")
         print(line)
 
 
@@ -558,8 +564,9 @@ def _emit_facet_summary(d: Any) -> None:
                                    "ids derived" if f.get("ids") == "derived" else "") if w)
         state = (f"{f['items']} item(s) indexed" if "items" in f
                  else f"waiting {f.get('waiting', '')}")
-        print(f"  facet {noun}: {f.get('dir')} {f.get('glob')}"
-              f"{f' ({how})' if how else ''}: {state}")
+        print(f"  facet {_st.paint('kind', noun)}: "
+              f"{_st.paint('path', str(f.get('dir')) + ' ' + str(f.get('glob')))}"
+              f"{_st.paint('meta', f' ({how})') if how else ''}: {state}")
 
 
 def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
@@ -570,7 +577,7 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     if not isinstance(d, dict):
         print(d)
         return
-    proj = d.get("project", "")
+    proj = _st.paint("name", d.get("project", ""))
     if verb == "migrate":
         if not d.get("changed") and not d.get("skipped"):
             print(f"{proj}: layout already current — nothing to migrate")
@@ -581,10 +588,11 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
             f"{len(d.get('refs_rewritten') or [])} citation(s)"
         )
         for s in d.get("skipped") or []:
-            print(
+            print(_st.paint(
+                "warn",
                 f"  ! collision left in place: {s['from']} → {s['to']} "
                 f"(resolve by hand, re-run migrate)"
-            )
+            ))
         rec = d.get("reconciled") or {}
         print(
             f"  reconcile: {rec.get('changed', 0)} changed, "
@@ -631,13 +639,15 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     if verb == "rename":
         print(d.get("message") or f"{proj}: renamed")
         for r in d.get("refs_affected") or []:
-            print(
+            print(_st.paint(
+                "warn",
                 f"  ! {r.get('referrer')} refs: {r.get('target')} — update its "
                 "repo's .crib"
-            )
+            ))
         return
     if verb == "status":
-        state = "indexed" if d.get("indexed") else "NOT indexed"
+        state = (_st.paint("ok", "indexed") if d.get("indexed")
+                 else _st.paint("warn", "NOT indexed"))
         print(
             f"{proj}: {state} — {d.get('symbols', 0)} symbols "
             f"in {d.get('files', 0)} files"
@@ -697,11 +707,13 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     _emit_facet_summary(d)
     errs = d.get("errors") or []
     if errs:
-        print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")
+        print(_st.paint("warn",
+                        f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})"))
     if empty := d.get("empty_extracts") or []:
         servers = ", ".join(sorted({str(e.get("server")) for e in empty}))
-        print(f"  {len(empty)} code file(s) got NO symbols from {servers} "
-              f"(first: {empty[0].get('file', '')}): see `crib project doctor`")
+        print(_st.paint("warn",
+                        f"  {len(empty)} code file(s) got NO symbols from {servers} "
+                        f"(first: {empty[0].get('file', '')}): see `crib project doctor`"))
 
 
 def _emit_code_dossier(d: Any, as_json: bool) -> None:
@@ -801,17 +813,23 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
         print(json.dumps(data, indent=2, default=str))
         return
     if "candidates" in data:
-        print(f"rehome {data.get('old', '')} → candidates:")
+        print(f"rehome {_st.paint('name', data.get('old', ''))} → candidates:")
         cands = data.get("candidates") or []
         if not cands:
             print("  (none — `crib learning forget` if it's truly gone)")
             return
         for c in cands:
-            print(f"  [{c.get('score', '')}] {_sym_name(c)}   {c.get('file', '')}")
-        print(f"\nconfirm: crib learning rehome {data.get('old', '')} <symbol>")
+            score = c.get("score", "")
+            print(f"  {_st.paint('score', f'[{score}]')} "
+                  f"{_st.paint('name', _sym_name(c))}   "
+                  f"{_st.paint('path', c.get('file', ''), _code_link(c))}")
+        print(_st.paint("meta",
+                        f"\nconfirm: crib learning rehome {data.get('old', '')} <symbol>"))
         return
     print(
-        f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})"
+        f"rehomed {_st.paint('name', data.get('old', ''))} → "
+        f"{_st.paint('name', data.get('new', ''))}  "
+        f"({_item_path(data.get('project'), data.get('relpath', ''), 'learnings')})"
     )
 
 
@@ -850,33 +868,38 @@ def _emit_design_tree(data: Any, args: Any) -> None:
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
     arrow = ">" if ascii_mode else ("▸" if data.get("direction") == "deps" else "◂")
     taint = "!" if ascii_mode else _TAINT
+    proj, store = data.get("project"), _store_of(args)
 
     def label(n: dict) -> str:
         if n.get("missing"):
-            return f"{n.get('title', '')}  (dangling id)"
+            return _st.paint("error", f"{n.get('title', '')}  (dangling id)")
         flags = (
             (f" {taint}" if n.get("tainted") else "")
             + (f" {_PROPOSED}" if n.get("status") == "proposed" else "")
             + (" ↑" if n.get("repeat") else "")
         )
         state = (
-            "  [superseded]"
+            f"  [{_st.status('superseded')}]"
             if n.get("status") == "superseded"
-            else "  [proposed]"
+            else f"  [{_st.status('proposed')}]"
             if n.get("status") == "proposed"
             else ""
         )
-        return f"{n.get('title', '')}{state}{flags}   {n.get('relpath', '')}"
+        return (f"{_st.paint('title', n.get('title', ''))}{state}"
+                f"{_st.paint('warn', flags)}   "
+                f"{_item_path(proj, n.get('relpath', ''), store)}")
 
     def render(node: dict, prefix: str) -> None:
         kids = node.get("children") or []
         for i, c in enumerate(kids):
             islast = i == len(kids) - 1
-            print(f"{prefix}{last if islast else branch}{arrow} {label(c)}")
+            conn = _st.paint("meta", f"{prefix}{last if islast else branch}{arrow}")
+            print(f"{conn} {label(c)}")
             render(c, prefix + (blank if islast else vert))
 
     for root in roots:
-        print(f"{label(root)}   [{data.get('direction', '')}]")
+        direction = data.get("direction", "")
+        print(f"{label(root)}   {_st.paint('meta', f'[{direction}]')}")
         render(root, "")
 
 
@@ -888,33 +911,39 @@ def _emit_design_check(data: Any, args: Any) -> None:
         return
     rows = (data or {}).get("tainted") or []
     proposed = (data or {}).get("proposed") or []
+    proj, store = (data or {}).get("project"), _store_of(args)
     for cyc in (data or {}).get("cycles") or []:
-        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+        print(_st.paint("error", f"✗ dependency CYCLE: {' → '.join(cyc)}"))
     for p in proposed:
-        print(f"{_PROPOSED} {p.get('title', '')}   {p.get('relpath', '')}")
-        print(f"    → {p.get('next', '')}")
+        print(f"{_st.paint('status.proposed', _PROPOSED)} "
+              f"{_st.paint('title', p.get('title', ''))}   "
+              f"{_item_path(proj, p.get('relpath', ''), store)}")
+        print(_st.paint("meta", f"    → {p.get('next', '')}"))
     if not rows:
-        print(f"✓ {data.get('designs', 0)} decision(s), none stale")
+        print(_st.paint("ok", f"✓ {data.get('designs', 0)} decision(s), none stale"))
         return
     for r in rows:
-        print(f"{_TAINT} {r.get('title', '')}   {r.get('relpath', '')}")
+        print(f"{_st.paint('warn', _TAINT)} {_st.paint('title', r.get('title', ''))}   "
+              f"{_item_path(proj, r.get('relpath', ''), store)}")
         for c in r.get("causes") or []:
             # the date is already inside `reason` when there is one — the bracket
             # carries only the kind, so the line doesn't say it twice
-            print(f"    • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
+            print(_st.paint("warn",
+                            f"    • [{c.get('change_kind', '?')}] {c.get('reason', '')}"))
         if not (r.get("causes") or []):
             for reason in r.get("reasons") or []:
-                print(f"    • {reason}")
+                print(_st.paint("warn", f"    • {reason}"))
         for p in r.get("paths") or []:
             chain = " → ".join(p.get("chain") or [])
             if len(p.get("chain") or []) > 1:
-                print(f"      via {chain}")
-        print(f"    → {r.get('next', '')}")
-    print(
-        f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-reading — "
+                print(_st.paint("meta", f"      via {chain}"))
+        print(_st.paint("meta", f"    → {r.get('next', '')}"))
+    print("\n" + _st.paint(
+        "warn",
+        f"{len(rows)} of {data.get('designs', 0)} decision(s) need re-reading — "
         f"`crib design read <ref>`, then `crib design reaffirm <ref>` "
         f"(taint means a dep moved, not that the decision is wrong)"
-    )
+    ))
 
 
 def _emit_facet_hits(hits: Any, args: Any) -> None:
@@ -1171,24 +1200,30 @@ def _emit_design_import(data: Any, args: Any) -> None:
     if not isinstance(data, dict):
         print(data)
         return
-    print(f"{data.get('relpath', '')}   ({data.get('path', '')})\n")
+    path = str(data.get("path", ""))
+    print(f"{_st.paint('path', data.get('relpath', ''), _st.file_link(path))}   "
+          f"{_st.paint('meta', f'({path})')}\n")
     print(data.get("instruction", "").rstrip())
     existing = data.get("existing") or []
     if existing:
-        print(
-            f"\nalready drawing on this doc ({len(existing)}) — extend these "
+        print("\n" + _st.paint(
+            "header",
+            f"already drawing on this doc ({len(existing)}) — extend these "
             f"rather than forking:"
-        )
+        ))
         for e in existing:
-            print(f"  · {e.get('title', '')}   {e.get('relpath', '')}")
+            print(f"  · {_st.paint('title', e.get('title', ''))}   "
+                  f"{_st.paint('path', e.get('relpath', ''))}")
             for c in e.get("cites") or []:
-                print(f"      § {c}")
+                print(_st.paint("meta", f"      § {c}"))
     sections = data.get("sections") or []
-    print(f"\nsections ({len(sections)}) — cite the `source` string verbatim:")
+    print("\n" + _st.paint(
+        "header", f"sections ({len(sections)}) — cite the `source` string verbatim:"))
     for s in sections:
-        print(f"  {s.get('words', 0):5}w  {s.get('source', '')}")
+        print(f"  {_st.paint('meta', format(s.get('words', 0), '5') + 'w')}  "
+              f"{_st.paint('path', s.get('source', ''))}")
         if s.get("preview"):
-            print(f"         {s['preview'][:96]}")
+            print(_st.paint("meta", f"         {s['preview'][:96]}"))
 
 
 def _emit_design_write(data: Any, args: Any) -> None:
@@ -1200,47 +1235,57 @@ def _emit_design_write(data: Any, args: Any) -> None:
     if not isinstance(data, dict):
         print(data)
         return
+    proj, store = data.get("project", ""), _store_of(args)
+
+    def tainted(d: dict) -> str:
+        return (_st.paint("warn", f"  {_TAINT} now tainted:") + " "
+                + _st.paint("title", d.get("title", "")) + "  ("
+                + _item_path(proj, d.get("relpath", ""), store) + ")")
     if data.get("removed") is not None:  # forget
-        print(f"removed  {data.get('project', '')}/{data.get('relpath', '')}")
+        print(f"removed  {_st.paint('path', proj + '/' + data.get('relpath', ''))}")
         for d in data.get("dependents") or []:
-            print(
-                f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})"
-            )
+            print(tainted(d))
         return
     if data.get("added", 0) > 1:  # a plan batch
-        print(f"→ {data.get('project', '')}: added {data['added']} item(s)")
+        print(f"→ {_st.paint('name', proj)}: added {data['added']} item(s)")
         for it in data.get("items") or []:
-            print(f"   · {it.get('title', '')}   {it.get('relpath', '')}")
+            print(f"   · {_st.paint('title', it.get('title', ''))}   "
+                  f"{_item_path(proj, it.get('relpath', ''), store)}")
         return
+    rel = data.get("relpath", "")
     print(
-        f"→ {data.get('project', '')}/{data.get('relpath', '')}  "
-        f"{data.get('title', '')}"
+        f"→ {_st.paint('path', proj + '/' + rel, _item_link(proj, rel, store))}  "
+        f"{_st.paint('title', data.get('title', ''))}"
     )
     for key in ("status", "rank", "dep_title", "superseded_by"):
         if data.get(key):
-            print(f"  {key}: {data[key]}")
+            value = _st.status(data[key]) if key == "status" else data[key]
+            print(f"  {_st.paint('meta', key + ':')} {value}")
     if data.get("deps"):
-        print(f"  deps: {len(data['deps'])}")
+        print(f"  {_st.paint('meta', 'deps:')} {len(data['deps'])}")
     for w in data.get("warnings") or []:
-        print(f"  {_TAINT} {w}")
+        print(_st.paint("warn", f"  {_TAINT} {w}"))
     for d in data.get("tainted_dependents") or []:
-        print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+        print(tainted(d))
     for d in data.get("newly_tainted") or []:
-        print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+        print(tainted(d))
         for via in d.get("via") or []:
-            print(f"      via {via}")
+            print(_st.paint("meta", f"      via {via}"))
     for u in data.get("unblocked") or []:
-        print(f"  ✓ unblocked: {u.get('title', '')}  ({u.get('ref', '')})")
+        print(_st.paint("ok", "  ✓ unblocked:") + " "
+              + _st.paint("title", u.get("title", "")) + "  ("
+              + _st.paint("path", u.get("ref", "")) + ")")
     for s in data.get("similar") or []:
         print(
-            f"  {_TAINT} similar decision [{s['score']:.3f}]: {s['relpath']}"
-            + (f" — {s['heading']}" if s.get("heading") else "")
+            _st.paint("warn", f"  {_TAINT} similar decision [{s['score']:.3f}]:") + " "
+            + _st.paint("path", s["relpath"])
+            + (f" — {_st.paint('heading', s['heading'])}" if s.get("heading") else "")
             + "  (append to it rather than forking the graph?)"
         )
     if data.get("missing"):
-        print(f"  ✗ missing dep(s): {', '.join(data['missing'])}")
+        print(_st.paint("error", f"  ✗ missing dep(s): {', '.join(data['missing'])}"))
     if data.get("next"):
-        print(f"  → {data['next']}")
+        print(_st.paint("meta", f"  → {data['next']}"))
 
 
 def _graph_direction(args: argparse.Namespace) -> str:
@@ -1280,7 +1325,7 @@ def _emit_resolved(data: dict) -> None:
     ref = r.get("symbol_ref") or r.get("fqn")
     if ref and r.get("query") != ref:
         proj = f" in {r['project']}" if r.get("project") else ""
-        print(f"  ({r['query']!r} → {ref}{proj}, matched on {r.get('via')})")
+        print(_st.paint("meta", f"  ({r['query']!r} → {ref}{proj}, matched on {r.get('via')})"))
 
 
 def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
@@ -1296,29 +1341,34 @@ def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
     )
     grouped = data.get("group_by") == "module"
     print(
-        f"{scope}  {len(nodes)} {'modules' if grouped else 'nodes'}, {len(edges)} edges"
+        f"{_st.paint('name', scope)}  "
+        + _st.paint("meta", f"{len(nodes)} {'modules' if grouped else 'nodes'}, "
+                    f"{len(edges)} edges")
     )
     _emit_resolved(data)
     indeg: dict[str, int] = {}
     for e in edges:
         if e["from"] != e["to"]:
             indeg[e["to"]] = indeg.get(e["to"], 0) + 1
-    print("\nnodes:")
+    print("\n" + _st.paint("header", "nodes:"))
     for n in nodes:
         d = f"{n['depth']}  " if "depth" in n else ""
         extra = f"   ×{n['symbols']}" if grouped else ""
         print(
-            f"  {d}{_sym_name(n)}{extra}{_sym_loc(n, '   ')}{_sym_tags(n, ascii_mode)}"
+            f"  {_st.paint('meta', d)}{_st.paint('name', _sym_name(n))}"
+            f"{_st.paint('meta', extra)}{_sym_loc(n, '   ')}"
+            f"{_st.paint('meta', _sym_tags(n, ascii_mode))}"
         )
-    print("\nedges:")
+    print("\n" + _st.paint("header", "edges:"))
     for e in edges:
-        w = f"  ×{e['weight']}" if "weight" in e else ""
-        print(f"  {e['from']} {arrow} {e['to']}{w}")
+        w = _st.paint("meta", f"  ×{e['weight']}") if "weight" in e else ""
+        print(f"  {_st.paint('name', e['from'])} {_st.paint('meta', arrow)} "
+              f"{_st.paint('name', e['to'])}{w}")
     conv = sorted(((c, i) for i, c in indeg.items() if c > 1), reverse=True)
     if conv:
-        print("\nconvergence (paths landing on one node):")
+        print("\n" + _st.paint("header", "convergence (paths landing on one node):"))
         for c, i in conv:
-            print(f"  {c}×  {i}")
+            print(f"  {_st.paint('warn', f'{c}×')}  {_st.paint('name', i)}")
 
 
 def _emit_code_graph(tree: Any, args: Any) -> None:
@@ -1339,7 +1389,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     arrow = arrows[direction][0 if ascii_mode else 1]
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
     print(
-        f"{render_symbol(tree, 'title')}   [{direction}]{_sym_tags(tree, ascii_mode)}"
+        f"{render_symbol(tree, 'title')}   "
+        + _st.paint("meta", f"[{direction}]{_sym_tags(tree, ascii_mode)}")
     )
     _emit_resolved(tree)
 
@@ -1347,8 +1398,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
         kids = node.get("children") or []
         for i, c in enumerate(kids):
             islast = i == len(kids) - 1
-            conn = last if islast else branch
-            print(f"{prefix}{conn}{arrow} {render_symbol(c, 'tree', ascii_mode)}")
+            conn = _st.paint("meta", f"{prefix}{last if islast else branch}{arrow}")
+            print(f"{conn} {render_symbol(c, 'tree', ascii_mode)}")
             render(c, prefix + (blank if islast else vert))
 
     render(tree, "")
@@ -1965,7 +2016,8 @@ def _E_export(d: Any, a: Any) -> None:
             return
         if a.out:
             a.out.write_text(d)
-            print(f"wrote {a.out} ({len(d.splitlines())} lines)")
+            print(f"wrote {_st.paint('path', a.out, _st.file_link(Path(a.out).resolve()))} "
+                  f"({len(d.splitlines())} lines)")
         else:
             print(d, end="")
         return
@@ -1976,7 +2028,8 @@ def _E_export(d: Any, a: Any) -> None:
     if a.out:
         a.out.write_text(md)
         print(
-            f"wrote {a.out} — {d['count']} {d['facet']}s, "
+            f"wrote {_st.paint('path', a.out, _st.file_link(Path(a.out).resolve()))} — "
+            f"{d['count']} {d['facet']}s, "
             f"{d['tainted']} tainted, {len(md.splitlines())} lines"
         )
     else:
@@ -2137,16 +2190,19 @@ def _emit_doctor(d: dict[str, Any], as_json: bool) -> None:
         print(json.dumps(d, indent=2, default=str))
         return
     if d.get("healthy"):
-        print(f"{d['project']}: nothing needs attention")
+        print(f"{_st.paint('name', d['project'])}: "
+              + _st.paint("ok", "nothing needs attention"))
         return
-    print(f"{d['project']}: " + ", ".join(f"{n} {c}" for c, n in d["counts"].items()))
+    print(f"{_st.paint('name', d['project'])}: "
+          + _st.paint("warn", ", ".join(f"{n} {c}" for c, n in d["counts"].items())))
     for f in d["findings"]:
         what = (f.get("item") or " ~ ".join(f.get("items", []))
                 or ", ".join(f.get("files", [])) or str(f.get("count", "")))
         extra = f.get("dep") or f.get("source") or f.get("symbol") or ""
         sim = f" ({f['similarity']})" if "similarity" in f else ""
-        print(f"  - {f['check']}: {what}{' -> ' + extra if extra else ''}{sim}")
-        print(f"      fix: {f['fix']}")
+        print(f"  - {_st.paint('warn', f['check'])}: {what}"
+              f"{' -> ' + extra if extra else ''}{_st.paint('meta', sim)}")
+        print(f"      {_st.paint('meta', 'fix:')} {f['fix']}")
 
 
 def _emit_lookup_all(rows: list[dict[str, Any]], as_json: bool) -> None:
@@ -2169,21 +2225,22 @@ def _emit_related(d: dict[str, Any], as_json: bool) -> None:
         return
 
     def line(r: dict[str, Any]) -> str:
-        st = f" [{r['status']}]" if r.get("status") else ""
-        what = r.get("title") or r.get("ref", "")
-        return f"{r.get('kind', '?')}: {what}{st}"
+        st = f" [{_st.status(r['status'])}]" if r.get("status") else ""
+        what = _st.paint("title", r.get("title") or r.get("ref", ""))
+        return f"{_st.paint('kind', r.get('kind', '?') + ':')} {what}{st}"
 
     it = d["item"]
-    print(f"{line(it)}  ({it['relpath']})")
+    print(f"{line(it)}  "
+          f"({_item_path(it.get('project') or d.get('project'), it['relpath'], it.get('store'))})")
     for label, rows in (("links out", d["links_out"]), ("links in", d["links_in"])):
         if rows:
-            print(f"  {label}:")
+            print(f"  {_st.paint('header', label + ':')}")
             for r in rows:
-                print(f"    {r['link']:<14} {line(r)}")
+                print(f"    {_st.paint('meta', format(r['link'], '<14'))} {line(r)}")
     for kind, rows in d["similar"].items():
-        print(f"  nearest {kind}s:")
+        print(f"  {_st.paint('header', f'nearest {kind}s:')}")
         for r in rows:
-            print(f"    {r['similarity']:.3f}  {line(r)}")
+            print(f"    {_st.paint('score', format(r['similarity'], '.3f'))}  {line(r)}")
 
 
 def _E_project(verb):
