@@ -20,12 +20,10 @@ from .app import Crib
 from .errors import CribUserError
 from .session import (
     ERA_STATELESS,
+    NAME_THE_PROJECT,
     ProjectResolution,
-    STATELESS_HINT,
-    adopt_into_session,
     request_era,
-    resolve_session_project,
-    session_state,
+    resolve_call_project,
 )
 
 # How often project_index emits an MCP progress notification while a sweep runs — frequent
@@ -54,19 +52,18 @@ def _cwd(project_path: str | None) -> Path | None:
 # ── Project resolution: three policies over one ProjectResolution ──────────────
 # A tool call's project can be decided three ways, differing by op class (DESIGN
 # §15). All produce (or hinge on) a `ProjectResolution` carrying *how* it resolved:
-#   • _resolve / _project  — READS: explicit > sticky session > seed-from-path.
-#       Sticky is the ergonomic default; the `via` lets a read tool ECHO an
-#       implicit (session/seed) resolution so a wrong one is visible, not silent.
-#   • _source_project      — REPO-SCOPED ops: a given path's .crib decides (never
-#       sticky), so indexing /other/repo never lands in the current project.
+#   • _resolve / _project  — READS: explicit > a path's .crib > ask (or refuse);
+#       the `via` lets a read tool ECHO an implicit (seed) resolution.
+#   • _source_project      — REPO-SCOPED ops: a given path's .crib decides.
 #   • _write_project(_elicit) — WRITES: must NAME the target (a durable fact belongs
-#       to the project it's ABOUT), never inheriting sticky.
+#       to the project it's ABOUT).
+# Nothing is remembered between calls (design: "Retire use_project and implicit
+# anchoring (all eras)").
 def _resolve(
     crib: Crib, project: str | None, project_path: str | None
 ) -> ProjectResolution:
     """The READ policy as a `ProjectResolution` (project + how it resolved)."""
-    return resolve_session_project(
-        session_state(),
+    return resolve_call_project(
         project,
         _cwd(project_path),
         lambda c: crib.resolve_project(None, c),
@@ -75,14 +72,13 @@ def _resolve(
 
 
 def _project(crib: Crib, project: str | None, project_path: str | None) -> str:
-    """The resolved project name for a read (sticky-session convenience)."""
+    """The resolved project name for a read."""
     return _resolve(crib, project, project_path).project
 
 
 def _echo_dict(out: Any, res: ProjectResolution) -> Any:
     """Stamp the PROJECT resolution onto a dict result (a non-breaking extra key), so
-    an agent that didn't name a project can see which one — and how — answered, and
-    so a call that adopted the session's project says it did.
+    an agent that didn't name a project can see which one — and how — answered.
 
     `resolved_project`, not `resolved`: the symbol verbs already return `resolved`
     for what a symbol name resolved to, and one key cannot mean both."""
@@ -108,7 +104,7 @@ def _echo_unlinked(out: Any, res: ProjectResolution) -> Any:
 
 def _echo_list(hits: Any, res: ProjectResolution) -> Any:
     """Surface an IMPLICIT resolution on a LIST result where it would otherwise be
-    invisible: an EMPTY result from a sticky/seeded project is indistinguishable
+    invisible: an EMPTY result from a seeded project is indistinguishable
     from 'answered the wrong project', so return one diagnostic marker instead of a
     bare `[]`. Non-empty lists already tag each hit with its owning `project`."""
     if res.implicit and isinstance(hits, list) and not hits:
@@ -133,17 +129,19 @@ def _source_project(
 
     Also `code_index` — a single-file index is the same op at file granularity.
 
-    These act on a specific repo, so an explicit `project_path` must decide WHICH
-    project via that repo's `.crib` — never the sticky session project (a call with
-    project_path=/other/repo but no project once indexed the OTHER repo INTO the
-    current one). Precedence: explicit `project` wins; else if a `project_path` is
-    given, return None so `crib.project_*` reads `link.project` from that repo's
-    `.crib`; else fall back to the session's current project."""
+    These act on a specific repo, so an explicit `project_path` decides WHICH
+    project via that repo's `.crib`. Precedence: explicit `project` wins; else if
+    a `project_path` is given, return None so `crib.project_*` reads
+    `link.project` from that repo's `.crib`; else refuse: nothing names the repo,
+    and the default project is never a silent answer."""
     if project:
         return project
     if project_path:
         return None  # let the repo's .crib name the project
-    return _project(crib, None, None)  # neither given → sticky session project
+    raise CribUserError(
+        f"this call named no project or repo: {NAME_THE_PROJECT}. Projects: "
+        + ", ".join(sorted(crib.projects()))
+    )
 
 
 # Documented exceptions to "a write NAMES its target" — both are declared at the
@@ -151,20 +149,18 @@ def _source_project(
 # is visible where it applies, not just here:
 #   • learning_add / learning_edit / learning_forget (and reaffirm/rehome) use the
 #     READ policy BY INTENT. A learning is about a SYMBOL in the code project you
-#     are working in — it can't belong anywhere else — so the sticky/inferred
-#     project is the right answer, and forcing `project=` on every pin would tax
-#     the one write we most want to be frictionless.
+#     are working in — it can't belong anywhere else — so the read policy (the
+#     named project, or the repo at project_path, or ask) is the right answer.
 #   • note_import / note_import_memory use the SOURCE policy: an import is about a
-#     REPO, so the repo's `.crib` decides (never the sticky session). They also
+#     REPO, so the repo's `.crib` decides. They also
 #     declare `needs_target`, because with no source they used to fall through to
 #     the config default project silently — the very thing `_write_project` forbids.
 def _write_project(crib: Crib, project: str | None, project_path: str | None) -> str:
     """Project for a WRITE op (store/append/edit/forget/move). Writes must NAME their
-    target — they do NOT inherit the sticky session project, because a durable fact
-    belongs to the project it's ABOUT, not whatever repo you're browsing (that's how a
-    shuck note once landed in `zdot`). Precedence: explicit `project`; else the `.crib`
-    at `project_path`; else ERROR asking the caller to specify. Reads keep the sticky
-    convenience via `_project`; only writes are forced."""
+    target, because a durable fact belongs to the project it's ABOUT, not whatever
+    repo you're browsing (that's how a shuck note once landed in `zdot`).
+    Precedence: explicit `project`; else the `.crib` at `project_path`; else ERROR
+    asking the caller to specify."""
     if project:
         return project
     if project_path:
@@ -173,8 +169,78 @@ def _write_project(crib: Crib, project: str | None, project_path: str | None) ->
         "a write needs an explicit target: pass project=<name> — the project this "
         "fact is ABOUT, which may differ from your current one (cross-cutting tooling "
         "knowledge often belongs in `default` or its own project) — or project_path="
-        "<a path in that repo>. Writes don't inherit the sticky current project."
+        "<a path in that repo>."
     )
+
+
+class NeedsInput(BaseException):
+    """A per-call ask (mcp 2026-07-28 era, SEP-2322) unwinding to the tool
+    boundary, which RETURNS `result` (an `InputRequiredResult`): the client asks
+    its human and retries the same call with the answer. A BaseException so no
+    `except Exception` on the way (the ask sites' own fallbacks) swallows it;
+    `_user_facing` turns it into the tool's return value."""
+
+    def __init__(self, result: Any) -> None:
+        super().__init__("input required")
+        self.result = result
+
+
+# One text answer, as a form (the combiner bridges form asks to handshake-era
+# clients; URL/sampling asks it does not).
+_ASK_SCHEMA = {
+    "type": "object",
+    "properties": {"value": {"type": "string", "title": "Answer"}},
+    "required": ["value"],
+}
+
+
+def _ask_per_call(key: str, message: str, state: str) -> str | None:
+    """The stateless era's ask. On the retry that carries the answer (its
+    `request_state` is this ask's `state`): the accepted, non-blank text, else
+    None (declined, cancelled, blank). Before that: raise `NeedsInput` with the
+    question. `request_state` is sealed on the wire by the SDK and bound to this
+    tool and its arguments, so an answer can't be replayed onto another call;
+    `state` only says WHICH ask it answers. Synchronous on purpose: asking is
+    returning, so sync tools can ask too."""
+    import mcp.types as mt
+    from fastmcp.server.dependencies import get_context
+
+    ctx = get_context()
+    answers = ctx.input_responses or {}
+    if ctx.request_state == state and key in answers:
+        r = answers[key]
+        if isinstance(r, mt.ElicitResult) and r.action == "accept" and isinstance(
+                r.content, dict):
+            value = r.content.get("value")
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return None
+    raise NeedsInput(mt.InputRequiredResult(
+        input_requests={key: mt.ElicitRequest(params=mt.ElicitRequestFormParams(
+            message=message, requested_schema=_ASK_SCHEMA))},
+        request_state=state,
+    ))
+
+
+async def _ask(ctx: Any, key: str, message: str, state: str) -> str | None:
+    """Ask the human one question, in whichever way this request's era allows:
+    returned per call on the stateless era (`_ask_per_call`), the server-
+    initiated `ctx.elicit` on the handshake era. The answer text, or None. A
+    handshake client without elicitation raises, as `ctx.elicit` does."""
+    if request_era() == ERA_STATELESS:
+        return _ask_per_call(key, message, state)
+    if ctx is None:
+        from fastmcp.server.dependencies import get_context
+
+        ctx = get_context()
+    result = await ctx.elicit(message, response_type=str)
+    chosen = getattr(result, "data", None)  # AcceptedElicitation.data
+    return chosen.strip() if isinstance(chosen, str) and chosen.strip() else None
+
+
+_WRITE_ASK = ("Which crib project should this fact be stored in? Name the project it's "
+              "ABOUT — often `default` for cross-cutting tooling/convention knowledge, "
+              "not the repo you're currently working in.")
 
 
 async def _write_project_elicit(
@@ -187,15 +253,9 @@ async def _write_project_elicit(
     if project or project_path:
         return _write_project(crib, project, project_path)
     try:
-        result = await ctx.elicit(
-            "Which crib project should this fact be stored in? Name the project it's "
-            "ABOUT — often `default` for cross-cutting tooling/convention knowledge, "
-            "not the repo you're currently working in.",
-            response_type=str,
-        )
-        chosen = getattr(result, "data", None)  # AcceptedElicitation.data
-        if isinstance(chosen, str) and chosen.strip():
-            return chosen.strip()
+        chosen = await _ask(ctx, "project", _WRITE_ASK, "write-project")
+        if chosen:
+            return chosen
     except Exception:  # noqa: BLE001 — no elicitation support → fall back to the error
         # pi-lens-ignore: python-empty-except
         pass
@@ -212,13 +272,11 @@ async def _confirm_destructive(project: str, verb: str, detail: str) -> None:
     refusal. A client that doesn't support elicitation is refused with the
     terminal path: the CLI confirms in its own interactive prompt."""
     try:
-        from fastmcp.server.dependencies import get_context
-
-        ctx = get_context()
-        result = await ctx.elicit(
+        chosen = await _ask(
+            None, "confirm",
             f"Confirm: {detail} Type the project name '{project}' to confirm, "
             "anything else to abort.",
-            response_type=str,
+            f"confirm:{verb}:{project}",
         )
     except Exception as e:  # noqa: BLE001 — no elicitation ⇒ no deletion
         raise CribUserError(
@@ -226,90 +284,78 @@ async def _confirm_destructive(project: str, verb: str, detail: str) -> None:
             f"support MCP elicitation — run `crib project delete {project}` "
             "in your terminal instead"
         ) from e
-    chosen = getattr(result, "data", None)
-    if not (isinstance(chosen, str) and chosen.strip() == project):
+    if chosen != project:
         raise CribUserError(f"{verb} aborted: confirmation did not echo {project!r}")
 
 
 async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectResolution:
-    """An UNANCHORED read — no selector, no path, no session — must not answer from
-    a guess: the daemon's own startup directory is meaningless to every chat, and
-    `default` merely LOOKS like an answer. So ASK (MCP elicitation) when the client
-    supports it; REFUSE with the actionable error when it does not. Either way the
-    caller ends up anchored on something a human named, never on where the daemon
-    happened to be started. (Every chat lands here right after a daemon restart —
-    the session state that made it anchored died with the old process.)"""
+    """A read that names no project (no selector, no path) must not answer from
+    a guess: the daemon's own startup directory is meaningless to every chat,
+    and `default` merely LOOKS like an answer. So ASK (MCP elicitation) when the
+    client can be asked; REFUSE with the actionable error when it cannot. The
+    answer is for THIS call only."""
     try:
-        from fastmcp.server.dependencies import get_context
-
-        ctx = get_context()
-        result = await ctx.elicit(
-            "No project is anchored for this session (sessions reset when the crib "
-            "daemon restarts). Which project should this call use? Name one of: "
-            + ", ".join(sorted(crib.projects()))
-            + " — or give a path inside the "
-            "repo you mean.",
-            response_type=str,
-        )
-        chosen = getattr(result, "data", None)
-        if isinstance(chosen, str) and chosen.strip():
-            chosen = chosen.strip()
-            if "/" in chosen or chosen.startswith("~"):
-                proj = crib.resolve_project(None, Path(chosen).expanduser())
-            else:
-                if chosen not in crib.projects():
-                    # the dir named in the refusal is the evidence that makes this
-                    # failure class self-explaining (flake investigation 2026-11-02:
-                    # a one-off empty list had no breadcrumbs to diagnose)
-                    raise CribUserError(
-                        f"no project named {chosen!r} — one of: "
-                        + ", ".join(sorted(crib.projects()))
-                        + f" (projects dir: {crib.paths.projects_dir}; CRIB_DATA_DIR: "
-                        f"{os.environ.get('CRIB_DATA_DIR')})"
-                    )
-                proj = chosen
-            # the human just named it — anchor (handshake era only) and say so;
-            # on the stateless era the answer is for this call, quietly
-            anchored = adopt_into_session(proj)
-            # pi-lens-ignore: unreachable-except
-            return ProjectResolution(proj, "elicited", session_set=anchored)
+        chosen = await _ask(None, "project", _read_ask(crib), "read-project")
+        if chosen:
+            return _elicited(crib, chosen)
     except CribUserError:
         # pi-lens-ignore: python-empty-except
         raise
     except Exception:  # noqa: BLE001 — no elicitation support / declined → refuse
         pass
-    raise CribUserError(
-        "no project is anchored for this session and none was named"
-        + (
-            f" — {STATELESS_HINT}"
-            if request_era() == ERA_STATELESS
-            else " (sessions reset when the crib daemon restarts): pass "
-            "project=<name> or project_path=<a path in the repo>, or call "
-            "project_use once"
-        )
-        + ". Projects: "
+    raise _unanchored(crib)
+
+
+def _read_ask(crib: Crib) -> str:
+    return ("This call named no project. Which project should it use? Name one of: "
+            + ", ".join(sorted(crib.projects()))
+            + " — or give a path inside the repo you mean.")
+
+
+def _elicited(crib: Crib, chosen: str) -> ProjectResolution:
+    """The resolution for a project the human just named (a name, or a path in
+    the repo), for this call only."""
+    if "/" in chosen or chosen.startswith("~"):
+        proj = crib.resolve_project(None, Path(chosen).expanduser())
+    else:
+        if chosen not in crib.projects():
+            # the dir named in the refusal is the evidence that makes this
+            # failure class self-explaining (flake investigation 2026-11-02:
+            # a one-off empty list had no breadcrumbs to diagnose)
+            raise CribUserError(
+                f"no project named {chosen!r} — one of: "
+                + ", ".join(sorted(crib.projects()))
+                + f" (projects dir: {crib.paths.projects_dir}; CRIB_DATA_DIR: "
+                f"{os.environ.get('CRIB_DATA_DIR')})"
+            )
+        proj = chosen
+    return ProjectResolution(proj, "elicited")
+
+
+def _unanchored(crib: Crib) -> CribUserError:
+    """The refusal when a read named no project and none was given in answer."""
+    return CribUserError(
+        f"this call named no project: {NAME_THE_PROJECT}. Projects: "
         + ", ".join(sorted(crib.projects()))
     )
 
 
 # ── The policy is DECLARED, not chosen in the body ────────────────────────────
 # Which of the resolvers above a tool uses is stated once, at its registration
-# (`@crib_tool("read"|"write"|"source"|"session"|"none")`); the decorator wires the
+# (`@crib_tool("read"|"write"|"source"|"none")`); the decorator wires the
 # resolver and hands the body an ALREADY-RESOLVED `project`. No tool body calls a
 # resolver, because that is exactly how the policy drifts invisibly: `code_index`
 # spent a release on the READ policy — one wrong helper call in one body — and
-# filed another repo's symbols under the sticky session project. Declaring it makes
+# filed another repo's symbols under the wrong project. Declaring it makes
 # the choice reviewable in the diff and checkable by a test.
-#   read    — explicit > sticky session > seed-from-path (`_resolve`)
+#   read    — explicit > a path's .crib > ask or refuse (`_resolve`)
 #   write   — must NAME the target (`_write_project`)
-#   source  — the repo at `project_path` decides; sticky never wins (`_source_project`)
-#   session — the tool IS the session pointer (project_use/project_current): it sets
-#             or reports the current project rather than resolving one for an op
+#   source  — the repo at `project_path` decides (`_source_project`)
 #   none    — no project args at all (whole-store / cross-project ops)
 # `TOOL_POLICY` records every registration so a table test can assert the surface is
 # fully declared (and the CLI's VERBS registry can be checked against it).
 TOOL_POLICY: dict[str, str] = {}
-_POLICIES = ("read", "write", "source", "session", "none")
+_POLICIES = ("read", "write", "source", "none")
 
 
 # ── Per-deployment tool-set EXPOSURE (crib serve --tools / [tools].expose) ────
@@ -422,18 +468,6 @@ def exposure(
     return frozenset(sets) | {"system"}, frozenset(ro)
 
 
-def _switch_if_created(result: dict) -> dict:
-    """Creating a project switches the session into it — referencing an existing
-    one (a one-off `project` arg) does not (DESIGN §15). The switch is the ONE
-    anchor gate (`adopt_into_session`): on the stateless era nothing anchors,
-    so say so instead of silently pretending."""
-    if isinstance(result, dict) and result.get("project_created"):
-        if not adopt_into_session(result.get("project")):
-            result["anchored"] = False
-            result["note"] = STATELESS_HINT
-    return result
-
-
 def build_server(crib: Crib | None = None, tools: str | list[str] | None = None):
     from fastmcp import FastMCP  # lazy
     from fastmcp.tools import FunctionTool
@@ -530,15 +564,11 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
             "INDEX IT — `project_index` (project_path=<the repo dir>) indexes the source in one "
             "call — then look up. Do NOT read files or grep instead; indexing first is "
             "how you explore effectively (there's no shortcut — the utility comes from "
-            "the index). PROJECT MODEL: code tools act on ONE current project. Set it once "
-            "for the codebase you're working in — `project_use <name>`, or your FIRST call "
-            "carrying `project_path` adopts that repo (the result says so when it does) — "
-            "then reads need no project args. To act on a DIFFERENT project (a related "
-            "codebase you're referencing), NAME it on that call: `project=<name>` or "
-            "`project_path=<a path inside that repo>`. Naming one always wins over the "
-            "current project and never changes it, so a cross-project lookup cannot "
-            "re-home the writes that follow it — but it only applies to the call you put "
-            "it on, so name it every time you mean elsewhere. `project_path` is NOT your "
+            "the index). PROJECT MODEL: NAME the project on EVERY call — `project=<name>`, "
+            "or `project_path=<a path inside that repo>` to let the repo's `.crib` decide. "
+            "Nothing carries over between calls: there is no current project to set, so a "
+            "call that names neither is ASKED which project (or refused if the client "
+            "can't be asked), never answered from a guess. `project_path` is NOT your "
             "shell cwd — it just identifies which repo you mean. "
             "When you finally UNDERSTAND a symbol — a "
             "subtlety, a gotcha, a 'now I get it' — `learning_add <symbol> \"…\"` pins a "
@@ -631,21 +661,18 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         def run_sync(*args, **kwargs):
             a, project, path = prepare(args, kwargs)
             a["project"], res = resolve(project, path)
+            if res is not None and res.unanchored and request_era() == ERA_STATELESS:
+                # asking is RETURNING on the stateless era, so a sync tool can ask
+                chosen = _ask_per_call("project", _read_ask(crib), "read-project")
+                if not chosen:
+                    raise _unanchored(crib)
+                res = _elicited(crib, chosen)
+                a["project"] = res.project
             if res is not None and res.unanchored:
-                # a sync tool cannot elicit — refuse with the same actionable error
-                # the async path falls back to; the message reaches the LLM verbatim
-                # (CribUserError rides the MCP face), and re-calling with project=
-                # is the recovery. Never answer from a guess.
-                anchor_help = (
-                    STATELESS_HINT
-                    if request_era() == ERA_STATELESS
-                    else "(sessions reset when the crib daemon restarts): pass "
-                    "project=<name> or project_path=<a path in the repo>, or "
-                    "call project_use once"
-                )
-                raise CribUserError(
-                    "no project is anchored for this session " + anchor_help
-                )
+                # a sync tool can't make a server-initiated ask (handshake era):
+                # refuse with the actionable error; re-calling with project= is
+                # the recovery. Never answer from a guess.
+                raise _unanchored(crib)
             return finish(fn(**a), res, project, path)
 
         return run_sync
@@ -669,6 +696,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
             async def run(*args, **kwargs):
                 try:
                     return await fn(*args, **kwargs)
+                except NeedsInput as ask:  # a per-call ask: the result IS the question
+                    return ask.result
                 except CribUserError as e:
                     raise ToolError(str(e)) from e
 
@@ -678,6 +707,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         def run_sync(*args, **kwargs):
             try:
                 return fn(*args, **kwargs)
+            except NeedsInput as ask:
+                return ask.result
             except CribUserError as e:
                 raise ToolError(str(e)) from e
 
@@ -691,7 +722,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         needs_target: bool = False,
     ):
         """Register an MCP tool AND declare its project-resolution policy (see the
-        block above `_switch_if_created`). The declaration is the only place a policy
+        "policy is DECLARED" block above). The declaration is the only place a policy
         is chosen; the body just uses the `project` it is handed.
 
         Refinements: `echo` — a read that surfaces an implicit resolution on its
@@ -720,7 +751,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
                 return fn  # a read-only set: the mutating verbs never register
             impl = (
                 fn
-                if resolution in ("session", "none")
+                if resolution == "none"
                 else _wire(fn, resolution, echo, elicit, needs_target)
             )
             tool = mcp.add_tool(FunctionTool.from_function(_user_facing(impl)))
@@ -761,11 +792,9 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         describe them, persist under `<project>/symbol_index/`. Use when code_lookup
         says a project isn't indexed yet. `path` MUST be ABSOLUTE — a relative path
         resolves against the daemon's cwd (not yours) and fails; also pass
-        `project_path=<your working dir>` so the project resolves via .crib (which
-        WINS over the sticky session project — indexing a repo files its symbols
-        under that repo's project, never the one you happen to be sitting in)."""
-        # Declared REPO-SCOPED (`source`) like its project_* siblings, not `read`:
-        # a sticky session must never capture another repo's symbols.
+        `project_path=<your working dir>` so the project resolves via .crib
+        (indexing a repo files its symbols under that repo's project)."""
+        # Declared REPO-SCOPED (`source`) like its project_* siblings, not `read`.
         return await crib.code_index(path, project, cwd=_cwd(project_path))
 
     @crib_tool("source")
@@ -780,9 +809,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         `project=<name>` works only for an already-indexed project — it resolves the
         recorded root). Idempotent. Then code_lookup/code_dossier work. Code-only
         variant: project_index."""
-        return _switch_if_created(
-            await crib.project_setup(project, cwd=_cwd(project_path))
-        )
+        return await crib.project_setup(project, cwd=_cwd(project_path))
 
     @crib_tool("source")
     async def project_index(
@@ -811,7 +838,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         res = await crib.project_index(
             project, cwd=_cwd(project_path), budget_s=budget_s
         )  # the polling contract — a RUNNING HANDLE at once (wait_s=None)
-        return _switch_if_created(res)
+        return res
 
     @crib_tool("none")
     async def project_relocate(
@@ -981,8 +1008,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         return await crib.project_migrate(project, cwd=_cwd(project_path))
 
     # NO resolution policy on create: the name is caller-supplied OR derived
-    # from the repo. The "write" default-resolution would land a name-less
-    # call on the session default and write `project: default` into a foreign
+    # from the repo. A default resolution would land a name-less call on the
+    # default project and write `project: default` into a foreign
     # repo's .crib — the exact misroute this policy system exists to refuse.
     @crib_tool("none")
     async def project_create(
@@ -1000,8 +1027,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         at-birth store must be empty — moving an existing global project's
         notes into the repo is `project_adopt`, not this. Idempotent.
 
-        The name comes from you OR the repo's `.crib`/repo dir — never from
-        the session's sticky current project (a fresh repo without a `.crib`
+        The name comes from you OR the repo's `.crib`/repo dir (a fresh repo
+        without a `.crib`
         derives its name from the repo dir; this is why create runs with NO
         resolution policy: the default-project fallback would silently point
         a repo-bound store at the shared bucket). The default project is
@@ -1020,7 +1047,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         they should follow the namespace). `force` is accepted for surface
         compatibility and gates nothing. The default project is refused (no
         owner to consent); a running code sweep or background reconcile is
-        refused. Deletion never resolves a session default or a cwd:
+        refused. Deletion never resolves a default or a cwd:
         `project=` is required and is the whole answer.
 
         ALWAYS elicited in MCP mode, and the fences run FIRST: the body
@@ -1252,10 +1279,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         repo into the daemon's live mirror so future memory edits sync on their
         own. REQUIRES a source repo — pass `project_path=<the repo dir>` (or
         `project=`); like `note_import` it resolves repo-scoped, never from the
-        sticky session or the default project."""
-        return _switch_if_created(
-            await crib.import_claude_memory(project, cwd=_cwd(project_path))
-        )
+        default project."""
+        return await crib.import_claude_memory(project, cwd=_cwd(project_path))
 
     @crib_tool("none")
     def status() -> dict[str, Any]:
@@ -1280,30 +1305,6 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         until then."""
         return crib.project_list()
 
-    @crib_tool("session")
-    def project_use(project: str) -> dict[str, Any]:
-        """Set THIS session's current project — subsequent `note_lookup`/`note_store`/etc.
-        target it without passing `project` each time. Sticky for the connection; a
-        per-call `project`/`project_path` still wins for that one call and leaves this
-        unchanged. Your first call carrying `project_path` adopts that repo the same
-        way (and says so), so call this to SWITCH, or to be explicit up front. The
-        namespace is created immediately (so it's real and listed, not a phantom
-        you're 'in' until the first write)."""
-        # One implementation, shared with the in-process CLI: `Crib.use_project`
-        # validates the name (before the eager mkdir — `../x` would otherwise plant a
-        # namespace outside the projects tree), creates the namespace, and sets the
-        # session pointer. A second copy here would only drift.
-        return crib.use_project(project)
-
-    @crib_tool("session")
-    def project_current(project_path: str | None = None) -> dict[str, Any]:
-        """Show this session's current project (seeding it from `project_path`/.crib if not
-        yet set), how it resolved, plus the available projects."""
-        # Shared with the in-process CLI (see `project_use`): `Crib.current_project`
-        # applies the READ policy itself — this tool reports the session pointer
-        # rather than resolving a project for an op, hence the `session` declaration.
-        return crib.current_project(cwd=_cwd(project_path))
-
     return mcp
 
 
@@ -1321,28 +1322,24 @@ def _prepare_http_serve(mcp) -> None:
     # pydantic settings on the fastmcp 4 line have this field; setattr because
     # the type resolver may resolve a different fastmcp.
     setattr(fastmcp.settings, "http_session_idle_timeout", 86_400)  # noqa: B010
-    # The daemon serves the handshake era only: a modern-era direct client
-    # would otherwise statelessly re-resolve per request (§15's sticky project
-    # dies) and lose elicitation.
+    # The daemon still ADVERTISES the handshake era only (see the docstring);
+    # a 2026-era request is still served, per request.
     _pin_legacy_era(mcp)
 
 
 def _pin_legacy_era(mcp) -> None:
-    """Advertise ONLY the handshake era, so clients with era defaults negotiate
-    stateful: modern-era (2026-07-28) stateless connections build a Connection
-    per request, which kills the per-session current project (DESIGN §15) and
-    forbids server-initiated requests (elicitation). Verified: without this pin
-    a client whose default is `mode='auto'` connects directly and negotiates
-    `2026-07-28` — sticky adoption dies between calls, silently; with an empty
-    `supported_versions` the same client falls back to the handshake era (`
-    `2025-11-25``) and everything works.
+    """Advertise ONLY the handshake era, so clients with era defaults (and the
+    combiner's `protocol: auto` upstream probe) negotiate the handshake.
 
-    This is a deliberate SERVER-side decision, the mirror of the combiner
-    pinning ITS clients to `mode='legacy'`: crib's session model (§15) and the
-    destructive-confirm gates depend on the back-channel that the handshake era
-    has and the modern era removes, so cribsheet does not yet support the
-    modern era. Revisit when the stateless era grows per-session state or
-    crib's session model moves to per-call selectors.
+    crib no longer depends on the handshake for correctness: there is no
+    per-connection state (projects are named per call), and on the 2026-07-28
+    era every ask is returned per call (`InputRequiredResult`, see `_ask`), so a
+    2026 request is served properly when one arrives. The pin remains only
+    because LIFTING it is its own step (design: "Retire use_project and implicit
+    anchoring (all eras), then advertise 2026"): it changes how the combiner
+    connects (2026 over one shared connection, `isolate` ignored), and wants an
+    end-to-end check against the combiner first. Lifting it is deleting this
+    handler.
 
     (Direct mcp 2 lowlevel-server API: `mcp._mcp_server` is fastmcp's own
     surface into it — the same route fastmcp's internal code takes. If a later

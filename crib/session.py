@@ -1,25 +1,17 @@
-"""Per-connection session state (DESIGN §15).
+"""How a call's project is decided: per call, from what the call names.
 
-One warm crib daemon serves many connections; each chat session keeps its own
-*current project* so calls don't have to re-pass cwd every time. The pattern is
-svg-mcp's: a `WeakKeyDictionary` — MCP exposes no session-close hook on the
-handshake era, so we lean on GC: when the connection ends and the key object is
-collected, its entry is released automatically.
+There is no per-connection state. A read names its project (`project=`), or a
+path in that repo (`project_path=`), on the call itself; with neither, the
+server ASKS the human (elicitation) or refuses — it never answers from a guess
+and never remembers an answer for later calls. Writes always had to name their
+target. Design: "Retire use_project and implicit anchoring (all eras)", which
+replaced the sticky per-connection current project (`project_use`, adoption by
+the first path-bearing call).
 
-The key is the per-client mcp `Connection` (``session._connection``), NOT the
-`ServerSession`: on MCP SDK v2 a fresh ServerSession is constructed for every
-inbound request, so keying on it would forget the adopted project between calls
-— silently (fastmcp 4 keys its own session state the same way, see fastmcp's
-``Context.session_id``). On the handshake era (what the daemon serves and the
-combiner pins its clients to) the Connection spans the whole client session, so
-WeakKeyDictionary[Connection, SessionState] keeps this call's sticky project
-and releases it on disconnect. Over the 2026-07-28 stateless era a Connection is
-built per request here too — session state then degrades to per-call, which is
-why clients that need persistent state must speak the legacy era (crib/client.py
-pins `mode="legacy"`).
-
-The state is MCP-only; the in-process CLI/tests have no session and fall back to
-a shared default (so `resolve_session_project` degrades to plain cwd seeding).
+The protocol era still matters for HOW the server asks: the handshake era asks
+with a server-initiated request (`ctx.elicit`); the mcp 2026-07-28 stateless
+era asks by returning an `InputRequiredResult` and reading the answer on the
+client's retry (crib/server.py `_ask`).
 """
 
 from __future__ import annotations
@@ -27,7 +19,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 import re
-from weakref import WeakKeyDictionary
 
 
 @dataclass(frozen=True)
@@ -35,32 +26,21 @@ class ProjectResolution:
     """How a call's project was decided — the project plus the *policy branch* that
     produced it, so a tool can echo a resolution that would otherwise be silent.
 
-      • ``explicit`` — the caller passed ``project=`` (a deliberate one-off).
-      • ``path``     — seeded from a caller-supplied ``project_path``'s ``.crib``.
-      • ``session``  — the sticky per-connection current project (set earlier).
-      • ``seed``     — seeded with no path (cwd-less / the bare default).
-      • ``elicited`` — the human was ASKED (an unanchored read + a client that
-        supports elicitation) and named the project; the session adopts it.
+      • ``explicit`` — the caller passed ``project=``.
+      • ``path``     — decided by a caller-supplied ``project_path``'s ``.crib``.
+      • ``seed``     — the fallthrough: a path no ``.crib`` decides (its
+        documented meaning is the bare default), or nothing at all.
+      • ``elicited`` — the human was ASKED (no selector, a client that can be
+        asked) and named the project, for this call only.
 
-    ``path``/``explicit`` are caller-directed; ``session``/``seed`` are *implicit*
-    — the two that silently answer with the wrong project when a connection's
-    session state is shared or stale (see DESIGN §15). ``implicit`` flags them so
-    the code tools surface the resolution only when it's worth surfacing.
-
-    ``session_set`` marks the call that ADOPTED its project as the session's — the
-    first path-bearing call of a session. That decides where every later
-    selector-less call lands, including writes, so it is always reported even
-    though ``path`` is caller-directed and otherwise quiet."""
+    ``explicit``/``path``/``elicited`` are caller-directed; ``seed`` is
+    *implicit*, the one that can silently answer with the wrong project, so
+    ``implicit`` flags it and the code tools surface it."""
 
     project: str
     via: str
-    session_set: bool = False
-    # NOTHING pointed here: no selector, no path, no session — the resolution is a
-    # pure fallthrough to the bare default. Distinct from `implicit` (a sticky
-    # session at least records something the caller once chose) because it is the
-    # one branch where the answer is a GUESS, and a guess must never be quiet: after
-    # a daemon restart every chat lands exactly here, believing it still has the
-    # project it adopted before the restart.
+    # NOTHING pointed here: no selector, no path. The one branch where the
+    # answer would be a GUESS, so the server asks or refuses instead.
     unanchored: bool = False
     # A caller-supplied `project_path` that no `.crib` anchors: resolution fell
     # through to the bare default even though the caller POINTED at a repo. The
@@ -82,102 +62,46 @@ class ProjectResolution:
 
     @property
     def implicit(self) -> bool:
-        return self.via in ("session", "seed")
+        return self.via == "seed"
 
     @property
     def worth_echoing(self) -> bool:
-        """Either the caller did not choose this project, or the call just made it
-        the session's — both are things the caller has not been told."""
-        return self.implicit or self.session_set
+        """The caller did not choose this project: something it hasn't been told."""
+        return self.implicit
 
     def echo(self) -> dict[str, Any]:
         out: dict[str, Any] = {"project": self.project, "resolved_via": self.via}
         if self.unanchored:
             out["warning"] = (
-                f"UNANCHORED: nothing names a project for this session — answered "
-                f"from {self.project!r}. If that is not where you meant to look, "
-                f"pass project= or project_path= once to anchor the session "
-                f"(sessions reset when the daemon restarts)."
-            )
-        if self.session_set:
-            out["session_project_set"] = self.project
-            out["note"] = (
-                f"this call also made {self.project!r} the session's "
-                f"current project — later calls that name no project "
-                f"will use it. `use_project` to change it."
+                f"UNANCHORED: this call named no project — answered from "
+                f"{self.project!r}. Pass project=<name> or project_path=<a path in "
+                f"the repo> on every call."
             )
         return out
 
 
-class SessionState:
-    """Per-connection scope. Just the current project for now."""
+# ── Protocol era: decides HOW the server asks, nothing else ──────────────────
 
-    def __init__(self) -> None:
-        self.current_project: str | None = None
-
-
-_SESSIONS: "WeakKeyDictionary[Any, SessionState]" = WeakKeyDictionary()
-_DEFAULT = SessionState()  # non-request contexts: in-process CLI, tests
-
-
-def retarget_sessions(old: str, new: str | None) -> int:
-    """Repoint (or clear, with `new=None`) the current-project pointer of EVERY
-    live session after a project rename/delete — not just the caller's: a
-    per-connection scope that still names a deleted project re-seeds it as a
-    phantom on its next write. Returns how many sessions moved."""
-    n = 0
-    for st in (*_SESSIONS.values(), _DEFAULT):
-        if st.current_project == old:
-            st.current_project = new
-            n += 1
-    return n
-
-
-def session_state() -> SessionState:
-    """The SessionState for the calling MCP connection, created on first use.
-    Returns the shared default when there's no active MCP context."""
-    try:
-        from fastmcp.server.dependencies import get_context
-
-        session = get_context().session
-    except Exception:  # noqa: BLE001 — no request context (CLI/tests)
-        return _DEFAULT
-    # mcp SDK v2 rebuilds the ServerSession per request; the per-client
-    # `Connection` is the object that lives for the whole client session
-    # (fastmcp 4 keys its own state off it the same way). Defensive fallback to
-    # the session itself keeps the dict shapable if the private attr moves.
-    conn = getattr(session, "_connection", None)
-    key = conn if conn is not None else session
-    st = _SESSIONS.get(key)
-    if st is None:
-        st = SessionState()
-        _SESSIONS[key] = st
-    return st
-
-
-# ── Protocol era: ONE gate for everything that anchors a session ─────────────
-
-ERA_HANDSHAKE = "handshake"  # durable Connection — session state can anchor
-ERA_STATELESS = "stateless"  # mcp 2026-07-28: a Connection per request, none can
+ERA_HANDSHAKE = "handshake"  # asks with a server-initiated request (ctx.elicit)
+ERA_STATELESS = "stateless"  # mcp 2026-07-28: asks by returning InputRequiredResult
 
 # mcp 2 serves both eras off one app, routed per request by this header (see
 # crib/server.py `_pin_legacy_era` and crib/client.py's `mode="legacy"` pin).
 _PROTOCOL_HEADER = "mcp-protocol-version"
 _STATELESS_PROTOCOL = "2026-07-28"
 
-STATELESS_HINT = (
-    "this is a STATELESS connection (mcp 2026-07-28 era: each request stands "
-    "alone, nothing anchors between calls) — pass project=<name> or "
-    "project_path=<a path in that repo> on every call"
+NAME_THE_PROJECT = (
+    "pass project=<name> or project_path=<a path in that repo> on every call "
+    "(nothing carries over between calls)"
 )
 
 
 def _era_of_version(version: str | None) -> str:
     """Classify one `mcp-protocol-version` header value. ONLY a well-formed
     ISO-date version at-or-after 2026-07-28 is the stateless era; absent,
-    malformed, or older values are the handshake era — anchoring is real there,
-    and every non-HTTP face (stdio, in-process CLI, in-memory transport) hits
-    this branch because it never carries the header at all."""
+    malformed, or older values are the handshake era, and every non-HTTP face
+    (stdio, in-process CLI, in-memory transport) hits this branch because it
+    never carries the header at all."""
     v = (version or "").strip()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):  # malformed/absent → handshake
         return ERA_HANDSHAKE
@@ -186,11 +110,9 @@ def _era_of_version(version: str | None) -> str:
 
 def request_era() -> str:
     """The protocol era of the current inbound request (see `_era_of_version`):
-    "stateless" when the client speaks mcp 2026-07-28 (a Connection per request
-    — nothing can anchor across calls), else "handshake". Falls back to the
-    handshake era whenever there is no HTTP request (stdio, the in-process CLI,
-    the in-memory test transport) — anchoring is real there and the legacy
-    behavior is what those tests assert."""
+    "stateless" when the client speaks mcp 2026-07-28, else "handshake" (also
+    whenever there is no HTTP request: stdio, the in-process CLI, the in-memory
+    test transport)."""
     try:
         from fastmcp.server.dependencies import get_http_headers
 
@@ -199,79 +121,32 @@ def request_era() -> str:
         return ERA_HANDSHAKE
 
 
-def adopt_into_session(project: str | None) -> bool:
-    """Anchor `project` as the session's current project. THE one gate: every
-    anchor (project_use, the first path-bearing call, an elicited project) goes
-    through here, so the stateless-era rule needs no scattered `if era` checks.
-
-    On the stateless era an anchor that LOOKED like it took would die after the
-    call — the same silent forgetting the fastmcp 4 port exists to prevent — so
-    it is refused (returns False; callers surface `STATELESS_HINT`) and nothing
-    is written. Returns True when anchored (handshake era)."""
-    if request_era() != ERA_HANDSHAKE:
-        return False
-    session_state().current_project = project
-    return True
-
-
-def resolve_session_project(
-    state: SessionState,
+def resolve_call_project(
     project_arg: str | None,
     cwd: Any,
     seed: Callable[[Any], str],
     default: str | None = None,
 ) -> ProjectResolution:
-    """Pick the project for a call (DESIGN §15 precedence), reporting the branch
+    """Pick a read's project from what THIS call names, reporting the branch
     (`ProjectResolution.via`) so a caller can echo how it resolved:
 
-      1. an EXPLICIT selector — `project_arg`, or a `cwd` whose `.crib` decides a
-         project. Both name a target outright, so neither loses to stickiness, and
-         `project_path` is if anything the more specific of the two ("this exact
-         repo"): it must not be the one that yields.
-      2. the session's current project
-      3. seed from cwd/.crib, or the bare `default`
+      1. `project_arg` — named outright;
+      2. a `cwd` whose `.crib` decides a project;
+      3. the fallthrough: a `cwd` no `.crib` decides lands on the bare default
+         (its documented meaning; the CLI standing in ~ does this on purpose,
+         and an MCP caller gets the UNLINKED advisory), and NO cwd at all is
+         `unanchored` — crib knows nothing, so the server asks or refuses.
 
-    ADOPTION happens once. The FIRST path-bearing call of a session adopts its
-    project as the session's, so the common pattern — name the repo once, then call
-    without it — keeps working. After that the session is set and rule 1 outranks
-    it, so a later call naming a different repo answers for that repo and changes
-    nothing: one cross-project read can never re-home the writes that follow it.
-
-    A call that adopts says so (`session_set`), because it decides where every
-    later selector-less call lands. A bare `default` never adopts — nothing sticks
-    that the caller did not point at, so a stray early call cannot lock the session
-    somewhere it has to be argued back out of.
-    """
+    Nothing is remembered between calls."""
     if project_arg:
         return ProjectResolution(project_arg, "explicit")
     if cwd is not None:
         picked = seed(cwd)
-        # ONLY when the path decided something. With no `.crib` under it the seed
-        # falls through to the bare `default`, which is not what the caller asked
-        # for: returning `path` there would mute the wrong-project echo built for
-        # exactly that case (a lookup answering from `default` while the agent
-        # believes it named a repo).
+        # ONLY when the path decided something: with no `.crib` under it the
+        # seed falls through to the bare default, which is not what the caller
+        # asked for, and must stay visible as such.
         if picked != default:
-            # Adoption, gated once: on the stateless era the state object is
-            # per-request — don't write it, and don't CLAIM it stuck (`session_set`
-            # would otherwise report an anchor that dies after the call). "path"
-            # itself is still a deliberate caller choice, so it echoes normally.
-            if request_era() != ERA_HANDSHAKE:
-                return ProjectResolution(picked, "path")
-            first = state.current_project is None
-            if first:
-                state.current_project = picked
-            return ProjectResolution(picked, "path", session_set=first)
-    if state.current_project is not None:
-        return ProjectResolution(state.current_project, "session")
-    # The fallthrough. Two different situations end here and they are NOT the same:
-    #   • a cwd was given but no `.crib` decides — landing on `default` is that
-    #     path's DOCUMENTED meaning (the CLI standing in ~ does this deliberately);
-    #   • NO cwd at all (only MCP can get here: a selector-less call on a fresh
-    #     session — which is every chat right after a daemon restart). Then crib
-    #     knows NOTHING; its own startup directory is meaningless to every chat,
-    #     so any answer is a guess. `unanchored` marks it, and the server layer
-    #     ASKS (elicitation) or REFUSES actionably rather than answering.
+            return ProjectResolution(picked, "path")
     return ProjectResolution(
         seed(cwd), "seed", unanchored=cwd is None, path_unmatched=cwd is not None
     )

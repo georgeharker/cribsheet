@@ -54,7 +54,7 @@ def run(coro):
 
 def test_create_global_skeleton_and_manifest(crib):
     out = run(crib.project_create(project="toucan"))
-    assert out["created"] is True and out["residency"] == "global"
+    assert out["project_created"] is True and out["residency"] == "global"
     root = crib.paths.project_dir("toucan")
     for seg in ("notes", "design", "plans", "learnings"):
         assert (root / seg).is_dir()
@@ -67,11 +67,11 @@ def test_create_global_skeleton_and_manifest(crib):
 
 def test_create_is_idempotent_and_never_rewrites_the_manifest(crib):
     first = run(crib.project_create(project="toucan"))
-    assert first["created"] is True
+    assert first["project_created"] is True
     pcfg = crib.project_config("toucan")
     born, host = pcfg.created, pcfg.host
     second = run(crib.project_create(project="toucan"))
-    assert second["created"] is False
+    assert second["project_created"] is False
     assert crib.project_config("toucan").created == born  # never rewritten
     assert crib.project_config("toucan").host == host
 
@@ -98,7 +98,7 @@ def test_create_resident_born_in_repo(tmp_path, monkeypatch, repo, crib):
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     c = Crib(Paths.resolve().ensure(), _cfg(tmp_path), InMemoryStore())
     out = run(c.project_create(project="toucan", cwd=repo, store=".crib-store"))
-    assert out["created"] is True and out["residency"] == "repo"
+    assert out["project_created"] is True and out["residency"] == "repo"
     store = repo / ".crib-store"
     for seg in ("notes", "design", "plans", "learnings"):
         assert (store / seg).is_dir()
@@ -253,17 +253,13 @@ def test_rename_fences(crib):
         run(crib.project_rename(project="a", to=crib.config.default_project))
 
 
-def test_rename_updates_session_and_stub(tmp_path, monkeypatch):
+def test_rename_updates_the_stub(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     c = Crib(Paths.resolve().ensure(), _cfg(tmp_path), InMemoryStore())
-    from crib.session import session_state
-
-    session_state().current_project = "old"
     run(c.store_note("x", title="T", project="old"))
     run(c.project_rename(project="old", to="renamed"))
-    assert session_state().current_project == "renamed"
     pcfg = c.project_config("renamed")
     assert pcfg.name == "renamed"
     # a rename NEVER fakes a birth record: implicitly-born stays implicitly-born
@@ -410,7 +406,7 @@ def test_create_allows_precreated_empty_pillar_dirs(crib, tmp_path, repo):
     pstore = repo / ".crib-store"
     (pstore / "notes").mkdir(parents=True)  # empty in-repo pillar dir
     out = run(crib.project_create(project="toucan", cwd=repo, store=".crib-store"))
-    assert out["created"] is True and out["residency"] == "repo"
+    assert out["project_created"] is True and out["residency"] == "repo"
 
 
 def test_create_refuses_default_project_as_resident(crib, repo):

@@ -1,27 +1,19 @@
-"""Sticky session project across REAL streamable-HTTP calls (DESIGN §15).
+"""Per-call projects across REAL streamable-HTTP calls, on both protocol eras.
 
-The per-connection session state is keyed on the per-client mcp `Connection`
-(``session._connection``), because MCP SDK v2 constructs a fresh `ServerSession`
-for EVERY inbound request — keying on it would forget an adopted project between
-calls, silently: no error, no type error, just every selector-less call resolving
-as `seed`/`unanchored` and elicited adoptions evaporating. Only an e2e round-trip
-over HTTP with one client session spanning several calls can see it, so this file
-exists for that; it pins the fastmcp 4 / mcp 2 era contract end to end.
+There is no per-connection current project (design: "Retire use_project and
+implicit anchoring (all eras)"): every call names its project, or is ASKED for
+it, and the answer is for that call only. How crib asks depends on the era:
 
-Three halves:
-  1. ADOPTION PERSISTS — `project_use` then selector-less reads on the SAME
-     connection stay `alpha` with `resolved_via: "session"`. On the ServerSession
-     keying (the bug) call 2 answers `default` here.
-  2. ELICITED ADOPTION PERSISTS — the unanchored read → elicit → adopt path also
-     sticks for the next selector-less call.
-  3. NO LEAK BETWEEN CONNECTIONS — a fresh connection must not see session 1's
-     pointer.
-  4. THE ERA PIN — a client whose default is `mode="auto"` (fastmcp 4's own
-     default: it probes `server/discover` and negotiates the modern era when
-     it can) must land on the HANDSHAKE era and keep sticky sessions working.
-     The daemon pins that server-side (`_pin_regression_era`), because on the
-     2026-07-28 stateless era every Connection is per-request and the sticky
-     session project + elicitation silently die.
+  1. HANDSHAKE (what the daemon advertises): a server-initiated
+     `elicitation/create` on the same connection; a client without an
+     elicitation handler gets the actionable refusal.
+  2. 2026-07-28 (a client that speaks it directly; the pin only steers
+     `mode="auto"` probing): the ask is RETURNED as an `InputRequiredResult` and
+     the client retries with the answer (crib/server.py `_ask_per_call`), for
+     the unanchored read and the destructive confirm alike.
+
+Only an e2e round-trip over HTTP shows both: the in-memory transport has neither
+the per-request era header nor a real retry.
 """
 
 from __future__ import annotations
@@ -94,211 +86,150 @@ def _data(res: Any) -> Any:
     return getattr(res, "data", res)
 
 
-def test_adopted_project_persists_across_http_calls(crib, http_url):
-    """`project_use` then selector-less `project_current` twice on the SAME
-    connection: `alpha`, with `resolved_via: "session"`. On the per-request keying
-    (fresh ServerSession each call) the second read answers `default`/`seed` —
-    the exact silent regression the brief warned that no type check would ever
-    surface."""
+def _counting(answer):
+    asked: list[str] = []
+
+    async def handler(message, response_type, params, ctx):  # noqa: ANN001
+        asked.append(message)
+        return answer
+
+    return handler, asked
+
+
+def test_handshake_asks_per_call_and_nothing_sticks(crib, http_url):
+    """A read naming no project is ASKED (sync and async tools alike), the
+    answer runs that call, and the NEXT selector-less call is asked again."""
     from fastmcp import Client
 
-    async def session():
-        async with Client(http_url, mode="legacy") as c:
-            await c.call_tool("project_use", {"project": "alpha"})
-            one = await c.call_tool("project_current", {})
-            two = await c.call_tool("project_current", {})
-            return _data(one), _data(two)
-
-    one, two = asyncio_run(session())
-    for r in (one, two):
-        assert r.get("current_project") == "alpha"
-        assert r.get("resolved_via") == "session"  # ← sticky, not re-seeded
-
-
-def test_elicited_adopt_persists_across_http_calls(crib, http_url):
-    """The elicit → adopt path too, exercised on an ASYNC tool (sync tools refuse
-    to elicit by design — see `_wire.run_sync`). An unanchored READ (`note_reindex`
-    with no selector) ELICITS the project; the named one is adopted as the
-    session's, so the next selector-less `project_current` must resolve
-    `session`, not `seed`/`default` — on the bug, the elicited adoption
-    evaporates between the two calls."""
-    from fastmcp import Client
-
-    # the elicited NAME must be a REAL project: create 'alpha' up front (via the
-    # Crib API — the fixture process has no MCP session, so this touches only the
-    # project tree, never any connection's session state)
     asyncio.run(crib.project_create("alpha"))
-    # PRECONDITION, on the record: the flake investigation (2026-11-02) found a
-    # one-off failure with `projects()` empty at the elicit check on an IN-FLIGHT
-    # working tree (another session was rewriting the port mid-run). Assert the
-    # precondition so a repeat names the broken invariant directly instead of
-    # surfacing as a mysterious resolution error.
     assert "alpha" in crib.projects(), "precondition failed: project_create didn't land"
-
-    async def accept_alpha(message, response_type, params, ctx):  # noqa: ANN001
-        return "alpha"
+    handler, asked = _counting("alpha")
 
     async def session():
-        async with Client(
-            http_url, mode="legacy", elicitation_handler=accept_alpha
-        ) as c:
-            # an unanchored read → the server ELICITS (legacy era carries the
-            # back-channel) → the human names the project → session adopts
-            await c.call_tool("note_reindex", {})
-            two = await c.call_tool("project_current", {})
-            return _data(two)
-
-    cur = asyncio_run(session())
-    assert cur.get("current_project") == "alpha"
-    assert cur.get("resolved_via") == "session"
-
-
-def test_sessions_do_not_leak_between_connections(crib, http_url):
-    """A second connection must not see session 1's pointer."""
-    from fastmcp import Client
-
-    async def session():
-        async with Client(http_url, mode="legacy") as c:
-            await c.call_tool("project_use", {"project": "alpha"})
-
-    async def second_session():
-        async with Client(http_url, mode="legacy") as c:
-            return _data(await c.call_tool("project_current", {}))
+        async with Client(http_url, mode="legacy", elicitation_handler=handler) as c:
+            one = await c.call_tool("note_lookup", {"query": "anything"})  # sync
+            two = await c.call_tool("note_reindex", {})                    # async
+            three = await c.call_tool("note_lookup", {"query": "again"})
+            return one, two, three
 
     asyncio_run(session())
-    fresh = asyncio_run(second_session())
-    assert fresh.get("current_project") != "alpha"
-    assert fresh.get("resolved_via") != "session"
+    assert len(asked) == 3  # every selector-less call asked; nothing carried over
+    assert all("named no project" in m for m in asked)
 
 
-def test_a_default_auto_client_negotiates_the_handshake_era(crib, http_url):
-    """The era pin: a DEFAULT fastmcp client (mode="auto" — probes server/discover
-    and adopts the modern era when the server advertises it) must end up on the
-    handshake era, because the daemon advertises supported_versions=[] there.
-    Regression case: before _pin_legacy_era this client negotiated 2026-07-28
-    (measured: current_project answered 'default'/'seed' on the call right
-    after project_use — no error, just no session)."""
-    from fastmcp import Client
-
-    async def session():
-        async with Client(http_url) as c:  # mode defaults to "auto"
-            await c.call_tool("project_use", {"project": "alpha"})
-            one = await c.call_tool("project_current", {})
-            two = await c.call_tool("project_current", {})
-            era = getattr(c, "protocol_version", None)
-            return era, _data(one), _data(two)
-
-    era, one, two = asyncio_run(session())
-    # handshake-era negotiation — no stateless 2026-07-28 connection
-    assert era is not None and era != "2026-07-28"
-    for r in (one, two):
-        assert r.get("current_project") == "alpha"  # sticky state persisted
-        assert r.get("resolved_via") == "session"
-
-
-# ── 4b. SYNC TOOLS ASK — the obs-1 fix (combiner live test, 2026-11-03) ───────
-# FastMCP runs sync tool bodies in a threadpool, where an imperative elicit
-# cannot block on a client round-trip — so crib's sync path REFUSED instead of
-# asking (note_lookup, design_lookup, plan_next and 20 more sync reads all
-# refused while an async code_lookup asked live). The sync READ bodies now run
-# their unanchored branch through the elicit-capable path; the refusal stays for
-# clients that can't take elicitation.
-
-
-# ── 5. THE PIN SERVES 2026 (direct) — it only STEERS auto-clients ──────────────
-# Combiner-era correction (2026-11-02): the discover pin exists for `mode="auto"`
-# probing. A client that SKIPS discovery and speaks 2026-07-28 directly must still
-# be served (that is how the combiner's per-server `protocol: "2026"` opt-in works
-# — no pin-dropping switch needed). On that era the one anchor gate applies:
-# nothing anchors between calls, and every answer is a visible per-call result.
-
-
-def test_sync_tools_ask_and_the_answer_sticks(crib, http_url):
-    """The obs-1 fix, end to end: a SYNC tool (note_lookup) whose body used to
-    refuse on unanchored now ASKS over the back-channel, and the human's answer
-    sticks for that chat (project_use-free flow) — the same contract the async
-    reads (code_lookup) already had."""
-    from fastmcp import Client
-
-    async def accept_alpha(message, response_type, params, ctx):  # noqa: ANN001
-        return "alpha"
-
-    # the elicited NAME must be a REAL project (same precondition as the async
-    # elicited-adopt test — and the same self-explaining assert)
-    asyncio.run(crib.project_create("alpha"))
-    assert "alpha" in crib.projects(), "precondition failed: project_create didn't land"
-
-    async def session():
-        async with Client(
-            http_url, mode="legacy", elicitation_handler=accept_alpha
-        ) as c:
-            r = await c.call_tool("note_lookup", {"query": "anything"})
-            cur = await c.call_tool("project_current", {})
-            return _data(r), _data(cur)
-
-    lookup, cur = asyncio_run(session())
-    assert lookup is not None  # the ask was ANSWERED — the lookup ran
-    assert cur.get("current_project") == "alpha"
-    assert cur.get("resolved_via") == "session"  # the answer stuck
-
-
-def test_sync_tools_still_refuse_without_a_handler(crib, http_url):
-    """The refusal path is intact: a client that can't take elicitation gets the
-    actionable refusal, never a silent default answer."""
+def test_handshake_refuses_without_a_handler(crib, http_url):
     from fastmcp import Client
 
     async def session():
         async with Client(http_url, mode="legacy") as c:  # no elicitation handler
             return await c.call_tool("note_lookup", {"query": "anything"})
 
-    with pytest.raises(Exception, match="no project is anchored"):
+    with pytest.raises(Exception, match="named no project") as exc:
         asyncio_run(session())
+    assert "project=<name>" in str(exc.value)
 
 
-def test_pin_serves_a_direct_2026_client(crib, http_url):
-    """A `mode="2026-07-28"` client (no discover) initializes against the PINNED
-    daemon and works — but per call: project_use refuses to anchor (reports so),
-    and a selector-less read lands on seed, never on a session."""
+def test_project_use_and_current_are_gone(crib, http_url):
     from fastmcp import Client
 
     async def session():
-        async with Client(http_url, mode="2026-07-28") as c:
-            use = await c.call_tool("project_use", {"project": "alpha"})
-            # selector-less read on 2026: the fresh per-request state is empty —
-            # it must answer without erroring and WITHOUT any “session” anchor
-            cur = await c.call_tool("project_current", {})
-            # explicit selector: the only way state is carried on 2026
-            lookup = await c.call_tool(
-                "note_lookup", {"project": "alpha", "query": "x", "k": 3}
-            )
-            return _data(use), _data(cur), _data(lookup)
+        async with Client(http_url, mode="legacy") as c:
+            return {t.name for t in await c.list_tools()}
 
-    use, cur, lookup = asyncio_run(session())
-    # project_use does not pretend: nothing anchored, it says what to do instead
-    assert use.get("anchored") is False
-    assert "STATELESS" in use.get("note", "").upper() or "stateless" in use.get(
-        "note", ""
-    )
-    # and the next call confirms nothing stuck
-    assert cur.get("resolved_via") != "session"
-    assert cur.get("current_project") != "alpha"
-    # per-call selectors are how 2026 works, and they work fully
-    assert lookup is not None
+    names = asyncio_run(session())
+    assert not names & {"project_use", "project_current"}
+    assert "note_lookup" in names
 
 
-def test_stateless_selector_less_read_refuses_actionably(crib, http_url):
-    """A selector-less READ on 2026 elicits per call — but ctx.elicit has no
-    channel on a stateless connection, so it falls through to the REFUSAL, which
-    must name the stateless fact and the recovery (pass project= every call).
-    Never a silent `default` answer, never a hang."""
+def test_a_default_auto_client_negotiates_the_handshake_era(crib, http_url):
+    """The era pin still steers a DEFAULT fastmcp client (mode="auto", which
+    probes server/discover) onto the handshake era; lifting it is its own step."""
     from fastmcp import Client
 
+    asyncio.run(crib.project_create("alpha"))
+
     async def session():
-        async with Client(http_url, mode="2026-07-28") as c:
+        async with Client(http_url) as c:  # mode defaults to "auto"
+            out = await c.call_tool("note_lookup", {"project": "alpha", "query": "x"})
+            return getattr(c, "protocol_version", None), out
+
+    era, out = asyncio_run(session())
+    assert era is not None and era != "2026-07-28"
+    assert out is not None
+
+
+# ── 2026-07-28: the ask is RETURNED and answered on the retry ────────────────
+
+
+def test_2026_an_explicit_project_needs_no_ask(crib, http_url):
+    from fastmcp import Client
+
+    asyncio.run(crib.project_create("alpha"))
+    handler, asked = _counting("alpha")
+
+    async def session():
+        async with Client(http_url, mode="2026-07-28",
+                          elicitation_handler=handler) as c:
+            return await c.call_tool("note_lookup", {"project": "alpha", "query": "x"})
+
+    assert asyncio_run(session()) is not None
+    assert asked == []
+
+
+def test_2026_asks_per_call_by_returning_the_question(crib, http_url):
+    """A selector-less read on 2026: crib returns an InputRequiredResult, the
+    client asks its human and retries with the answer, the call runs. Every
+    such call asks again."""
+    from fastmcp import Client
+
+    asyncio.run(crib.project_create("alpha"))
+    handler, asked = _counting("alpha")
+
+    async def session():
+        async with Client(http_url, mode="2026-07-28",
+                          elicitation_handler=handler) as c:
+            one = await c.call_tool("note_lookup", {"query": "anything"})
+            two = await c.call_tool("note_lookup", {"query": "again"})
+            return one, two
+
+    one, two = asyncio_run(session())
+    assert one is not None and two is not None
+    assert len(asked) == 2
+
+
+def test_2026_a_declined_ask_refuses_actionably(crib, http_url):
+    from fastmcp import Client
+    from fastmcp.client.elicitation import ElicitResult
+
+    async def decline(message, response_type, params, ctx):  # noqa: ANN001
+        return ElicitResult(action="decline")
+
+    async def session():
+        async with Client(http_url, mode="2026-07-28",
+                          elicitation_handler=decline) as c:
             return await c.call_tool("note_lookup", {"query": "anything"})
 
-    with pytest.raises(Exception, match="STATELESS") as exc:
+    with pytest.raises(Exception, match="named no project"):
         asyncio_run(session())
-    msg = str(exc.value)
-    assert "nothing anchors between calls" in msg
-    assert "project=<name>" in msg or "project_path=" in msg
+
+
+def test_2026_destructive_confirm_is_asked_per_call(crib, http_url):
+    """project_delete confirms by asking; on 2026 the confirmation round-trips
+    as a returned ask, sealed to this call, and a wrong echo aborts."""
+    from fastmcp import Client
+
+    asyncio.run(crib.project_create("doomed"))
+    asyncio.run(crib.project_create("kept"))
+    wrong, _ = _counting("not-it")
+    right, asked = _counting("doomed")
+
+    async def delete(project, handler):
+        async with Client(http_url, mode="2026-07-28",
+                          elicitation_handler=handler) as c:
+            return await c.call_tool("project_delete", {"project": project})
+
+    with pytest.raises(Exception, match="did not echo"):
+        asyncio_run(delete("kept", wrong))
+    assert "kept" in crib.projects()
+    asyncio_run(delete("doomed", right))
+    assert len(asked) == 1 and "doomed" not in crib.projects()

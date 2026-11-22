@@ -451,12 +451,10 @@ def _m_import(crib: Crib, f: FacetSpec):
     async def body(
         paths: list[str], project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
-        from .server import _cwd, _switch_if_created
+        from .server import _cwd
 
-        return _switch_if_created(
-            await crib.import_files(
-                paths, project, cwd=_cwd(project_path), facet=f.noun
-            )
+        return await crib.import_files(
+            paths, project, cwd=_cwd(project_path), facet=f.noun
         )
 
     return body

@@ -10,7 +10,6 @@ from crib.app import Crib
 from crib.config import Config
 from crib.paths import Paths
 from crib.server import _source_project, _write_project
-from crib.session import session_state
 from crib.store import InMemoryStore
 
 
@@ -26,17 +25,17 @@ def test_explicit_project_wins(crib):
     assert _source_project(crib, "chosen", "/some/repo") == "chosen"
 
 
-def test_project_path_defers_to_crib_not_sticky(crib):
-    # sticky session is on some project…
-    session_state().current_project = "cribsheet"
-    # …but a repo-scoped call names a DIFFERENT repo via project_path → return None
-    # so crib.project_* reads link.project from THAT repo's .crib (never the sticky).
+def test_project_path_defers_to_crib(crib):
+    # a repo-scoped call naming a repo via project_path → return None so
+    # crib.project_* reads link.project from THAT repo's .crib
     assert _source_project(crib, None, "/Users/me/other-repo") is None
 
 
-def test_no_path_falls_back_to_session(crib):
-    session_state().current_project = "sticky-proj"
-    assert _source_project(crib, None, None) == "sticky-proj"
+def test_naming_nothing_is_refused_not_defaulted(crib):
+    """No session to fall back on: a repo-scoped call that names nothing is
+    refused with the recovery, never answered from the default project."""
+    with pytest.raises(ValueError, match="named no project or repo"):
+        _source_project(crib, None, None)
 
 
 def test_write_tools_carry_project_or_path_anyof(crib):
@@ -100,8 +99,7 @@ def test_write_project_elicits_when_target_omitted(crib):
 
 
 def test_write_project_requires_explicit_target(crib):
-    # writes never inherit the sticky session — a fact belongs to its subject's project
-    session_state().current_project = "some-repo-im-browsing"
+    # a write names its target — a fact belongs to its subject's project
     with pytest.raises(ValueError, match="explicit target"):
         _write_project(crib, None, None)
     # explicit project wins
@@ -210,35 +208,28 @@ def test_insitu_docs_and_memory_import_require_repo_dir(crib):
         asyncio.run(crib.import_claude_memory())
 
 
-def test_switch_if_created_fires_on_project_creation(crib, tmp_path):
-    # DESIGN §15: creating a project switches the session into it. Regression:
-    # the switch keyed on "created", which setup/index never returned.
+def test_creating_a_project_reports_it_and_changes_nothing_else(crib, tmp_path):
+    """project_index on a fresh repo reports `project_created`; it no longer
+    switches any session (there is none)."""
     import asyncio
-
-    from crib.server import _switch_if_created
 
     repo = tmp_path / "fresh"
     (repo / ".git").mkdir(parents=True)
     out = asyncio.run(crib.project_index(cwd=repo, wait_s=60))  # join
     assert out["crib_created"] and out["project_created"]
-    session_state().current_project = None
-    _switch_if_created(out)
-    assert session_state().current_project == "fresh"
 
 
-def test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project(
+def test_code_index_files_symbols_under_the_path_repo(
     crib, tmp_path, monkeypatch
 ):
-    """P1.1: `code_index` is REPO-SCOPED like its project_* siblings. With a sticky
-    session on A, indexing a file in repo B (project_path=B) must file B's symbols
-    under B — resolving via `_project` filed them under A."""
+    """P1.1: `code_index` is REPO-SCOPED like its project_* siblings: indexing a
+    file in repo B (project_path=B) files B's symbols under B."""
     import asyncio
 
     from crib.server import build_server
 
     beta = _crib_repo(tmp_path, "beta")
     (beta / "b.py").write_text("def b(): pass\n")
-    session_state().current_project = "alpha"  # sticky elsewhere
 
     indexed: list[tuple[str, str]] = []
     monkeypatch.setattr(
@@ -256,7 +247,7 @@ def test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project(
         return await tool.run({"path": str(beta / "b.py"), "project_path": str(beta)})
 
     asyncio.run(call())
-    assert indexed == [("beta", "b.py")]  # B's repo, not the sticky A
+    assert indexed == [("beta", "b.py")]  # B's repo
 
 
 def _advisory_args(project_path, json=False, cmd="note", project_verb="lookup"):
@@ -366,7 +357,6 @@ def test_mcp_unlinked_project_path_carries_advisory(crib, tmp_path):
     # not just echo= ones), so the agent can re-call with project=.
     from crib.server import _echo_unlinked, _resolve
 
-    session_state().current_project = None
     res = _resolve(crib, None, str(tmp_path))  # no `.crib` under tmp_path
     assert res.via == "seed" and res.path_unmatched and not res.unanchored
     out = _echo_unlinked({"items": [], "total": 0}, res)
@@ -378,14 +368,12 @@ def test_mcp_unlinked_project_path_carries_advisory(crib, tmp_path):
 def test_mcp_advisory_absent_for_linked_or_explicit(crib, tmp_path):
     from crib.server import _resolve
 
-    session_state().current_project = None
     (tmp_path / ".crib").write_text("project: linked\n")
     res = _resolve(crib, None, str(tmp_path))
     # `path_unmatched` is the guard `finish` checks before calling `_echo_unlinked`;
     # a linked path never trips it, so the advisory is never injected.
     assert not res.path_unmatched
 
-    session_state().current_project = None
     res2 = _resolve(crib, "named", None)  # explicit project= never triggers it
     assert not res2.path_unmatched
 
@@ -395,7 +383,6 @@ def test_mcp_no_path_is_unanchored_not_unmatched(crib):
     # distinct branch from a supplied-but-unlinked path.
     from crib.server import _resolve
 
-    session_state().current_project = None
     res = _resolve(crib, None, None)
     assert res.unanchored and not res.path_unmatched
 

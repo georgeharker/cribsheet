@@ -269,22 +269,20 @@ def test_the_empty_result_marker_is_the_key_the_cli_renders(capsys):
     from crib.server import _echo_list
     from crib.session import ProjectResolution
 
-    marker = _echo_list([], ProjectResolution("someproj", "session"))
+    marker = _echo_list([], ProjectResolution("someproj", "seed"))
     assert isinstance(marker, list) and len(marker) == 1
     _emit_code(marker, "code-lookup", False)
     assert "0 matches" in capsys.readouterr().out
 
 
-def test_an_adopting_call_reports_it(capsys):
-    """A call that adopts the session's project is echoed even though `path` is
-    caller-directed — it decides where every later selector-less call lands."""
+def test_only_an_implicit_resolution_is_echoed():
+    """A seeded (implicit) resolution is echoed; a project the caller named, or
+    decided through a path, stays quiet. There is no adoption to report."""
     from crib.server import _echo_dict
     from crib.session import ProjectResolution
 
-    res = ProjectResolution("svg-mcp", "path", session_set=True)
-    assert res.worth_echoing
-    out = _echo_dict({"hits": []}, res)
-    assert out["resolved_project"]["session_project_set"] == "svg-mcp"
-    # …and a later path-bearing call, which adopts nothing, stays quiet
-    quiet = _echo_dict({"hits": []}, ProjectResolution("other", "path"))
-    assert "resolved_project" not in quiet
+    seeded = _echo_dict({"hits": []}, ProjectResolution("default", "seed"))
+    assert seeded["resolved_project"]["resolved_via"] == "seed"
+    for via in ("explicit", "path", "elicited"):
+        quiet = _echo_dict({"hits": []}, ProjectResolution("p", via))
+        assert "resolved_project" not in quiet

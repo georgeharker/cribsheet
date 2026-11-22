@@ -77,11 +77,11 @@ That noun-verb shape is the only form — there is no hyphenated `crib code-look
 - `-P <path>` / `--project-path <path>` — select by any path inside the repo (cribsheet
   resolves it to the project).
 
-Code and learning commands act on one *current* project. Set it once with
-`crib project use <name>` (or let it be inferred from a path), and later reads need no
-selector. **Writes always need an explicit project** — `store`, `append`, `edit`,
-`forget`, `move`, and learnings won't silently inherit the current one, so a fact
-can't land in the wrong place.
+There is no *current* project to set: each command acts on the project you name, or,
+on the CLI, the one your working directory's `.crib` decides (the CLI passes it for
+you). Over MCP, a call that names no project is asked which one (for that call only),
+or refused when the client can't be asked. **Writes always need an explicit project**
+— `store`, `append`, `edit`, `forget`, `move` — so a fact can't land in the wrong place.
 
 **Two global flags**, placed before the noun:
 

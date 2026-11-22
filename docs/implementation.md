@@ -238,8 +238,8 @@ flat `@mcp.tool()` names (`note_lookup`, `code_xref`, `learning_add`, `project_l
 method + emitter; `_run_daemon`/`_run_inprocess` are the two ~12-line dispatchers over
 it. `--no-daemon` runs in-process. Writes require an
 explicit project (schema-level `anyOf` via the `write_tool` decorator;
-elicitation when omitted); reads ride the sticky per-connection session project
-(DESIGN §15). `status` is the one-call health summary (inventory, git state,
+elicitation when omitted); reads name their project per call too (asked or
+refused when they don't; the per-connection current project of DESIGN §15 is retired). `status` is the one-call health summary (inventory, git state,
 LSP sessions, in-flight indexing, sweep progress).
 
 ---

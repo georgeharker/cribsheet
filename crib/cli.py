@@ -620,7 +620,7 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
         )
         return
     if verb == "create":
-        if d.get("created"):
+        if d.get("project_created"):
             print(d.get("message") or f"{proj} created")
         else:
             print(d.get("message") or f"{proj}: already exists — nothing changed")
@@ -1690,10 +1690,6 @@ def build_parser() -> argparse.ArgumentParser:
     _sp.add_argument("-k", type=int, default=3, help="nearest items per kind")
     proj(_sp)
     pjsub.add_parser("list", help="list projects (separate memory namespaces)")
-    _pu = pjsub.add_parser("use", help="set this session's current project")
-    _pu.add_argument("project")
-    _pc = pjsub.add_parser("current", help="show this session's current project")
-    proj(_pc)
     pjsub.add_parser("reconcile", help="sweep all projects for offline changes")
 
     # noun groups mirroring `project`: note / code / learning (verbs nest under them)
@@ -3407,23 +3403,6 @@ VERBS: dict[str, Verb] = {
         wants_cwd=False,
         policy="none",
         mcp="",
-    ),
-    "project use": Verb(
-        "use_project",
-        lambda a: {"project": a.project},
-        _E,
-        method="use_project",
-        wants_cwd=False,
-        policy="session",
-        mcp="project",
-    ),
-    "project current": Verb(
-        "current_project",
-        lambda a: {},
-        _E,
-        method="current_project",
-        policy="session",
-        mcp="project_path=None",
     ),
     "status": Verb(
         "status", lambda a: {}, _E_status, wants_cwd=False, policy="none", mcp=""

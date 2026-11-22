@@ -76,7 +76,6 @@
   "project adopt": "usage: crib project adopt [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project cancel": "usage: crib project cancel [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project create": "usage: crib project create [-h] [--store RELPATH] [-P PROJECT_PATH] [-p PROJECT_FLAG] [project]\n\npositional arguments:\n  project               the new project's name\n\noptions:\n  -h, --help            show this help message and exit\n  --store RELPATH       create the project IN-REPO at this repo-relative store path (writes .crib\n                        + the machine stub; anchor with -P/--project-path)\n  -P, --project-path PROJECT_PATH\n                        anchor --store at this repo (needed with --store; never the daemon's cwd)\n  -p, --project PROJECT_FLAG\n                        the new project's name (selector spelling)\n",
-  "project current": "usage: crib project current [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project delete": "usage: crib project delete [-h] [-p PROJECT_FLAG] [--force] [--yes] [project]\n\npositional arguments:\n  project               the project to delete (explicit; positional or -p; never the session\n                        default)\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT_FLAG\n                        the project to delete (selector spelling, same fact)\n  --force               accepted for compatibility; NO-OP \u2014 delete never removes anything from a\n                        user repo (its notes stay; release them first if they should follow the\n                        namespace)\n  --yes                 skip the interactive confirmation (for scripts; piped stdin refuses\n                        without it)\n",
   "project doctor": "usage: crib project doctor [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project forget": "usage: crib project forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--with-learnings]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --with-learnings      also drop attached learnings (default: keep them)\n",
@@ -92,7 +91,6 @@
   "project rename": "usage: crib project rename [-h] project to\n\npositional arguments:\n  project     the current name\n  to          the new name\n\noptions:\n  -h, --help  show this help message and exit\n",
   "project setup": "usage: crib project setup [-h] [--budget BUDGET_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project status": "usage: crib project status [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
-  "project use": "usage: crib project use [-h] project\n\npositional arguments:\n  project\n\noptions:\n  -h, --help  show this help message and exit\n",
   "project wait": "usage: crib project wait [-h] [--wait-s WAIT_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --wait-s WAIT_S       bound this WAIT (the sweep keeps running daemon-side); re-invoke to re-\n                        join\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "status": "usage: crib status [-h]\n\noptions:\n  -h, --help  show this help message and exit\n"
  },
@@ -294,7 +292,7 @@
   },
   "code_index": {
    "annotations": null,
-   "description": "Populate the code index for a source file: extract its symbols (functions,\nclasses, globals, class members) + call graph + references via the LSP,\ndescribe them, persist under `<project>/symbol_index/`. Use when code_lookup\nsays a project isn't indexed yet. `path` MUST be ABSOLUTE \u2014 a relative path\nresolves against the daemon's cwd (not yours) and fails; also pass\n`project_path=<your working dir>` so the project resolves via .crib (which\nWINS over the sticky session project \u2014 indexing a repo files its symbols\nunder that repo's project, never the one you happen to be sitting in).",
+   "description": "Populate the code index for a source file: extract its symbols (functions,\nclasses, globals, class members) + call graph + references via the LSP,\ndescribe them, persist under `<project>/symbol_index/`. Use when code_lookup\nsays a project isn't indexed yet. `path` MUST be ABSOLUTE \u2014 a relative path\nresolves against the daemon's cwd (not yours) and fails; also pass\n`project_path=<your working dir>` so the project resolves via .crib\n(indexing a repo files its symbols under that repo's project).",
    "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -2110,7 +2108,7 @@
   },
   "note_import_memory": {
    "annotations": null,
-   "description": "Mirror Claude Code's own harness memory (the `memory/*.md` files it\nwrites for this project) into a crib project, so those notes become\nsearchable here alongside everything else. One-way + idempotent; opts the\nrepo into the daemon's live mirror so future memory edits sync on their\nown. REQUIRES a source repo \u2014 pass `project_path=<the repo dir>` (or\n`project=`); like `note_import` it resolves repo-scoped, never from the\nsticky session or the default project.",
+   "description": "Mirror Claude Code's own harness memory (the `memory/*.md` files it\nwrites for this project) into a crib project, so those notes become\nsearchable here alongside everything else. One-way + idempotent; opts the\nrepo into the daemon's live mirror so future memory edits sync on their\nown. REQUIRES a source repo \u2014 pass `project_path=<the repo dir>` (or\n`project=`); like `note_import` it resolves repo-scoped, never from the\ndefault project.",
    "inputSchema": {
     "additionalProperties": false,
     "anyOf": [
@@ -3874,7 +3872,7 @@
   },
   "project_create": {
    "annotations": null,
-   "description": "Explicitly create a project: pillar skeleton + birth manifest\n(created/host in `.cribproject`). A DOORWAY, not a gate \u2014 writes still\ncreate implicitly; use this when a project should exist before its\nfirst write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative\npath>` + `project_path=<the repo dir>` writes the repo's `.crib`\n(`project:` + `store:`) and the machine stub, so the project is born\nin-repo (its pillar stores travel with the repo; commit them). The\nat-birth store must be empty \u2014 moving an existing global project's\nnotes into the repo is `project_adopt`, not this. Idempotent.\n\nThe name comes from you OR the repo's `.crib`/repo dir \u2014 never from\nthe session's sticky current project (a fresh repo without a `.crib`\nderives its name from the repo dir; this is why create runs with NO\nresolution policy: the default-project fallback would silently point\na repo-bound store at the shared bucket). The default project is\nrefused as a residency target.",
+   "description": "Explicitly create a project: pillar skeleton + birth manifest\n(created/host in `.cribproject`). A DOORWAY, not a gate \u2014 writes still\ncreate implicitly; use this when a project should exist before its\nfirst write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative\npath>` + `project_path=<the repo dir>` writes the repo's `.crib`\n(`project:` + `store:`) and the machine stub, so the project is born\nin-repo (its pillar stores travel with the repo; commit them). The\nat-birth store must be empty \u2014 moving an existing global project's\nnotes into the repo is `project_adopt`, not this. Idempotent.\n\nThe name comes from you OR the repo's `.crib`/repo dir (a fresh repo\nwithout a `.crib`\nderives its name from the repo dir; this is why create runs with NO\nresolution policy: the default-project fallback would silently point\na repo-bound store at the shared bucket). The default project is\nrefused as a residency target.",
    "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -3915,30 +3913,9 @@
     "type": "object"
    }
   },
-  "project_current": {
-   "annotations": null,
-   "description": "Show this session's current project (seeding it from `project_path`/.crib if not\nyet set), how it resolved, plus the available projects.",
-   "inputSchema": {
-    "additionalProperties": false,
-    "properties": {
-     "project_path": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "default": null
-     }
-    },
-    "type": "object"
-   }
-  },
   "project_delete": {
    "annotations": null,
-   "description": "Fenced removal of a project from CRIB: its index entries, caches,\ncode-index state, mirror bindings, and the machine-local tree \u2014 moved\nto `.trash/` (one-level undo), not rm -rf'd.\n\nTHE INVARIANT: crib NEVER removes anything from a user repo. For an\nin-repo project the committed notes, the store's ring and the repo's\n`.crib` STAY (the result says so, and how to release them first if\nthey should follow the namespace). `force` is accepted for surface\ncompatibility and gates nothing. The default project is refused (no\nowner to consent); a running code sweep or background reconcile is\nrefused. Deletion never resolves a session default or a cwd:\n`project=` is required and is the whole answer.\n\nALWAYS elicited in MCP mode, and the fences run FIRST: the body\ncomputes the deletion plan (which refuses any fence), then the client\nis asked to echo the project name against an exact account of what\nwill happen. A client without elicitation support is refused (the\nCLI's terminal prompt is the same gate in the other mode).",
+   "description": "Fenced removal of a project from CRIB: its index entries, caches,\ncode-index state, mirror bindings, and the machine-local tree \u2014 moved\nto `.trash/` (one-level undo), not rm -rf'd.\n\nTHE INVARIANT: crib NEVER removes anything from a user repo. For an\nin-repo project the committed notes, the store's ring and the repo's\n`.crib` STAY (the result says so, and how to release them first if\nthey should follow the namespace). `force` is accepted for surface\ncompatibility and gates nothing. The default project is refused (no\nowner to consent); a running code sweep or background reconcile is\nrefused. Deletion never resolves a default or a cwd:\n`project=` is required and is the whole answer.\n\nALWAYS elicited in MCP mode, and the fences run FIRST: the body\ncomputes the deletion plan (which refuses any fence), then the client\nis asked to echo the project name against an exact account of what\nwill happen. A client without elicitation support is refused (the\nCLI's terminal prompt is the same gate in the other mode).",
    "inputSchema": {
     "additionalProperties": false,
     "anyOf": [
@@ -4477,22 +4454,6 @@
       "default": null
      }
     },
-    "type": "object"
-   }
-  },
-  "project_use": {
-   "annotations": null,
-   "description": "Set THIS session's current project \u2014 subsequent `note_lookup`/`note_store`/etc.\ntarget it without passing `project` each time. Sticky for the connection; a\nper-call `project`/`project_path` still wins for that one call and leaves this\nunchanged. Your first call carrying `project_path` adopts that repo the same\nway (and says so), so call this to SWITCH, or to be explicit up front. The\nnamespace is created immediately (so it's real and listed, not a phantom\nyou're 'in' until the first write).",
-   "inputSchema": {
-    "additionalProperties": false,
-    "properties": {
-     "project": {
-      "type": "string"
-     }
-    },
-    "required": [
-     "project"
-    ],
     "type": "object"
    }
   },

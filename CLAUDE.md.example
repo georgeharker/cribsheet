@@ -52,7 +52,7 @@ over creating a near-duplicate.
 you just understood is *why we chose this*, `note_store` is the wrong verb: it takes the
 prose and silently drops the edges, which were the part worth keeping.
 
-Writes need an explicit `project=` — they do **not** inherit your current project. Name
+Writes need an explicit `project=`, like every call (see *Projects* below). Name
 the project the fact is *about*: the repo you're in, or `default` (or that tool's own
 project) for cross-cutting knowledge like a CLI or editor convention. Say where it landed.
 To pin a hard-won insight about a symbol: `code_append <symbol> "…"`.
@@ -158,20 +158,14 @@ with "isn't ready in this store" is waiting for `crib facets sync --apply`: say 
 don't work around it. When this machine declares any, a "Declared facets on this
 machine" section follows these instructions, saying what each one is for.
 
-### Project selection for *reads*: name it — every call, never wrong
+### Projects: name it — every call, reads and writes
 
-**Pass `project=<name>` or `project_path=<a path in that repo>` on every read.** Naming
-a project is never wrong, costs nothing, and can't re-home or leak anything: a named
-selector always decides that call, naming a different one changes nothing, and
-`project_path` means "which repo I mean" — not your shell cwd.
+**Pass `project=<name>` or `project_path=<a path in that repo>` on every call.** There
+is no current project to set and nothing carries over between calls, so naming it is
+the only way a call reaches the project you mean. `project_path` means "which repo I
+mean" (its `.crib` decides) — not your shell cwd.
 
-**A read with NO project doesn't guess — it may ask or refuse.** If the call is
-unanchored, crib ASKS the user which project to use (a real question, answer it with a
-project name or a repo path — never a placeholder), or refuses with a one-pass
-recovery asking you to name it. Expect that; don't pass `default` to dodge it.
-
-`use_project <name>` (MCP: `project_use`) is optional today and on its way out: it sets
-a per-connection current project so selector-less reads keep working — but the
-convenience does not survive a daemon restart, and a 2026 (stateless) connection never
-has one at all, so the named project is the call. Treat **"name it every call" as the
-rule now**; keep naming it when it matters even if you also used `use_project`.
+**A call with NO project doesn't guess — it asks or refuses.** crib ASKS the user which
+project to use (a real question: answer it with a project name or a repo path — never a
+placeholder), or refuses with a one-pass recovery asking you to name it. The answer is
+for that call only. Expect it; don't pass `default` to dodge it.

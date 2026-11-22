@@ -2297,8 +2297,7 @@ class Crib:
             names = ", ".join(f"{p['project']}" for p in avail)
             hint = (
                 f" If you meant a DIFFERENT, already-indexed project ({names}), name "
-                f"it: pass project=<name> or project_path=<a path in that repo> (or "
-                f"use_project <name> to switch your current project)."
+                f"it: pass project=<name> or project_path=<a path in that repo>."
             )
         else:
             hint = ""
@@ -3505,7 +3504,7 @@ class Crib:
                 if pp.store_root == store_dir:
                     return {
                         "project": name,
-                        "created": False,
+                        "project_created": False,
                         "residency": "repo",
                         "store": str(store_dir),
                         "store_root": pp.store_token,
@@ -3571,7 +3570,7 @@ class Crib:
             self.project_paths.invalidate(name)
             return {
                 "project": name,
-                "created": True,
+                "project_created": True,
                 "residency": "repo",
                 "store": str(store_dir),
                 "store_root": pcfg.store_root,
@@ -3592,7 +3591,7 @@ class Crib:
         if self.paths.project_dir(name).exists():
             return {
                 "project": name,
-                "created": False,
+                "project_created": False,
                 "residency": "global",
                 "message": f"{name} already exists (implicit birth on first "
                 "write, or a previous create) — nothing changed",
@@ -3605,7 +3604,7 @@ class Crib:
         pcfg.save(pdir / ".cribproject")
         return {
             "project": name,
-            "created": True,
+            "project_created": True,
             "residency": "global",
             "message": (
                 f"{name} created with an empty pillar skeleton + birth manifest"
@@ -3679,7 +3678,7 @@ class Crib:
         and gates nothing.
 
         FENCES, all loud:
-        - `project=` is required — deletion never resolves a session default
+        - `project=` is required — deletion never resolves a default
           (an accidental `delete` with no selector must not guess).
         - the default project is refused: a shared bucket has no owner to
           consent (use `project_forget` for its index only).
@@ -3693,7 +3692,7 @@ class Crib:
         if not project:
             raise CribUserError(
                 "project_delete: pass project=<name> — deletion never resolves "
-                "the session default"
+                "the default project"
             )
         proj = check_project_name(project)
         del cwd  # deliberately unused: the selector above is the whole answer
@@ -3752,9 +3751,6 @@ class Crib:
         # mid-delete (hash-gated) go with it too
         self._drop_index_state(proj)
         self.project_paths.invalidate(proj)
-        from .session import retarget_sessions
-
-        retarget_sessions(proj, None)
         # the live mirror holds its start-time _watched snapshot — a harness
         # edit would otherwise re-sync into the deleted namespace
         if self._mirror is not None:
@@ -3804,7 +3800,7 @@ class Crib:
         THE INVARIANT (user-set 2026-10-31): delete NEVER removes anything
         from a user repo. Whatever a store's location, only crib-owned state
         is removed — index entries (the vector store), local derived caches, the global
-        tree to `.trash/`, mirror bindings, session pointers. The user's repo
+        tree to `.trash/`, mirror bindings. The user's repo
         (committed notes, `.crib`, store dir) is untouched, so `force` no
         longer gates anything here either; it is accepted for surface
         compatibility and ignored."""
@@ -3813,7 +3809,7 @@ class Crib:
         if proj is None:
             raise CribUserError(
                 "project_delete: pass project=<name> — deletion never resolves "
-                "the session default"
+                "the default project"
             )
         if proj == self.config.default_project:
             raise CribUserError(
@@ -3880,7 +3876,7 @@ class Crib:
         which embeds the project name) are STAMPED with the pre-rename derived
         id first, so their ring history and cross-references stay resolvable.
 
-        Fences: explicit `project=` (never the session default), a target name
+        Fences: explicit `project=` (never the default project), a target name
         that doesn't exist, the default project pinned (like delete), and an
         in-repo store that isn't on this machine. Other projects' `.crib`
         `refs:` naming the old name are REPORTED, not edited (they live in
@@ -3890,7 +3886,7 @@ class Crib:
         if not project:
             raise CribUserError(
                 "project_rename: pass project=<name> — renaming never resolves "
-                "the session default"
+                "the default project"
             )
         if not to:
             raise CribUserError("project_rename: pass to=<new name>")
@@ -4007,9 +4003,6 @@ class Crib:
         self._drop_index_state(old, drop_sources=False, drop_bindings=False)
         self.project_paths.invalidate(old)
         self.project_paths.invalidate(new)
-        from .session import retarget_sessions
-
-        retarget_sessions(old, new)
         # the live mirror holds its start-time _watched snapshot — a harness
         # edit would otherwise re-sync into the OLD name after a rename
         if self._mirror is not None:
@@ -4273,7 +4266,7 @@ class Crib:
             raise CribUserError(
                 "project_relocate: pass project=<name> AND "
                 "project_path=<the repo's new dir> — a relocation names both, "
-                "never the session default and never a cwd guess"
+                "never the default project and never a cwd guess"
             )
         old = check_project_name(project)
         new_root = Path(project_path).expanduser().resolve()
@@ -6528,49 +6521,6 @@ class Crib:
         if not pd.is_dir():
             return []
         return sorted(p.name for p in pd.iterdir() if p.is_dir())
-
-    def use_project(self, project: str) -> dict[str, Any]:
-        """Set the session's current project — the one implementation behind both the
-        `project_use` MCP tool and the in-process CLI verb (session state is
-        process-local here)."""
-        from .paths import check_project_name
-        from .session import STATELESS_HINT, adopt_into_session
-
-        # Validated BEFORE the eager mkdir — otherwise `../x` would create a
-        # namespace outside the projects tree on the way in.
-        check_project_name(project)
-        created = self.project_is_new(project)
-        self.notes_dir(project)  # eager mkdir — no phantom namespace
-        # The ONE anchor gate: on the stateless era the pointer would die after
-        # this call, so don't write it — say so instead (the CLI, which anchors
-        # process-locally, never sees the `anchored: false` shape).
-        if not adopt_into_session(project):
-            return {
-                "current_project": project,
-                "created": created,
-                "anchored": False,
-                "note": STATELESS_HINT,
-            }
-        return {"current_project": project, "created": created}
-
-    def current_project(self, cwd: Path | None = None) -> dict[str, Any]:
-        """Show the session's current project + how it resolved (mirrors the
-        project_current MCP tool). A cwd naming a real project is reported as the
-        answer, and adopted when the session has none yet."""
-        from .session import resolve_session_project, session_state
-
-        res = resolve_session_project(
-            session_state(),
-            None,
-            cwd,
-            lambda c: self.resolve_project(None, c),
-            default=self.config.default_project,
-        )
-        return {
-            "current_project": res.project,
-            "resolved_via": res.via,
-            "projects": self.projects(),
-        }
 
     def project_config(self, project: str) -> ProjectConfig:
         return ProjectConfig.load(self.project_paths(project).config_file, project)

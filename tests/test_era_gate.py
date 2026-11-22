@@ -1,31 +1,28 @@
-"""The ONE anchor gate for the protocol era (session.py, crib/server.py).
+"""The protocol era decides HOW crib asks, nothing else (crib/session.py,
+crib/server.py `_ask`).
 
-The stateless era (mcp 2026-07-28) builds a Connection per request, so an
-anchor that looked like it took would die after the call — the same silent
-forgetting the fastmcp 4 port exists to prevent (tests/test_http_session.py).
-Everything that anchors a session goes through ONE gate: `adopt_into_session`,
-and the era itself is classified in one place (`_era_of_version`) from the
-client's `mcp-protocol-version` header. This file pins both in units; the e2e
-handshake-era behavior stays in tests/test_http_session.py (a stateless e2e is
-impossible while the daemon pins `supported_versions=[]` — that gate is tested
-here at the unit level, and an unpin later adds the e2e alongside it).
-
-The tests below monkeypatch `crib.session.request_era` — the same module-global
-the resolution code reads, so the patch exercises the REAL call sites.
+There is no per-connection state to anchor (design: "Retire use_project and
+implicit anchoring (all eras)"). The era is classified in one place
+(`_era_of_version`) from the client's `mcp-protocol-version` header. On the
+handshake era an ask is a server-initiated `ctx.elicit`; on the 2026-07-28
+stateless era it is RETURNED (`InputRequiredResult`) and the answer read off the
+client's retry (`_ask_per_call`). The retry's `request_state` is sealed by the
+SDK and bound to the tool + arguments; crib's own state only names the ask.
 """
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
+import mcp.types as mt
 import pytest
 
-from crib import session as sessionmod
+from crib import server
 from crib.session import (
     ERA_HANDSHAKE,
     ERA_STATELESS,
-    STATELESS_HINT,
-    SessionState,
+    NAME_THE_PROJECT,
     _era_of_version,
-    resolve_session_project,
 )
 
 # ── era classification: only a well-formed 2026-07-28+ ISO date is stateless ──
@@ -49,79 +46,102 @@ def test_era_of_version(version, want):
     assert _era_of_version(version) == want
 
 
-# ── the gate: handshake anchors, stateless refuses and writes nothing ─────────
+# ── the stateless ask: returned, answered on the retry ───────────────────────
 
 
-def test_adopt_anchors_on_the_handshake_era():
-    st = SessionState()
-    # in-process tests have no HTTP request → request_era() is handshake; pin it
-    # explicitly anyway so the test states its premise, not its environment
-    import unittest.mock as mock
-
-    with mock.patch.object(sessionmod, "request_era", return_value=ERA_HANDSHAKE):
-        assert adopt_via(st, "alpha") is True
-    assert st.current_project == "alpha"
+def _context(monkeypatch, answers=None, state=None):
+    ctx = SimpleNamespace(input_responses=answers, request_state=state)
+    monkeypatch.setattr("fastmcp.server.dependencies.get_context", lambda: ctx)
+    return ctx
 
 
-def adopt_via(st: SessionState, project: str) -> bool:
-    """`adopt_into_session` targets the ambient context's session, not a passed
-    state — so this drives the REAL gate through the state the way the callers
-    do: with a SessionState substituted for the ambient one."""
-    import unittest.mock as mock
-
-    def fake_state():
-        return st
-
-    # patched the same way the tests patch `request_era`: set, then restored
-    with mock.patch.object(sessionmod, "session_state", fake_state):
-        return sessionmod.adopt_into_session(project)
+def _accept(value):
+    return mt.ElicitResult(action="accept", content={"value": value})
 
 
-def test_adopt_refuses_on_the_stateless_era_and_writes_nothing():
-    st = SessionState()
-    import unittest.mock as mock
-
-    with mock.patch.object(sessionmod, "request_era", return_value=ERA_STATELESS):
-        assert adopt_via(st, "alpha") is False
-    assert st.current_project is None  # nothing stuck — not even a corpse
-
-
-# ── resolution: the stateless path branch must not claim it stuck ─────────────
-
-
-def seed_to(cwd: str) -> str:
-    """A seed callable mimicking a cwd whose `.crib` decides: names a real
-    project distinct from the bare default."""
-    return "alpha"
+def test_the_first_call_returns_the_question(monkeypatch):
+    _context(monkeypatch)
+    with pytest.raises(server.NeedsInput) as ask:
+        server._ask_per_call("project", "Which project?", "read-project")
+    irr = ask.value.result
+    assert isinstance(irr, mt.InputRequiredResult)
+    assert irr.request_state == "read-project"
+    assert irr.input_requests is not None
+    req = irr.input_requests["project"]
+    assert isinstance(req, mt.ElicitRequest)
+    assert isinstance(req.params, mt.ElicitRequestFormParams)
+    assert req.params.message == "Which project?"
+    assert req.params.requested_schema["required"] == ["value"]
 
 
-def test_path_adoption_on_the_stateless_era_never_sets_session_set():
-    st = SessionState()
-    import unittest.mock as mock
-
-    with mock.patch.object(sessionmod, "request_era", return_value=ERA_STATELESS):
-        res = resolve_session_project(st, None, "some/repo", seed_to, default="default")
-    assert res.via == "path" and res.session_set is False
-    assert st.current_project is None  # no anchor written
+def test_the_retry_reads_the_answer(monkeypatch):
+    _context(monkeypatch, {"project": _accept("  cribsheet ")}, "read-project")
+    assert server._ask_per_call("project", "?", "read-project") == "cribsheet"
 
 
-def test_path_adoption_on_the_handshake_era_adopts_once_and_says_so():
-    st = SessionState()
-    import unittest.mock as mock
-
-    with mock.patch.object(sessionmod, "request_era", return_value=ERA_HANDSHAKE):
-        first = resolve_session_project(st, None, "some/repo", seed_to, "default")
-        assert first.via == "path" and first.session_set is True
-        assert st.current_project == "alpha"
-        # a second call does NOT re-adopt (DESIGN §15: adopt once)
-    second = resolve_session_project(st, None, "some/repo", seed_to, "default")
-    # a later PATH-bearing call still resolves `path` (rule 1 outranks the session)
-    assert second.via == "path" and second.session_set is False
-    third = resolve_session_project(st, None, None, seed_to, "default")
-    # …and a SELECTOR-LESS call lands on the adopted one (the whole point)
-    assert third.via == "session" and third.session_set is False
+@pytest.mark.parametrize("answer", [
+    mt.ElicitResult(action="decline"),
+    mt.ElicitResult(action="cancel"),
+    _accept("   "),
+])
+def test_a_declined_or_blank_answer_is_no_answer(monkeypatch, answer):
+    _context(monkeypatch, {"project": answer}, "read-project")
+    assert server._ask_per_call("project", "?", "read-project") is None
 
 
-def test_stateless_hint_names_the_recovery():
-    # the hint must be actionable by a bare string read: name the params.
-    assert "project=<name>" in STATELESS_HINT and "project_path=" in STATELESS_HINT
+def test_an_answer_to_another_ask_asks_again(monkeypatch):
+    """A retry carrying a different ask's state (or none) doesn't count."""
+    _context(monkeypatch, {"project": _accept("p")}, "write-project")
+    with pytest.raises(server.NeedsInput):
+        server._ask_per_call("project", "?", "read-project")
+
+
+def _server(tmp_path, monkeypatch):
+    import asyncio
+
+    from crib.app import Crib
+    from crib.config import Config
+    from crib.paths import Paths
+    from crib.store import InMemoryStore
+
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "c"))
+    monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "d"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "i"))
+    app = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    app.paths.project_dir("p").mkdir(parents=True, exist_ok=True)
+    mcp = server.build_server(app)
+    return {t.name: t for t in asyncio.run(mcp.list_tools())}
+
+
+def test_a_stateless_read_naming_no_project_returns_the_question(tmp_path, monkeypatch):
+    """A sync read can ask on the stateless era (asking is returning); the
+    tool boundary turns the raised ask into the tool's result, and the retry
+    carrying the answer runs against the named project."""
+    import asyncio
+
+    from fastmcp.tools.base import InputRequiredToolResult
+
+    tools = _server(tmp_path, monkeypatch)
+    monkeypatch.setattr(server, "request_era", lambda: ERA_STATELESS)
+    _context(monkeypatch)
+    out = asyncio.run(tools["learning_report"].run({}))
+    assert isinstance(out, InputRequiredToolResult)
+    _context(monkeypatch, {"project": _accept("p")}, "read-project")
+    done = asyncio.run(tools["learning_report"].run({}))
+    assert not isinstance(done, InputRequiredToolResult)
+
+
+def test_a_stateless_decline_refuses_actionably(tmp_path, monkeypatch):
+    import asyncio
+
+    from fastmcp.exceptions import ToolError
+
+    tools = _server(tmp_path, monkeypatch)
+    monkeypatch.setattr(server, "request_era", lambda: ERA_STATELESS)
+    _context(monkeypatch, {"project": mt.ElicitResult(action="decline")}, "read-project")
+    with pytest.raises(ToolError, match="named no project"):
+        asyncio.run(tools["learning_report"].run({}))
+
+
+def test_the_refusal_names_the_recovery():
+    assert "project=<name>" in NAME_THE_PROJECT and "project_path=" in NAME_THE_PROJECT

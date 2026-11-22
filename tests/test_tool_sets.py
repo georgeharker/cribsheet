@@ -100,7 +100,7 @@ def test_exposure_validates_and_always_includes_system():
 
 def test_filtered_server_serves_only_its_sets(crib):
     """build_server(tools=['notes','plans','memory']) exposes exactly those
-    (+ system): note_lookup answers, project_use/code_lookup are absent —
+    (+ system): note_lookup answers, project_list/code_lookup are absent —
     a general assistant never sees code intelligence or project management —
     and the POLICY table stays full (exposure is face-level, not a rewrite)."""
     mcp = build_server(crib, tools=["notes", "plans", "memory"])
@@ -108,7 +108,7 @@ def test_filtered_server_serves_only_its_sets(crib):
     assert any(t.startswith("note_") for t in names)
     assert any(t.startswith("plan_") for t in names)
     assert any(t.startswith("memory_") for t in names)
-    assert "project_use" not in names and "code_lookup" not in names
+    assert "project_list" not in names and "code_lookup" not in names
     assert "learning_add" not in names and "design_add" not in names
     assert {"status", "ops", "project_reconcile"} <= names  # system always
     # the policy table remains FULL (the declared/reserved policies stay
@@ -132,7 +132,8 @@ def test_default_build_exposes_everything(crib):
     mcp = build_server(crib)  # no filter: every set
     names = {t.name for t in run(mcp.list_tools())}
     assert {v.tool for v in VERBS.values()} <= names
-    assert names >= {"note_lookup", "code_lookup", "project_use", "ops"}
+    assert names >= {"note_lookup", "code_lookup", "project_list", "ops"}
+    assert not names & {"project_use", "project_current"}  # retired
 
 
 def test_cli_flag_overrides_config_expose(tmp_path):
