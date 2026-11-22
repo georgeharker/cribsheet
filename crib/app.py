@@ -946,6 +946,8 @@ class Crib:
             row: dict[str, Any] = {"relpath": it.relpath, "title": it.title, "tags": have}
             if spec.has("anchored"):
                 row["symbol"] = it.facet.get("symbol_ref")
+            if spec.has("status") and it.facet.get("status"):
+                row["status"] = it.facet.get("status")
             row.update({k: it.facet.get(k) for k in spec.params})
             out.append(row)
         return sorted(out, key=lambda r: r["relpath"])
@@ -968,6 +970,39 @@ class Crib:
         self._require_conformed(facet)
         rows = self._field_items(proj, facets.by_noun(facet), fields, where, tags)
         return {"project": proj, "total": len(rows), "items": rows[:k]}
+
+    def project_items(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        kinds: list[str] | None = None,
+        k: int = 200,
+        tags: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Every item in a project, across facets, with no query: each row's
+        `kind` (the facet's noun), relpath, title, tags, and a decision's or
+        plan's `status`; in facet order, then relpath. `kinds` narrows it to
+        those facets, `tags` to items with any of them. A facet the store isn't
+        conformed to yet is skipped and named in `pending`."""
+        proj = self.resolve_project(project, cwd)
+        known = [s.noun for s in facets.FACETS]
+        if kinds and (bad := sorted(set(kinds) - set(known))):
+            raise CribUserError(f"unknown kinds {bad}: use any of {known}")
+        rows: list[dict[str, Any]] = []
+        pending: list[str] = []
+        for spec in facets.FACETS:
+            if kinds and spec.noun not in kinds:
+                continue
+            if spec.noun in self.pending_facets:
+                pending.append(spec.noun)
+                continue
+            for row in self._field_items(proj, spec, None, None, tags):
+                rows.append({"kind": spec.noun, "store": spec.store, **row})
+        out: dict[str, Any] = {"project": proj, "total": len(rows), "items": rows[:k]}
+        if pending:
+            out["pending"] = pending
+        return out
 
     def abspath(self, project: str, relpath: str, facet: str = facets.HOME) -> Path:
         return self._facet_store(facet).abspath(project, relpath)

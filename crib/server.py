@@ -360,11 +360,11 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
         for s in _facets.FACETS
     },
     "code": frozenset({"code_lookup", "code_dossier", "code_graph", "code_xref"}),
-    "learnings": frozenset({"learning_read", "learning_report"}),
+    "learnings": frozenset({"learning_read", "learning_report", "learning_list"}),
     "memory": frozenset({"memory_history"}),
     "projects": frozenset(
         {"project_list", "project_status", "project_wait", "project_doctor",
-         "project_related", "project_lookup"}
+         "project_related", "project_lookup", "project_items"}
     ),
 }
 
@@ -870,6 +870,23 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         `kinds` (note/design/plan/learning) and `status` (e.g. active, todo)
         narrow it. Use the per-pillar lookups when you know which you want."""
         return crib.lookup_all(query, project, k, kinds, status, cwd=_cwd(project_path))
+
+    @crib_tool("source")
+    def project_items(
+        kinds: list[str] | None = None,
+        k: int = 200,
+        tags: list[str] | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Every item in a project across facets (notes, decisions, plans,
+        learnings, any declared facet), with no search query: each row's
+        `kind`, relpath, title, tags, and a decision's or plan's `status`, in
+        facet then relpath order, plus `total` (`k` caps the list). `kinds`
+        narrows it to those facets, `tags` to items with any of them. To search
+        instead, `project_lookup`; one facet's own fields, `<noun>_list`."""
+        return crib.project_items(project, kinds=kinds, k=k, tags=tags,
+                                  cwd=_cwd(project_path))
 
     @crib_tool("source")
     def project_related(

@@ -810,7 +810,7 @@ disable = ["import", "move", "distill"]
     gone = {"memo_import", "memo_move", "memo_distill"}
     assert not gone & set(out["tools"])
     assert "memo_add" in out["tools"] and "memo_summarize" in out["tools"]
-    assert len(out["tools"]) == 13  # 16 core + enriched, less 3
+    assert len(out["tools"]) == 14  # 17 core + enriched (list included), less 3
     assert not {"memo import", "memo move", "memo distill"} & set(out["rows"])
     assert out["cli_move"] is False
     assert "memo_lookup" in out["ro"]

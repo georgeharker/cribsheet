@@ -325,12 +325,12 @@ templates reproduce exactly). The verbs, by aspect:
 
 | aspect | verbs |
 | --- | --- |
-| core | `add`, `read`, `edit`, `append`, `forget`, `lookup`, `apropos`, `locate`, `versions`, `restore`, `reindex`, `import`, `move` |
+| core | `add`, `read`, `edit`, `append`, `forget`, `lookup`, `apropos`, `locate`, `list`, `versions`, `restore`, `reindex`, `import`, `move` |
 | enriched | `summarize`, `elaborate`, `distill` |
-| anchored (replaces core) | `add`, `edit`, `forget`, `read`, `reaffirm`, `migrate`, `report`, `rehome`, by `symbol` |
+| anchored (replaces core) | `add`, `edit`, `forget`, `read`, `reaffirm`, `migrate`, `report`, `rehome`, by `symbol`; `list` |
 | links + status (a graph facet) | `add`, `read`, `edit`, `append`, `lookup`, `list`, `forget`, `dep_add`, `dep_remove`, `reaffirm`, `graph`, and one verb per status transition |
 | progress / ordered / supersede / sources | `status`, `next`, `review`, `review_apply` / `move` / `supersede` / `export`, `extract` |
-| declared fields | `list`; each field a typed parameter on `add`/`edit` and a filter on `lookup`/`list` (`where=[{field, op, value}]`, CLI `--<field>`, `--where 'FIELD OP VALUE'`) |
+| declared fields | `list` filters by them; each field a typed parameter on `add`/`edit` and a filter on `lookup`/`list` (`where=[{field, op, value}]`, CLI `--<field>`, `--where 'FIELD OP VALUE'`) |
 
 `extract` is the canonical name of the decision/plan doc-extraction procedure;
 the built-ins keep calling it `design_import` / `plan_import`. A facet's

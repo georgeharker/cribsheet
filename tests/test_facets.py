@@ -269,8 +269,8 @@ def test_disable():
     assert s.disabled == {"import", "move", "distill"}
     with pytest.raises(FacetSpecError, match="can't disable \\['reaffirm'\\]"):
         parse("t", {"plural": "ts", "disable": ["reaffirm"]})  # not a core verb
-    with pytest.raises(FacetSpecError, match="can't disable \\['list'\\]"):
-        parse("t", {"plural": "ts", "disable": ["list"]})  # no fields, no list
+    # every facet has `list`, fields or not, so it can be disabled like any other
+    assert parse("t", {"plural": "ts", "disable": ["list"]}).disabled == {"list"}
     with pytest.raises(FacetSpecError, match="built-in"):
         parse("t", {"plural": "ts", "disable": ["move"]}, builtin=True)
     with pytest.raises(FacetSpecError, match="disables every one"):

@@ -73,7 +73,7 @@ run `crib facets sync`, then restart the daemon.
 | command | what it does |
 |---|---|
 | `crib facets init [--force]` | write a starter file: guidance, commented examples, crib's own facets as a commented reference. Everything is commented, so it declares nothing until you uncomment an example. Refuses to replace an existing file without `--force`. |
-| `crib facets show` | every facet, built-in and declared, with its aspects, fields, disabled verbs and its state in this store. |
+| `crib facets show` (or `list`) | every facet, built-in and declared, with its aspects, fields, disabled verbs and its state in this store. |
 | `crib facets show --toml` | the effective registry as a facets file (crib's own facets exactly as shipped, then yours): an export to read or start from. |
 | `crib facets sync [--apply] [--drop] [--shared]` | bring the store in line with the declared facets; see [conformance](#conformance-crib-facets-sync). |
 | `crib facets instructions` | the agent-facing section on this machine's declared facets (markdown), as the server and plugins add it; see [how agents learn about your facets](#how-agents-learn-about-your-facets). |
@@ -115,7 +115,10 @@ and verbs.
 | `supersede` (needs `status`, `links`) | an item replaced by another; what rested on it goes stale | `supersede` |
 | `sources` | citations of doc sections, and the extraction procedure | `export`, `extract` (it hands an agent a procedure built from the facet's own abilities: with a gated status, add each with `proposed=True` for a human to confirm; else, if `ordered`, one batch with `#N` deps, otherwise one add per item; it names only the facet's own tools) |
 
-A facet with declared fields also gets `list` (filter by fields, no query).
+Every facet has `list`: its items with no query (relpath, title, tags; `-k`,
+`--tag`). A facet with declared fields can also filter it by them.
+`crib project items` (MCP `project_items`) lists a project's items across
+every facet at once, `--kind` to narrow it.
 
 Some combinations are refused because the engine would serve nothing for
 them: `links` without `status` (or the reverse), `ordered` or `sources`

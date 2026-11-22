@@ -105,7 +105,8 @@ RESERVED_STORES = frozenset({
 # THE verb catalogue: which verbs each family of facet has, the aspect that
 # brings each, and any condition beyond that aspect ("fields": the facet
 # declares fields; "taint": it reports taint), in tool-registration order. A
-# note-like facet's family is core + enriched (+ list with fields); an anchored
+# note-like facet's family is core + enriched (list included: every facet can
+# be listed without a query, by its fields when it has some); an anchored
 # one's items are named by symbol, so its family REPLACES the relpath-addressed
 # ones; a graph facet (links + status) has its own, then one verb per status
 # transition. Everything that asks "which verbs does this facet have" reads
@@ -130,12 +131,12 @@ VERB_CATALOGUE: Mapping[str, tuple[VerbDecl, ...]] = MappingProxyType({
                 "forget", "reindex", "versions", "restore"),
         *_decls("enriched", "distill", "elaborate", "summarize"),
         *_decls("core", "import", "move"),
-        *_decls("core", "list", needs="fields"),
+        *_decls("core", "list"),
     ),
     "anchored": (
         *_decls("anchored", "add", "edit", "forget", "read", "reaffirm", "migrate",
                 "report", "rehome"),
-        *_decls("anchored", "list", needs="fields"),
+        *_decls("anchored", "list"),
     ),
     "graph": (
         *_decls("core", "add", "read", "edit", "append", "lookup", "list"),

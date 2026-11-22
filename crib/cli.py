@@ -1674,6 +1674,15 @@ def build_parser() -> argparse.ArgumentParser:
                      help="only decisions/plans in this status (repeatable)")
     proj(_sp)
     _sp = pjsub.add_parser(
+        "items", help="every item across facets, no query (notes, decisions, plans ...)"
+    )
+    _sp.add_argument("-k", type=int, default=200)
+    _sp.add_argument("--kind", action="append", dest="kinds",
+                     help="only this facet: note/design/plan/learning/... (repeatable)")
+    _sp.add_argument("--tag", action="append", dest="tags",
+                     help="only items with this tag (repeatable: any)")
+    proj(_sp)
+    _sp = pjsub.add_parser(
         "related",
         help="one item and what surrounds it: links both ways, nearest of every kind",
     )
@@ -1851,7 +1860,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     facetsub = n_facets.add_subparsers(dest="facets_cmd", required=True)
     _fsh = facetsub.add_parser(
-        "show", help="every facet (built-in and declared) and its state in this store"
+        "show", aliases=["list"],
+        help="every facet (built-in and declared) and its state in this store"
     )
     _fsh.add_argument("--toml", action="store_true",
                       help="print the effective registry as a facets file instead")
@@ -2496,11 +2506,44 @@ def _a_list(s: Any, proj: Any, f: Any) -> None:
                    help="only items with this tag (a file's `type` counts; repeatable: any)")
 
 
+def _emit_items(d: Any, args: Any) -> None:
+    """`<noun> list` / `project items`: one line per item, its title then its
+    (linked) path, with its kind, status, symbol, tags and fields; then how
+    many of how many."""
+    if getattr(args, "json", False) or not isinstance(d, dict):
+        _emit(d, bool(getattr(args, "json", False)))
+        return
+    items = d.get("items") or []
+    if not items:
+        print("(nothing listed)")
+    for it in items:
+        kind = it.get("kind")
+        store = it.get("store") or _store_of(args)
+        head = _st.paint("kind", f"{kind:8} ") if kind else ""
+        st = f"  [{_st.status(it['status'])}]" if it.get("status") else ""
+        sym = f"  {_st.paint('name', it['symbol'])}" if it.get("symbol") else ""
+        print(f"{head}{_st.paint('title', it.get('title') or '')}{st}{sym}   "
+              f"{_item_path(d.get('project'), it.get('relpath', ''), store)}")
+        known = {"kind", "store", "relpath", "title", "tags", "status", "symbol"}
+        extra = [f"{k}={v}" for k, v in it.items() if k not in known and v is not None]
+        tags = ", ".join(it.get("tags") or [])
+        meta = "  ".join(x for x in (f"#{tags}" if tags else "", *extra) if x)
+        if meta:
+            print(_st.paint("meta", f"    {meta}"))
+    if d.get("pending"):
+        print(_st.paint("warn", f"not listed (facet not conformed yet): "
+                                f"{', '.join(d['pending'])}: `crib facets sync`"))
+    shown, total = len(items), d.get("total", len(items))
+    if total > shown:
+        print(_st.paint("meta", f"\n{shown} of {total} shown (-k to show more)"))
+
+
 _LIST_CLI = _FacetCli(
-    lambda f: f"list {f.plural} by their fields (no search query)",
+    lambda f: (f"list {f.plural} by their fields (no search query)" if f.params
+               else f"list {f.plural} (no search query)"),
     _a_list,
     lambda a: {"project": a.project, "k": a.k, "tags": a.tags},
-    _E, "list_items", False, 
+    _emit_items, "list_items", False, 
 )
 
 _FACET_CLI: dict[str, _FacetCli] = {
@@ -3446,6 +3489,14 @@ VERBS: dict[str, Verb] = {
         policy="source",
         mcp=f"query k=8 kinds=None status=None {_PROJ}",
     ),
+    "project items": Verb(
+        "project_items",
+        lambda a: {"kinds": a.kinds, "k": a.k, "tags": a.tags,
+                   "project": _proj_of(a)},
+        _emit_items,
+        policy="source",
+        mcp=f"kinds=None k=200 tags=None {_PROJ}",
+    ),
     "project related": Verb(
         "project_related",
         lambda a: {"ref": a.ref, "k": a.k, "project": _proj_of(a)},
@@ -4048,6 +4099,9 @@ def _user_errors() -> tuple[type[BaseException], ...]:
 def _facets_cmd(args: Any) -> int:
     """`crib facets show|init|sync`: local, against this machine's store."""
     from . import facets
+
+    if args.facets_cmd == "list":  # an alias of `show`
+        args.facets_cmd = "show"
 
     if args.facets_cmd == "init":
         f = facets.system_file()

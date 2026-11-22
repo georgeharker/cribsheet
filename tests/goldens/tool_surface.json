@@ -26,6 +26,7 @@
   "learning add": "usage: crib learning add [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                         [--lang LANG]\n                         symbol text\n\npositional arguments:\n  symbol\n  text\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
   "learning edit": "usage: crib learning edit [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                          [--lang LANG]\n                          symbol text\n\npositional arguments:\n  symbol\n  text\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
   "learning forget": "usage: crib learning forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                            [--lang LANG]\n                            symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
+  "learning list": "usage: crib learning list [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--tag TAGS]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --tag TAGS            only items with this tag (a file's `type` counts; repeatable: any)\n",
   "learning migrate": "usage: crib learning migrate [-h] [-p PROJECT] [-P PROJECT_PATH] [--apply]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --apply               write the plan out; without it nothing is changed\n",
   "learning read": "usage: crib learning read [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                          [--lang LANG]\n                          symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
   "learning reaffirm": "usage: crib learning reaffirm [-h] [-p PROJECT] [-P PROJECT_PATH] [--path PATH] [--scope SCOPE]\n                              [--lang LANG]\n                              symbol\n\npositional arguments:\n  symbol\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --path PATH           a trailing run of the file path (state.rs, core/state.rs)\n  --scope SCOPE         a trailing run of the language's own scope (ServerState)\n  --lang LANG           exact language of the symbol\n",
@@ -41,6 +42,7 @@
   "note forget": "usage: crib note forget [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "note import": "usage: crib note import [-h] [-p PROJECT] [-P PROJECT_PATH] paths [paths ...]\n\npositional arguments:\n  paths                 files to copy into memory\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "note import-memory": "usage: crib note import-memory [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "note list": "usage: crib note list [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--tag TAGS]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --tag TAGS            only items with this tag (a file's `type` counts; repeatable: any)\n",
   "note locate": "usage: crib note locate [-h] [-p PROJECT] [-P PROJECT_PATH] relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "note lookup": "usage: crib note lookup [-h] [-p PROJECT] [-P PROJECT_PATH] [-k K] [--tag TAGS]\n                        [--keywords KEYWORDS] [--keyword-weight KEYWORD_WEIGHT]\n                        [--summaries SUMMARIES] [--summary-weight SUMMARY_WEIGHT] [--hint HINTS]\n                        [--hint-weight HINT_WEIGHT] [--rerank | --no-rerank] [-a]\n                        query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  -k K\n  --tag TAGS\n  --keywords KEYWORDS   comma-separated keyword_index labels to fold into BM25 for this query\n                        (overrides [retrieve].keyword_labels)\n  --keyword-weight KEYWORD_WEIGHT\n                        weight of keyword_index tokens vs body in BM25 (overrides\n                        [retrieve].keyword_weight)\n  --summaries SUMMARIES\n                        comma-separated summary_index labels to fold in as dense alias vectors\n                        (overrides [retrieve].summary_labels)\n  --summary-weight SUMMARY_WEIGHT\n                        trust scale of summary alias vectors vs body dense (overrides\n                        [retrieve].summary_weight)\n  --hint HINTS          exact strings you already know (symbol, flag, error code, title) \u2014 each\n                        runs as its own exact-term route and boosts candidates multiple routes\n                        agree on; repeatable\n  --hint-weight HINT_WEIGHT\n                        weight of the hint agreement bonus (overrides [retrieve].hint_weight)\n  --rerank              force the cross-encoder rerank for this query\n  --no-rerank           skip the cross-encoder rerank for this query\n  -a, --render          render each matched section as markdown (like `apropos`) instead of\n                        compact locator lines\n",
   "note move": "usage: crib note move [-h] [-p PROJECT] [-P PROJECT_PATH] [--to-project TO_PROJECT]\n                      [--to-relpath TO_RELPATH]\n                      relpath\n\npositional arguments:\n  relpath\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --to-project TO_PROJECT\n  --to-relpath TO_RELPATH\n",
@@ -79,6 +81,7 @@
   "project doctor": "usage: crib project doctor [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project forget": "usage: crib project forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--with-learnings]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --with-learnings      also drop attached learnings (default: keep them)\n",
   "project index": "usage: crib project index [-h] [--budget BUDGET_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project items": "usage: crib project items [-h] [-k K] [--kind KINDS] [--tag TAGS] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -k K\n  --kind KINDS          only this facet: note/design/plan/learning/... (repeatable)\n  --tag TAGS            only items with this tag (repeatable: any)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project list": "usage: crib project list [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
   "project lookup": "usage: crib project lookup [-h] [-k K] [--kind KINDS] [--status STATUS] [-p PROJECT]\n                           [-P PROJECT_PATH]\n                           query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -k K\n  --kind KINDS          note/design/plan/learning (repeatable)\n  --status STATUS       only decisions/plans in this status (repeatable)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project migrate": "usage: crib project migrate [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
@@ -1409,6 +1412,56 @@
     "type": "object"
    }
   },
+  "learning_list": {
+   "annotations": null,
+   "description": "List learnings with no search query (in relpath order; `tags` narrows it to items with any of them). Returns each item's relpath and symbol, title, tags, plus `total` (`k` caps the list).\n\nFilter by field: . A plain `field=value` is equality; `where=[{field, op, value}]` takes `== != < <= > >=` for int and date, `== != re` (a regular expression) for str. An item without the field matches no condition.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 50,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
   "learning_migrate": {
    "annotations": null,
    "description": "Rebind this project's learning notes to the current symbol identity.\n\nOPTIONAL TIDINESS \u2014 the learnings join resolves a note bound to any prior\nspelling, so an unconverted note keeps working forever; this buys canonical\nfilenames and `symbol_ref` frontmatter. Per record: `noop` (already\ncurrent), `convert` (rebound, file renamed, old binding kept in\n`symbol_was`), `orphan` (binding answers to nothing \u2014 `learning_rehome`\nrepairs it), `collision` (two notes claim one symbol: both kept, said out\nloud, never merged). Re-running is the resume.\n\nDRY RUN unless `apply=True` \u2014 it renames files under a git-synced store.",
@@ -2088,6 +2141,56 @@
       "anyOf": [
        {
         "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "note_list": {
+   "annotations": null,
+   "description": "List notes with no search query (in relpath order; `tags` narrows it to items with any of them). Returns each item's relpath, title, tags, plus `total` (`k` caps the list).\n\nFilter by field: . A plain `field=value` is equality; `where=[{field, op, value}]` takes `== != < <= > >=` for int and date, `== != re` (a regular expression) for str. An item without the field matches no condition.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 50,
+      "type": "integer"
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
        },
        {
         "type": "null"
@@ -3965,6 +4068,70 @@
       "anyOf": [
        {
         "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     }
+    },
+    "type": "object"
+   }
+  },
+  "project_items": {
+   "annotations": null,
+   "description": "Every item in a project across facets (notes, decisions, plans,\nlearnings, any declared facet), with no search query: each row's\n`kind`, relpath, title, tags, and a decision's or plan's `status`, in\nfacet then relpath order, plus `total` (`k` caps the list). `kinds`\nnarrows it to those facets, `tags` to items with any of them. To search\ninstead, `project_lookup`; one facet's own fields, `<noun>_list`.",
+   "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+     "k": {
+      "default": 200,
+      "type": "integer"
+     },
+     "kinds": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "project_path": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "tags": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
        },
        {
         "type": "null"

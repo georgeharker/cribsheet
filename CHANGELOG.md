@@ -9,6 +9,24 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Added
+
+- **List without a query, on every facet.** `note list` and `learning list`
+  (MCP `note_list`, `learning_list`) join `design list`, `plan list` and
+  declared facets' `list`: every item by title and path, with `-k` and
+  `--tag`; a facet with declared fields can still filter by them.
+- **`crib project items`** (MCP `project_items`): a project's items across
+  every facet at once, each with its kind (and a decision's or plan's
+  status); `--kind` and `--tag` narrow it.
+- **`crib facets list`** is an alias of `crib facets show`.
+
+### Changed
+
+- `<noun> list` output for declared facets is now one readable line per item
+  (title, linked path, then tags and fields) instead of a raw key=value dump.
+
 ## [0.26.3] - 2026-11-21
 
 ### Fixed

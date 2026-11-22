@@ -731,12 +731,14 @@ def _m_a_rehome(crib: Crib, f: FacetSpec):
 
 
 def _d_list(f: FacetSpec) -> str:
+    by = (" by their fields, " + ", ".join(f"`{n}`" for n in f.params) + ","
+          if f.params else "")
     return (
-        f"List {f.plural} by their fields, with no search query: "
-        + ", ".join(f"`{n}`" for n in f.params)
-        + ". Returns each match's relpath"
+        f"List {f.plural}{by} with no search query (in relpath order; `tags` "
+        "narrows it to items with any of them). Returns each item's relpath"
         + (" and symbol" if f.has("anchored") else "")
-        + ", title and fields, plus `total` (`k` caps the list)."
+        + ", title, tags" + (" and fields" if f.params else "")
+        + ", plus `total` (`k` caps the list)."
     )
 
 
