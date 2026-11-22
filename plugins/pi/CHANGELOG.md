@@ -9,6 +9,18 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.26.2] - 2026-11-21
+
+### Changed
+
+- **The rest of the CLI is styled on a colour terminal too:** write
+  confirmations (note, decision and plan writes, moves, plan batches, with
+  what they tainted or unblocked), `design tree`, `design check`,
+  `design extract`, `code graph` (tree and edge views), `learning rehome`,
+  `project list`, the project verbs (`index`, `status`, `doctor`, `related`
+  ...), `ops` and `export`. Same roles and links as 0.26.1; piped output is
+  unchanged.
+
 ## [0.26.1] - 2026-11-21
 
 ### Added
