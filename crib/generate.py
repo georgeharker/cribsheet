@@ -234,6 +234,26 @@ def _generate(
     return text.strip()
 
 
+def _retry_after_failure(result: Any, attempt: int, bad_replies: int,
+                         provider: Any) -> float | None:
+    """Seconds to wait before retrying a failed structured call, or None to
+    give up. A bad reply (the call completed, the reply was unusable) gets
+    `_BAD_REPLY_RETRIES` more tries; a rate limit backs off as `_retry_delay`
+    says; anything else (auth, endpoint, adapter) is final. Says so on stderr,
+    the stream where llmkit's own reason already lands."""
+    if result.bad_reply:
+        if bad_replies >= _BAD_REPLY_RETRIES or attempt + 1 >= _RATE_LIMIT_ATTEMPTS:
+            return None
+        print(f"[crib] unusable structured reply from {provider.adapter!r} "
+              f"({result.reason}); retrying once", file=sys.stderr)
+        return _BAD_REPLY_PAUSE
+    delay = _retry_delay(_failed_call(result), attempt)
+    if delay is not None:
+        print(f"[crib] rate-limited (attempt {attempt + 1}/{_RATE_LIMIT_ATTEMPTS}), "
+              f"retrying in {delay:.0f}s: {str(result.reason)[:120]}", file=sys.stderr)
+    return delay
+
+
 def _retry_delay(e: BaseException, attempt: int) -> float | None:
     """Retry backoff for a transient rate-limit error, else None (fail fast).
 
@@ -247,6 +267,17 @@ def _retry_delay(e: BaseException, attempt: int) -> float | None:
     if attempt + 1 >= _RATE_LIMIT_ATTEMPTS:
         return None
     return _rate_limit_wait(attempt)
+
+
+_BAD_REPLY_RETRIES = 1  # an unusable reply (empty, off-schema) gets ONE more try
+_BAD_REPLY_PAUSE = 1.0  # seconds before that retry
+
+
+def _failed_call(result: Any) -> BaseException:
+    """A failed structured call as the exception `_retry_delay` judges: its
+    reason text is what says "429" for an openai-compatible provider, whose
+    SDK errors llmkit catches and returns rather than raises."""
+    return RuntimeError(result.reason or f"exited {result.code}")
 
 
 def generate_structured(
@@ -276,13 +307,21 @@ def _generate_structured(
     object. Adapters enforce the schema natively (anthropic forced tool-use,
     openai-compatible ``response_format``), so the model can't wander off-format.
 
-    Raises GenerationError on a non-zero exit AND on a "successful" exit that
+    Raises GenerationError on a failed call AND on a "successful" exit that
     carried no parsed object. The latter used to be passed through as None, and
     callers read None as "nothing to describe": a provider whose structured
     channel came back empty was paid for, recorded nothing, and was asked again
     at every start (crib-bulk's ollama-glm, 2026-11-09). Callers already treat a
-    raise as "fall back to the mop-up / leave it for later"."""
-    from llmkit.bridge import ChatRequest, chat_structured
+    raise as "fall back to the mop-up / leave it for later".
+
+    llmkit's `structured_result` says why a call failed (`reason`) and whether
+    the call completed but the reply was unusable (`bad_reply`: empty, or not
+    fitting the schema). A bad reply is retried ONCE: those were intermittent
+    (glm-5.3-flash on Ollama Cloud, 2026-11-21). A rate limit backs off and
+    retries as before; any other failure is final. The error carries llmkit's
+    reason, not just an exit code. Design: "Structured generation retries a bad
+    reply once, using llmkit's returned failure reason"."""
+    from llmkit.bridge import ChatRequest, structured_result
 
     provider = resolve_provider(cfg, purpose)
     request = ChatRequest(
@@ -292,8 +331,8 @@ def _generate_structured(
         schema_name=schema_name,
         schema_description=schema_description,
     )
-    code = 1
-    data = None
+    result = None
+    bad_replies = 0
     with _stats_lock:
         _gen_stats["waiting"] += 1
     try:
@@ -303,8 +342,7 @@ def _generate_structured(
                     _gen_stats["waiting"] -= 1
                     _gen_stats["inflight"] += 1
                 try:
-                    code, data = chat_structured(provider, request)
-                    break
+                    result = structured_result(provider, request)
                 finally:
                     with _stats_lock:
                         _gen_stats["inflight"] -= 1
@@ -331,15 +369,23 @@ def _generate_structured(
                     _gen_stats["waiting"] += 1
                 time.sleep(delay)
                 continue
-                raise GenerationError(
-                    f"llmkit structured generation failed for adapter "
-                    f"{provider.adapter!r}: {e}."
-                ) from e
-        if code != 0:
+            if result.ok:
+                break
+            retry = _retry_after_failure(result, attempt, bad_replies, provider)
+            if retry is None:
+                break
+            bad_replies += result.bad_reply
+            with _stats_lock:
+                _gen_stats["waiting"] += 1
+            time.sleep(retry)
+        if result is None or not result.ok:
+            why = (result.reason if result is not None else None) or "no reason given"
+            code = result.code if result is not None else 1
             raise GenerationError(
-                f"llmkit structured generation exited {code} for adapter "
-                f"{provider.adapter!r}."
+                f"llmkit structured generation failed for adapter "
+                f"{provider.adapter!r} (exit {code}): {why}"
             )
+        data = result.data
         if data is None:
             raise GenerationError(
                 f"llmkit structured generation returned no structured data (exit 0) "

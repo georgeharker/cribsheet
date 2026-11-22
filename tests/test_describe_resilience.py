@@ -32,9 +32,11 @@ def crib(tmp_path, monkeypatch):
 
 
 def _patch_bridge(monkeypatch, script):
-    """Replace llmkit's chat_structured with `script`: each entry is either an
-    exception to raise or a (code, data) tuple to return. Records attempts."""
+    """Replace llmkit's structured_result with `script`: each entry is an
+    exception to raise, a (code, data) tuple, or a StructuredResult to return.
+    Records attempts."""
     import llmkit.bridge as bridge
+    from llmkit.bridge import StructuredResult
 
     state = {"attempts": 0}
 
@@ -43,10 +45,58 @@ def _patch_bridge(monkeypatch, script):
         state["attempts"] += 1
         if isinstance(step, BaseException):
             raise step
+        if isinstance(step, tuple):
+            return StructuredResult(code=step[0], data=step[1])
         return step
 
-    monkeypatch.setattr(bridge, "chat_structured", fake)
+    monkeypatch.setattr(bridge, "structured_result", fake)
     return state
+
+
+def _bad(reason: str):
+    from llmkit.bridge import StructuredResult
+
+    return StructuredResult(code=1, reason=reason, bad_reply=True)
+
+
+def _failed(reason: str):
+    from llmkit.bridge import StructuredResult
+
+    return StructuredResult(code=1, reason=reason)
+
+
+def test_a_bad_reply_is_retried_once_then_succeeds(monkeypatch, no_sleep, capsys):
+    state = _patch_bridge(monkeypatch, [_bad("empty reply"), (0, {"symbols": []})])
+    assert gen.generate_structured(GenerateConfig(), "sys", "user", {}) == {"symbols": []}
+    assert state["attempts"] == 2
+    assert no_sleep == [gen._BAD_REPLY_PAUSE]
+    assert "empty reply" in capsys.readouterr().err
+
+
+def test_a_second_bad_reply_fails_and_says_why(monkeypatch, no_sleep):
+    state = _patch_bridge(monkeypatch, [
+        _bad("empty reply"), _bad("sections[0].keywords: expected array, got str")])
+    with pytest.raises(gen.GenerationError, match="expected array, got str"):
+        gen.generate_structured(GenerateConfig(), "sys", "user", {})
+    assert state["attempts"] == 1 + gen._BAD_REPLY_RETRIES
+
+
+def test_a_failed_call_is_not_retried_and_says_why(monkeypatch, no_sleep):
+    """Auth, endpoint, adapter: the same call would fail the same way."""
+    state = _patch_bridge(monkeypatch, [_failed("401 Unauthorized: bad key")])
+    with pytest.raises(gen.GenerationError, match="401 Unauthorized"):
+        gen.generate_structured(GenerateConfig(), "sys", "user", {})
+    assert state["attempts"] == 1 and no_sleep == []
+
+
+def test_a_rate_limit_reported_as_a_reason_backs_off(monkeypatch, no_sleep):
+    """llmkit returns an openai-compatible SDK's 429 as a result, not an
+    exception: its reason text still triggers the rate-limit backoff."""
+    state = _patch_bridge(monkeypatch, [
+        _failed("Error code: 429 - rate limit exceeded"), (0, {"ok": 1})])
+    assert gen.generate_structured(GenerateConfig(), "sys", "user", {}) == {"ok": 1}
+    assert state["attempts"] == 2
+    assert len(no_sleep) == 1 and no_sleep[0] > 0
 
 
 @pytest.fixture(autouse=True)
