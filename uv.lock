@@ -307,6 +307,7 @@ dependencies = [
     { name = "numpy" },
     { name = "polyllmkit", extra = ["all", "md"] },
     { name = "pyyaml" },
+    { name = "rich" },
     { name = "watchdog" },
 ]
 
@@ -331,6 +332,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2" },
     { name = "polyllmkit", extras = ["md", "all"], specifier = ">=0.2.4" },
     { name = "pyyaml", specifier = ">=6.0" },
+    { name = "rich", specifier = ">=13" },
     { name = "sentence-transformers", marker = "extra == 'st'", specifier = ">=2.2" },
     { name = "watchdog", specifier = ">=4.0" },
 ]

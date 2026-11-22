@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 from . import proc
+from . import style as _st
 from .app import Crib
 from .codequery import GRAPH_GROUPINGS
 
@@ -124,9 +125,13 @@ def _emit_apropos(hits: Any, as_json: bool) -> None:
         loc = (
             f":{h.get('line_start')}-{h.get('line_end')}" if h.get("line_start") else ""
         )
-        head = f" — {h['heading']}" if h.get("heading") else ""
-        stale = "  ⚠︎ stale decision (a dep moved)" if h.get("tainted") else ""
-        print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}{stale}")
+        head = f" — {_st.paint('heading', h['heading'])}" if h.get("heading") else ""
+        stale = (_st.paint("warn", "  ⚠︎ stale decision (a dep moved)")
+                 if h.get("tainted") else "")
+        score = _st.paint("score", f"[{h.get('score', 0.0):.3f}]")
+        path = _item_path(h.get("project"), h.get("relpath", ""),
+                          h.get("store") or "notes", loc)
+        print(f"\n{score} {path}{head}{stale}")
         _render_markdown(h.get("section") or "")
     _emit_rebuilding_note(hits)
 
@@ -175,10 +180,11 @@ def _emit_rebuilding_note(hits: Any) -> None:
         )
 
     if isinstance(hits, list) and any(_flag(h) for h in hits):
-        print(
+        print(_st.paint(
+            "warn",
             "⚠︎ index rebuilding: this project is still re-embedding "
             "(see `crib status`) — results are incomplete"
-        )
+        ))
 
 
 def _emit_human_one(item: Any) -> None:
@@ -198,19 +204,22 @@ def _emit_human_one(item: Any) -> None:
             line_end=item.get("line_end"),
             index_rebuilding=bool(item.get("index_rebuilding")),
             tainted=bool(item.get("tainted")),
+            store=item.get("store") or "notes",
         )
     if isinstance(item, LookupHit):
         loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
-        head = f"  {item.heading}" if item.heading else ""
+        head = f"  {_st.paint('heading', item.heading)}" if item.heading else ""
         first = item.snippet.splitlines()[0][:100] if item.snippet else ""
         # a stale DECISION says so on the hit itself: the moment you retrieve it is
         # the moment the warning can still change what you do with it
         stale = (
-            f"  {_TAINT} stale (a dep moved — `crib design read`)"
+            _st.paint("warn", f"  {_TAINT} stale (a dep moved — `crib design read`)")
             if item.tainted
             else ""
         )
-        print(f"[{item.score:.3f}] {item.relpath}{loc}{head}{stale}\n    {first}")
+        print(f"{_st.paint('score', f'[{item.score:.3f}]')} "
+              f"{_item_path(item.project, item.relpath, item.store, loc)}"
+              f"{head}{stale}\n    {first}")
     elif isinstance(item, dict) and ("relpath" in item or "from" in item):
         _emit_write_result(item)
     elif isinstance(item, dict):
@@ -251,12 +260,80 @@ def _sym_name(d: dict) -> str:
     )
 
 
+_SOURCE_ROOTS: dict[str, Path | None] = {}
+
+
+def _code_link(d: dict) -> str | None:
+    """A `file://` link to a symbol's source file, while styling is on: the
+    project's source root (recorded beside its symbol index) joined with the
+    symbol's repo-relative `file`. None when either is unknown."""
+    proj, rel = d.get("project"), d.get("file")
+    if not _st.enabled() or not proj or not rel:
+        return None
+    if proj not in _SOURCE_ROOTS:
+        try:
+            from .codeindex import SymbolIndex
+            from .paths import Paths
+
+            _SOURCE_ROOTS[proj] = SymbolIndex(
+                Paths.resolve().project_dir(proj)).source_root()
+        except Exception:  # noqa: BLE001 — a link is a nicety, never a failure
+            _SOURCE_ROOTS[proj] = None
+    root = _SOURCE_ROOTS[proj]
+    return _st.file_link(root / rel) if root else None
+
+
+_ITEM_PATHS: dict[str, Any] = {}
+
+
+def _item_link(project: Any, relpath: Any, store: str | None) -> str | None:
+    """A `file://` link to an item's file (note, decision, plan, learning ...),
+    while styling is on: the project's configured root for the facet's store
+    (`resolve_project_paths`), plus the relpath. None when that isn't a file."""
+    if not _st.enabled() or not project or not relpath or not store:
+        return None
+    try:
+        from .config import Config
+        from .paths import Paths, resolve_project_paths
+
+        if project not in _ITEM_PATHS:
+            paths = Paths.resolve()
+            _ITEM_PATHS[project] = resolve_project_paths(
+                paths, Config.load(paths.config_file), str(project))
+        path = _ITEM_PATHS[project].pillar_dir(store) / str(relpath)
+        return _st.file_link(path) if path.is_file() else None
+    except Exception:  # noqa: BLE001 — a link is a nicety, never a failure
+        return None
+
+
+def _item_path(project: Any, relpath: Any, store: str | None,
+               suffix: str = "") -> str:
+    """A relpath (plus e.g. `:3-9`) painted as a path, linked when resolvable."""
+    return _st.paint("path", f"{relpath or ''}{suffix}",
+                     _item_link(project, relpath, store))
+
+
+def _store_of(args: Any) -> str | None:
+    """The store dir of the facet a command names (`crib plan list` -> plans)."""
+    from . import facets
+
+    try:
+        return facets.by_noun(getattr(args, "cmd", "") or "").store
+    except KeyError:
+        return None
+
+
+def _lab(text: str) -> str:
+    """`crib status`'s key column (`daemon`, `lsp` ...), padded then painted."""
+    return _st.paint("label", f"{text:10}")
+
+
 def _sym_loc(d: dict, gap: str = "  ") -> str:
     """`file:line` — nothing without a line, because a rolled-up module IS its file
     and an unresolved target has no location to point at."""
     if d.get("external") or not d.get("line"):
         return ""
-    return f"{gap}{d.get('file', '')}:{d['line']}"
+    return gap + _st.paint("path", f"{d.get('file', '')}:{d['line']}", _code_link(d))
 
 
 def _sym_tags(d: dict, ascii_mode: bool = False) -> str:
@@ -281,14 +358,14 @@ def render_symbol(d: dict, style: str = "inline", ascii_mode: bool = False) -> s
     `hit`    — a ranked-list row (kind column, then name and location)
     `tree`   — a graph row: name, flags, location
     """
-    name, kind = _sym_name(d), d.get("kind", "")
+    name, kind = _st.paint("name", _sym_name(d)), d.get("kind", "")
     if style == "title":
-        return f"{name}  ({kind})"
+        return f"{name}  {_st.paint('kind', f'({kind})')}"
     if style == "hit":
-        return f"{kind:8} {name}{_sym_loc(d)}"
+        return f"{_st.paint('kind', f'{kind:8}')} {name}{_sym_loc(d)}"
     if style == "tree":
-        return f"{name}{_sym_tags(d, ascii_mode)}{_sym_loc(d, '   ')}"
-    return f"{name}  ({kind}){_sym_loc(d)}"
+        return f"{name}{_st.paint('meta', _sym_tags(d, ascii_mode))}{_sym_loc(d, '   ')}"
+    return f"{name}  {_st.paint('kind', f'({kind})')}{_sym_loc(d)}"
 
 
 def _emit_code(data: Any, verb: str, as_json: bool) -> None:
@@ -334,27 +411,24 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
             cg = f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→" + (
                 f"/{refs}⇐" if refs else ""
             )
-            print(f"[{h.get('rank', '?')}] {render_symbol(h, 'hit')}{cg}")
+            rank = _st.paint("rank", f"[{h.get('rank', '?')}]")
+            print(f"{rank} {render_symbol(h, 'hit')}{_st.paint('meta', cg)}")
             if h.get("description"):
                 print(f"      {h['description']}")
             if h.get("learning"):
-                _print_learning(h["learning"], "      ")
+                _print_learning(h["learning"], "      ", h.get("project"))
     elif verb == "code-xref":
         if not data:
             print("(symbol not found in the symbol_index)")
             return
         for e in data:
             print(render_symbol(e))
-            for c in e.get("called_by") or []:
-                print(f"   ← {c}")
-            for c in e.get("calls") or []:
-                print(f"   → {c}")
-            for c in (
-                e.get("references") or []
-            ):  # ⇐ = referenced by (broader than a call)
-                print(f"   ⇐ {c}")
+            for arrow, key in (("←", "called_by"), ("→", "calls"),
+                               ("⇐", "references")):  # ⇐ = referenced by
+                for c in e.get(key) or []:
+                    print(f"   {_st.paint('meta', arrow)} {c}")
             if e.get("learning"):
-                _print_learning(e["learning"], "   ")
+                _print_learning(e["learning"], "   ", e.get("project"))
 
 
 def _emit_status(d: Any, as_json: bool) -> None:
@@ -363,7 +437,7 @@ def _emit_status(d: Any, as_json: bool) -> None:
     if as_json:
         _emit(d, True)
         return
-    print(f"{'store':10} {d.get('store')}  embed: {d.get('embed_model')}")
+    print(f"{_lab('store')} {d.get('store')}  embed: {d.get('embed_model')}")
     g = d.get("git") or {}
     if g.get("enabled"):
         parts = [
@@ -372,47 +446,47 @@ def _emit_status(d: Any, as_json: bool) -> None:
         ]
         if "ahead" in g:
             parts.append(f"↑{g['ahead']} ↓{g['behind']}")
-        print(f"{'git':10} " + "  ".join(parts))
+        print(f"{_lab('git')} " + "  ".join(parts))
         if g.get("last_commit"):
             print(f"{'':10} last: {g['last_commit']}")
     else:
-        print(f"{'git':10} not enabled (crib memory setup --remote <url>)")
+        print(f"{_lab('git')} not enabled (crib memory setup --remote <url>)")
     for s in d.get("lsp_sessions") or []:
         state = "busy" if s.get("busy") else f"idle {s.get('idle_s', 0):.0f}s"
-        alive = "" if s.get("alive") else "  DEAD"
+        alive = "" if s.get("alive") else _st.paint("error", "  DEAD")
         print(
-            f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
+            f"{_lab('lsp')} {s.get('server')}  {s.get('root')}  "
             f"pid {s.get('pid')}  {state}{alive}"
         )
     if d.get("reconciling"):
         why = f" ({d['reconcile_reason']})" if d.get("reconcile_reason") else ""
         print(
-            f"{'reconcile':10} in progress{why}: "
+            f"{_lab('reconcile')} in progress{why}: "
             f"{d.get('reconcile_remaining', '?')} project(s) to go"
         )
     if d.get("index_rebuilding"):
         print(
-            f"{'rebuilding':10} not re-embedded yet: {', '.join(d['index_rebuilding'])}"
+            f"{_lab('rebuilding')} not re-embedded yet: {', '.join(d['index_rebuilding'])}"
         )
     for proj, sw in (d.get("sweeps") or {}).items():
-        print(f"{'sweep':10} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
+        print(f"{_lab('sweep')} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
-        print(f"{'indexing':10} {proj}: {', '.join(files)}")
+        print(f"{_lab('indexing')} {proj}: {', '.join(files)}")
     _emit_daemon(d)
     projs = d.get("projects") or []
-    print(f"{'projects':10} {len(projs)}")
+    print(f"{_lab('projects')} {len(projs)}")
     if projs:
         w = max(len(p["project"]) for p in projs)
         for p in projs:
             # stale decisions ride along on the inventory line: an ambient count
             # nobody has to think to ask for (`crib design check` says which)
             stale = (
-                f"  ⚠︎ {p['design_tainted']} stale decision(s)"
+                _st.paint("warn", f"  ⚠︎ {p['design_tainted']} stale decision(s)")
                 if p.get("design_tainted")
                 else ""
             )
             print(
-                f"  {p['project']:{w}}  notes {p['notes']:4}  "
+                f"  {_st.paint('name', format(p['project'], f'{w}'))}  notes {p['notes']:4}  "
                 f"designs {p.get('designs', 0):3}  plans {p.get('plans', 0):3}  "
                 f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
                 f"learnings {p['learnings']:3}{stale}"
@@ -641,24 +715,28 @@ def _emit_code_dossier(d: Any, as_json: bool) -> None:
     print(render_symbol(d))
     _emit_resolved(d)
     if d.get("signature"):
-        print(f"  {d['signature']}")
+        print(f"  {_st.paint('meta', d['signature'])}")
     if d.get("description"):
         print(f"  {d['description']}")
     if d.get("learning"):
-        _print_learning(d["learning"], "  ")
+        _print_learning(d["learning"], "  ", d.get("project"))
     for label, arrow in (("called_by", "←"), ("calls", "→"), ("references", "⇐")):
         rows = d.get(label) or []
         if rows:
-            print(f"  {label} {arrow}")
+            print(f"  {_st.paint('header', f'{label} {arrow}')}")
             for r in rows:
-                desc = f"  — {r['description']}" if r.get("description") else ""
-                print(f"     {r.get('symbol', '')}{desc}")
+                desc = _st.paint("meta", f"  — {r['description']}") if r.get(
+                    "description") else ""
+                print(f"     {_st.paint('name', r.get('symbol', ''))}{desc}")
 
 
-def _print_learning(learning: dict, indent: str) -> None:
+def _print_learning(learning: dict, indent: str, project: Any = None) -> None:
     """Render an attached symbol learning (※) under a code-lookup/xref hit."""
-    flag = "  ⚠︎ stale — body changed since written" if learning.get("stale") else ""
-    print(f"{indent}※ note ({learning.get('relpath', '')}){flag}")
+    flag = (_st.paint("warn", "  ⚠︎ stale — body changed since written")
+            if learning.get("stale") else "")
+    path = _item_path(learning.get("project") or project,
+                      learning.get("relpath", ""), "learnings")
+    print(f"{indent}{_st.paint('header', '※ note')} ({path}){flag}")
     for line in (learning.get("body") or "").splitlines():
         print(f"{indent}  {line}" if line.strip() else "")
 
@@ -668,7 +746,8 @@ def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
     if as_json:
         print(json.dumps(data, indent=2, default=str))
         return
-    sym, rel = data.get("symbol", ""), data.get("relpath", "")
+    sym = _st.paint("name", data.get("symbol", ""))
+    rel = _item_path(data.get("project"), data.get("relpath", ""), "learnings")
     if verb == "learning-read":
         if not data.get("found"):
             print(f"(no learning for {sym})")
@@ -698,9 +777,11 @@ def _emit_code_report(rows: Any, as_json: bool) -> None:
         print("(no learnings recorded)")
         return
     icon = {"ok": "·", "moved": "~", "orphan": "✗"}
+    role = {"ok": "ok", "moved": "warn", "orphan": "error"}
     for r in rows:
         st = r.get("status", "")
-        line = f"{icon.get(st, '?')} {st:7} {r.get('symbol', '')}"
+        line = (_st.paint(role.get(st, "meta"), f"{icon.get(st, '?')} {st:7}")
+                + f" {_st.paint('name', r.get('symbol', ''))}")
         if st == "moved":
             line += f"   {r.get('file', '')} → {r.get('new_file', '')}"
         elif st == "orphan":
@@ -849,23 +930,25 @@ def _emit_facet_hits(hits: Any, args: Any) -> None:
         loc = (
             f":{h.get('line_start')}-{h.get('line_end')}" if h.get("line_start") else ""
         )
-        st = f"  [{h['status']}]" if h.get("status") else ""
-        edges = (
+        st = f"  [{_st.status(h['status'])}]" if h.get("status") else ""
+        edges = _st.paint("meta", (
             f"  {h.get('deps', 0)}▸/{h.get('dependents', 0)}◂" if "deps" in h else ""
-        )
-        stale = f"  {_TAINT} stale" if h.get("tainted") else ""
+        ))
+        stale = _st.paint("warn", f"  {_TAINT} stale") if h.get("tainted") else ""
         print(
-            f"[{h.get('score', 0.0):.3f}] {h.get('title', '')}{st}{edges}{stale}"
-            f"   {h.get('relpath', '')}{loc}"
+            f"{_st.paint('score', '[{:.3f}]'.format(h.get('score', 0.0)))} "
+            f"{_st.paint('title', h.get('title', ''))}{st}{edges}{stale}"
+            f"   {_item_path(h.get('project'), h.get('relpath', ''), h.get('store'), loc)}"
         )
         first = (h.get("snippet") or "").splitlines()
         if first:
             print(f"    {first[0][:100]}")
     if any(h.get("tainted") for h in hits):
-        print(
-            f"\n{_TAINT} a stale decision is one whose ground moved and nobody "
+        print("\n" + _st.paint(
+            "warn",
+            f"{_TAINT} a stale decision is one whose ground moved and nobody "
             f"re-read — `crib design read <ref>` before relying on it"
-        )
+        ))
 
 
 def _emit_design_read(data: Any, args: Any) -> None:
@@ -878,37 +961,30 @@ def _emit_design_read(data: Any, args: Any) -> None:
         print(data)
         return
     state = (
-        "  [superseded]"
+        f"  [{_st.status('superseded')}]"
         if data.get("status") == "superseded"
-        else f"  [proposed {_PROPOSED}]"
+        else f"  [{_st.paint('status.proposed', f'proposed {_PROPOSED}')}]"
         if data.get("status") == "proposed"
         else ""
     )
-    flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
+    flag = _st.paint("warn", f"  {_TAINT} STALE") if data.get("tainted") else ""
+    proj = data.get("project")
     print(
-        f"{data.get('title', '')}{state}{flag}   {data.get('relpath', '')}"
-        f"   (updated {data.get('updated', '?')})"
+        f"{_st.paint('title', data.get('title', ''))}{state}{flag}   "
+        f"{_item_path(proj, data.get('relpath', ''), _store_of(args))}"
+        f"   {_st.paint('meta', '(updated {})'.format(data.get('updated', '?')))}"
     )
     for c in data.get("causes") or []:
-        print(f"  • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
+        print(_st.paint("warn", f"  • [{c.get('change_kind', '?')}] {c.get('reason', '')}"))
     for p in data.get("paths") or []:
         if len(p.get("chain") or []) > 1:
-            print(f"    via {' → '.join(p['chain'])}")
+            print(_st.paint("meta", f"    via {' → '.join(p['chain'])}"))
     if data.get("next"):
-        print(f"  → {data['next']}")
+        print(_st.paint("meta", f"  → {data['next']}"))
     print()
     _render_markdown((data.get("body") or "").strip() + "\n")
-    for label, arrow in (("deps", "▸ builds on"), ("dependents", "◂ built on by")):
-        rows = data.get(label) or []
-        if not rows:
-            continue
-        print(f"  {arrow}")
-        for r in rows:
-            st = f"  [{r['status']}]" if r.get("status") else ""
-            print(
-                f"     {r.get('title', '')}{st}{_facet_flags(r)}"
-                f"   {r.get('relpath', '')}"
-            )
+    _print_edge_rows(data, (("deps", "▸ builds on"), ("dependents", "◂ built on by")),
+                     _store_of(args))
     # attribution: where this came FROM, and whether that passage still reads
     # the way it did (`changed`/`missing` are what taints it)
     sources = data.get("sources") or []
@@ -919,13 +995,31 @@ def _emit_design_read(data: Any, args: Any) -> None:
             print(f"    {mark} {s.get('label', '')}  [{s.get('state', '')}]")
 
 
+def _print_edge_rows(data: dict, sections: tuple[tuple[str, str], ...],
+                     store: str | None) -> None:
+    """A design/plan read's annotated edges: per section, each row's title,
+    status, flags and path (linked when it is a file of this facet)."""
+    for label, arrow in sections:
+        rows = data.get(label) or []
+        if not rows:
+            continue
+        print(f"  {_st.paint('header', arrow)}")
+        for r in rows:
+            st = f"  [{_st.status(r['status'])}]" if r.get("status") else ""
+            flags = _st.paint("warn", _facet_flags(r))
+            print(
+                f"     {_st.paint('title', r.get('title', ''))}{st}{flags}"
+                f"   {_item_path(data.get('project'), r.get('relpath', ''), store)}"
+            )
+
+
 def _emit_design_list(data: Any, args: Any) -> None:
     """Flat decision table: taint, title, edge counts, relpath."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str))
         return
     for cyc in (data or {}).get("cycles") or []:
-        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+        print(_st.paint("error", f"✗ dependency CYCLE: {' → '.join(cyc)}"))
     rows = (data or {}).get("designs") or []
     if not rows:
         print(
@@ -945,12 +1039,14 @@ def _emit_design_list(data: Any, args: Any) -> None:
             if r.get("status") == "proposed"
             else " "
         )
-        sup = "  [superseded]" if r.get("status") == "superseded" else ""
+        mark = _st.paint("warn" if r.get("tainted") else "status.proposed", mark)
+        sup = f"  [{_st.status('superseded')}]" if r.get("status") == "superseded" else ""
         cited = f"   §{r['sources']}" if r.get("sources") else ""
+        edges = _st.paint("meta", f"{r.get('deps', 0)}▸/{r.get('dependents', 0)}◂{cited}")
         print(
-            f"{mark} {r.get('title', '')}{sup}"
-            f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂{cited}"
-            f"   {r.get('relpath', '')}"
+            f"{mark} {_st.paint('title', r.get('title', ''))}{sup}"
+            f"   {edges}"
+            f"   {_item_path(data.get('project'), r.get('relpath', ''), _store_of(args))}"
         )
     stale, proposed = data.get("tainted", 0), data.get("proposed", 0)
     tail = ""
@@ -982,7 +1078,7 @@ def _emit_plan_list(data: Any, args: Any) -> None:
         print(json.dumps(data, indent=2, default=str))
         return
     for cyc in (data or {}).get("cycles") or []:
-        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+        print(_st.paint("error", f"✗ dependency CYCLE: {' → '.join(cyc)}"))
     items = (data or {}).get("items") or []
     if not items:
         print(
@@ -994,22 +1090,26 @@ def _emit_plan_list(data: Any, args: Any) -> None:
     for it in items:
         if it.get("group") and it["group"] != group:
             group = it["group"]
-            print(f"\n{_GROUP_HEADS.get(group, group)}:")
-        mark = "⊘" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
+            print("\n" + _st.paint("header", f"{_GROUP_HEADS.get(group, group)}:"))
+        status = it.get("status", "")
+        mark = "⊘" if it.get("blocked") else _PLAN_GLYPH.get(status, "·")
+        mark = _st.paint("warn" if it.get("blocked") else f"status.{status}", f"{mark:2}")
         print(
-            f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
-            f"   {it.get('relpath', '')}"
+            f"{mark} {_st.paint(f'status.{status}', f'{status:12}')} "
+            f"{_st.paint('title', it.get('title', ''))}"
+            f"   {_item_path(data.get('project'), it.get('relpath', ''), _store_of(args))}"
         )
         for b in it.get("blocked_by") or []:
             ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
-            st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
+            bst = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
             kind = f"{b['kind']} " if isinstance(b, dict) and b.get("kind") else ""
-            print(f"     ← waiting on {kind}{ref}{st}")
+            print(_st.paint("meta", f"     ← waiting on {kind}{ref}{bst}"))
         if it.get("missing_deps"):
-            print(f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}")
+            print(_st.paint("error",
+                           f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}"))
         # a finished item whose source moved: reported, never re-opened
         for why in it.get("revisit") or []:
-            print(f"     {_TAINT} revisit: {why}")
+            print(_st.paint("warn", f"     {_TAINT} revisit: {why}"))
     for it in items:  # the per-item loop the ready ones carry
         if it.get("next"):
             print(f"\n→ {it['next']}")
@@ -1030,35 +1130,29 @@ def _emit_plan_read(data: Any, args: Any) -> None:
         return
     status = data.get("status", "")
     mark = "⊘" if data.get("blocked") else _PLAN_GLYPH.get(status, "·")
-    flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
+    mark = _st.paint("warn" if data.get("blocked") else f"status.{status}", mark)
+    flag = _st.paint("warn", f"  {_TAINT} STALE") if data.get("tainted") else ""
     print(
-        f"{mark} {data.get('title', '')}  [{status}]{flag}   "
-        f"{data.get('relpath', '')}   (updated {data.get('updated', '?')})"
+        f"{mark} {_st.paint('title', data.get('title', ''))}  "
+        f"[{_st.status(status)}]{flag}   "
+        f"{_item_path(data.get('project'), data.get('relpath', ''), _store_of(args))}"
+        f"   {_st.paint('meta', '(updated {})'.format(data.get('updated', '?')))}"
     )
     for b in data.get("blocked_by") or []:
         st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
         kind = f"{b['kind']} " if isinstance(b, dict) and b.get("kind") else ""
         ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
-        print(f"  ← waiting on {kind}{ref}{st}")
+        print(_st.paint("meta", f"  ← waiting on {kind}{ref}{st}"))
     if data.get("missing_deps"):
-        print(f"  ✗ missing dep(s): {', '.join(data['missing_deps'])}")
+        print(_st.paint("error", f"  ✗ missing dep(s): {', '.join(data['missing_deps'])}"))
     for why in data.get("revisit") or []:
-        print(f"  {_TAINT} revisit: {why}")
+        print(_st.paint("warn", f"  {_TAINT} revisit: {why}"))
     if data.get("next"):
-        print(f"  → {data['next']}")
+        print(_st.paint("meta", f"  → {data['next']}"))
     print()
     _render_markdown((data.get("body") or "").strip() + "\n")
-    for label, arrow in (("deps", "▸ waits on"), ("dependents", "◂ blocks")):
-        rows = data.get(label) or []
-        if not rows:
-            continue
-        print(f"  {arrow}")
-        for r in rows:
-            st = f"  [{r['status']}]" if r.get("status") else ""
-            print(
-                f"     {r.get('title', '')}{st}{_facet_flags(r)}"
-                f"   {r.get('relpath', '')}"
-            )
+    _print_edge_rows(data, (("deps", "▸ waits on"), ("dependents", "◂ blocks")),
+                     _store_of(args))
     sources = data.get("sources") or []
     if sources and isinstance(sources[0], dict):
         print("  § drawn from")
@@ -1315,6 +1409,13 @@ def build_parser() -> argparse.ArgumentParser:
         "config.toml [tools].expose",
     )
     p.add_argument("--json", action="store_true", help="machine-readable output")
+    p.add_argument(
+        "--color",
+        choices=("auto", "always", "never"),
+        default="auto",
+        help="style human output by role: auto (a colour terminal; honours "
+        "NO_COLOR / FORCE_COLOR), always, or never",
+    )
     # transport options (apply to --mcp and `serve`; also pick the daemon the CLI
     # attaches to). Default to None so config `[daemon]` (host/port) wins unless
     # the user overrides on the command line.
@@ -1934,19 +2035,19 @@ def _emit_daemon(d: dict[str, Any]) -> None:
     dm = d.get("daemon") or {}
     if dm:
         log = f"  log {dm['log_file']}" if dm.get("log_file") else ""
-        print(f"{'daemon':10} up {_secs(dm.get('uptime_s', 0))}{log}")
+        print(f"{_lab('daemon')} up {_secs(dm.get('uptime_s', 0))}{log}")
     for j in dm.get("background") or []:
         detail = f"  {j['detail']}" if j.get("detail") else ""
-        print(f"{'running':10} {j['job']} for {_secs(j.get('running_s', 0))}{detail}")
+        print(f"{_lab('running')} {j['job']} for {_secs(j.get('running_s', 0))}{detail}")
     queued = {k: v for k, v in (dm.get("queues") or {}).items() if v}
     if queued:
-        print(f"{'queued':10} " + ", ".join(f"{k.replace('_', ' ')} {v}"
+        print(f"{_lab('queued')} " + ", ".join(f"{k.replace('_', ' ')} {v}"
                                              for k, v in queued.items()))
     notes = (dm.get("watchers") or {}).get("notes") or {}
     if notes.get("state") and notes["state"] != "healthy":
         lat = (f" ({notes['last_latency_s']}s)"
                if notes.get("last_latency_s") is not None else "")
-        print(f"{'watching':10} {notes['state']}{lat}: reads still refresh; a "
+        print(f"{_lab('watching')} {notes['state']}{lat}: reads still refresh; a "
               f"catch-up sweep runs while degraded")
     gen = d.get("generation") or {}
     if gen:
@@ -1954,7 +2055,7 @@ def _emit_daemon(d: dict[str, Any]) -> None:
         waiting = (": descriptions waiting in "
                    + ", ".join(f"{p} {n}" for p, n in pending.items())
                    if pending else "")
-        print(f"{'generate':10} {gen.get('mode', '?')}{waiting}")
+        print(f"{_lab('generate')} {gen.get('mode', '?')}{waiting}")
 
 
 def _secs(s: float) -> str:
@@ -2053,9 +2154,12 @@ def _emit_lookup_all(rows: list[dict[str, Any]], as_json: bool) -> None:
         print(json.dumps(rows, indent=2, default=str))
         return
     for r in rows:
-        st = f" [{r['status']}]" if r.get("status") else ""
-        where = f"{r['relpath']}" + (f" :: {r['heading']}" if r.get("heading") else "")
-        print(f"{r['score']:.3f}  {r['kind']:<8} {r.get('title') or ''}{st}")
+        st = f" [{_st.status(r['status'])}]" if r.get("status") else ""
+        where = _item_path(r.get("project"), r["relpath"], r.get("store")) + (
+            f" :: {_st.paint('heading', r['heading'])}" if r.get("heading") else "")
+        print(f"{_st.paint('score', format(r['score'], '.3f'))}  "
+              f"{_st.paint('kind', format(r['kind'], '<8'))} "
+              f"{_st.paint('title', r.get('title') or '')}{st}")
         print(f"         {where}")
 
 
@@ -4014,6 +4118,8 @@ def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
     args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
+    # --json is for machines: never styled, whatever the terminal
+    _st.configure("never" if args.json else args.color)
 
     if args.mcp or args.cmd == "serve":
         host, port = _resolve_serve_endpoint(args)

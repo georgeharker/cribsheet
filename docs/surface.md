@@ -27,7 +27,9 @@ two **imports** use _source_ and REQUIRE a `project`/`project_path` — an impor
 about a repo, so it errors rather than quietly filing into the default project.
 
 **Global flags** go before the noun: `--json` for machine-readable output, `--no-daemon`
-to run in-process instead of attaching to the warm daemon (see [Server & daemon](#server--daemon)).
+to run in-process instead of attaching to the warm daemon (see [Server & daemon](#server--daemon)),
+`--color auto|always|never` for styled human output (auto: a colour terminal, not
+`NO_COLOR`).
 Content-taking verbs (`note store`/`append`/`edit`, `learning add`/`edit`) accept `-`
 to read the content from stdin.
 
@@ -299,6 +301,7 @@ One warm process serves both the CLI and MCP.
 | `crib info`                 | —        | Resolved paths, backends, and daemon/chunk/retrieve config.                                                                                           |
 | `--no-daemon` (global)      | —        | Run the verb in-process instead of attaching to the warm daemon — e.g. to exercise freshly edited code without a daemon restart.                      |
 | `--json` (global)           | —        | Machine-readable output for any verb.                                                                                                                 |
+| `--color` (global)          | —        | `auto` (default: styled on a colour terminal, honouring `NO_COLOR`/`FORCE_COLOR`), `always`, `never`. Piped and `--json` output is never styled.        |
 
 ## Git sync — share notes across machines (CLI-only)
 

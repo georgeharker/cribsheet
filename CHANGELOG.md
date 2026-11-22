@@ -9,6 +9,21 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Added
+
+- **Styled CLI output on a colour terminal.** Query and list commands
+  (lookup and apropos for every facet, `project lookup`, `code lookup`,
+  `xref` and `dossier`, `design`/`plan` list and read, learnings, `status`)
+  mark each part by what it is: ranks and metadata dim, names and titles
+  bold, kinds magenta, statuses by value, warnings yellow, paths cyan. Paths
+  are clickable in terminals that support links: code to its source file,
+  notes, decisions, plans and learnings to theirs. Piped output and `--json`
+  are unchanged byte for byte. `--color auto|always|never` overrides the
+  detection, `NO_COLOR` turns it off, and `$CRIB_THEME_FILE`'s `[styles]`
+  can restyle any role (`crib.path`, `crib.rank`, ...).
+
 ## [0.26.0] - 2026-11-21
 
 ### Added

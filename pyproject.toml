@@ -28,6 +28,10 @@ dependencies = [
     # DIRECT dependency of the query path and not an incidental transitive one.
     # 2.x floor: that is what the matrix code was written and measured against.
     "numpy>=2",
+    # The CLI styles its human output by role on a colour terminal
+    # (crib/style.py), and renders markdown. polyllmkit[md] pulls it in too;
+    # listed because the CLI imports it directly.
+    "rich>=13",
 # v4 line to match mcp-combiner (which requires >=4.1.5) so both install into a
 # shared venv. `SessionState` is keyed on the per-client mcp `Connection` — in mcp
 # 2 the ServerSession is constructed per-request, so it can no longer hold
