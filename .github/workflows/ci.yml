@@ -60,8 +60,12 @@ jobs:
               # In parallel (pytest-xdist): each test has its own tmp dirs and
               # free ports, so -n auto is safe; serial took ~27 min here. The
               # tests that drive a REAL language server run in the next step.
+              # --durations names the slowest tests in every run (the job took
+              # 14-28 min while ~94% of tests finished in ~3; this says which);
+              # --timeout fails a genuinely hung test with every thread's stack.
               run: >-
                   uv run pytest -q -n auto
+                  --durations=30 --timeout=900
                   --ignore=tests/test_codeindex.py
                   --ignore=tests/test_code_integrity.py
 

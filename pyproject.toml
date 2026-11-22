@@ -77,7 +77,9 @@ st = ["sentence-transformers>=2.2"]
 #
 # pytest-xdist runs the suite in parallel (`-n auto`): every test builds its own
 # tmp dirs and free ports, and the shared Quack server fixture is per worker.
-dev = ["pytest>=8", "pytest-xdist>=3", "basedpyright>=1.19", "ruff>=0.15"]
+# pytest-timeout: CI's backstop for a hung test (`--timeout`), which fails it
+# with every thread's stack instead of stalling the job silently.
+dev = ["pytest>=8", "pytest-xdist>=3", "pytest-timeout>=2", "basedpyright>=1.19", "ruff>=0.15"]
 
 [project.scripts]
 crib = "crib.cli:main"
