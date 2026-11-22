@@ -9,7 +9,7 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
-## [Unreleased]
+## [0.26.2] - 2026-11-21
 
 ### Changed
 
