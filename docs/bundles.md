@@ -63,8 +63,9 @@ in the sandbox: it is read as a small regular file, never through a symlink,
 and capped by `--max-retention`), writes nothing through a symlink, and
 deletes only paths from its own registry.
 
-Inside the sandbox, the `writable` list lives in the bundle's own writable
-config, so a hostile agent there can edit it: treat it as advisory. What
+Inside the sandbox, the `writable` list lives in the bundle's `config/`: unless
+that is mounted read-only, a hostile agent there can edit it, so treat it as
+advisory. What
 holds against that is crib's root check (nothing written outside `DIR` or
 `--store`) and the sandbox's read-only mounts.
 
@@ -74,7 +75,11 @@ crib's guarantees cover crib's own reads and writes. The VM is the real
 boundary, and should:
 
 - mount the bundle read-write and any context copy read-only, and nothing of
-  the trusted store;
+  the trusted store; mount the bundle's `config/` read-only too (bind it over
+  itself): it holds what decides what runs and what may be written
+  (`config.toml` with the `writable` list, `lsp.json`, `grammar.json`,
+  `facets.toml`), and a read-only `config/` is what makes `writable` binding
+  rather than advisory;
 - point `HOME`, `XDG_*` and model caches at writable scratch inside the VM:
   language servers (pyright, rust-analyzer, tsc, ...) and the embedding
   runtime keep caches there, outside crib's control, and some execute
