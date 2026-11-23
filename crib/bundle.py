@@ -223,6 +223,35 @@ def _copy_project_files(
     return n
 
 
+def _copy_lsp_json(src: Path, dest: Path) -> dict[str, str]:
+    """Copy the trusted machine's lsp.json into the bundle with every server
+    `command` that is a path reduced to its bare name (`/opt/homebrew/bin/gopls`
+    -> `gopls`): the bundle runs on another machine (the review image), where a
+    bare name is looked up on PATH (codeindex.resolve_command) and a path from
+    here would not exist, silently disabling that server. Returns the rewrites,
+    label -> the command it had. A malformed file is not copied (crib would
+    ignore it anyway)."""
+    if not src.is_file():
+        return {}
+    try:
+        specs = json.loads(src.read_text())
+    except (ValueError, OSError) as e:
+        print(f"[crib] {src} not copied into the bundle: {e}", file=sys.stderr)
+        return {}
+    if not isinstance(specs, dict):
+        print(f"[crib] {src} not copied into the bundle: not a JSON object",
+              file=sys.stderr)
+        return {}
+    rewritten: dict[str, str] = {}
+    for label, spec in specs.items():
+        cmd = spec.get("command") if isinstance(spec, dict) else None
+        if isinstance(cmd, str) and "/" in cmd:
+            spec["command"] = cmd.rstrip("/").rsplit("/", 1)[-1]
+            rewritten[str(label)] = cmd
+    dest.write_text(json.dumps(specs, indent=2) + "\n")
+    return rewritten
+
+
 def _trusted_crib(paths: Paths, base: str, overlay: str) -> str | None:
     """The base repo's `.crib`, renamed to the overlay: code `paths:` and `docs:`
     only (confined mode ignores residency and mappings anyway)."""
@@ -372,7 +401,9 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     # the sandbox embeds with the SAME model, or its store refuses the vectors
     lines += ["", "[embed]", f"model = {json.dumps(cfg.embed.model)}"]
     (bpaths.config_dir / "config.toml").write_text("\n".join(lines) + "\n")
-    for extra in ("lsp.json", "grammar.json", "facets.toml"):
+    lsp_rewritten = _copy_lsp_json(paths.config_dir / "lsp.json",
+                                   bpaths.config_dir / "lsp.json")
+    for extra in ("grammar.json", "facets.toml"):
         if (src := paths.config_dir / extra).is_file():
             shutil.copy2(src, bpaths.config_dir / extra)
 
@@ -404,6 +435,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "context_dir": str(ctx_dir) if context else None,
         "expires": until,
         "expires_capped": capped,
+        "lsp_rewritten": lsp_rewritten,
         "files": files,
         "vectors": vec_rows,
     }

@@ -681,3 +681,20 @@ def test_item_links_resolve_context_projects(trusted, tmp_path, monkeypatch):
     monkeypatch.setattr(cli, "_ITEM_PATHS", {})
     link = cli._item_link("llmkit", "ctx-note.md", "notes")
     assert link is not None and "context/llmkit/notes/ctx-note.md" in link
+
+
+def test_lsp_json_commands_become_bare_names_in_the_bundle(trusted, tmp_path):
+    """The bundle runs in another image: a path command from this machine is
+    reduced to its bare name (found on PATH there); bare ones are unchanged."""
+    import json as _json
+
+    (trusted.config_dir / "lsp.json").write_text(_json.dumps({
+        "gopls": {"command": "/opt/homebrew/bin/gopls", "args": ["serve"]},
+        "ty": {"command": "ty", "args": ["server"]},
+    }))
+    out = bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
+                         vectors=False)
+    specs = _json.loads((tmp_path / "b" / "config" / "lsp.json").read_text())
+    assert specs["gopls"] == {"command": "gopls", "args": ["serve"]}
+    assert specs["ty"]["command"] == "ty"
+    assert out["lsp_rewritten"] == {"gopls": "/opt/homebrew/bin/gopls"}

@@ -4198,7 +4198,9 @@ def _bundle_cmd(args: Any) -> int:
                  f"  expires {out['expires']}"
                  + (" (capped by --max-retention)" if out.get("expires_capped") else "")
                  + "\n"
-                 f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
+                 + "".join(f"  lsp.json {label}: {was} -> bare name (found on PATH)\n"
+                           for label, was in (out.get("lsp_rewritten") or {}).items())
+                 + f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
     elif cmd == "list":
         out = bundles.listing(paths)
         human = "\n".join(

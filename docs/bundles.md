@@ -74,7 +74,9 @@ With `--root DIR` (or `$CRIB_ROOT`):
   outside `DIR`, and CLI verbs run in-process (there is no daemon to attach to);
 - config outside `DIR` is not read: `$CRIB_FACETS_FILE`, and `lsp.json` /
   `grammar.json` come from `DIR/config` (the bundle's copy decides which
-  language servers run).
+  language servers run). `bundle create` copies your `lsp.json` with each
+  command reduced to a bare name, found on the image's PATH; without one the
+  built-in specs (all bare names) apply.
 
 The trusted side reads back only a bundle's expiry (the manifest is writable
 in the sandbox: it is read as a small regular file, never through a symlink,

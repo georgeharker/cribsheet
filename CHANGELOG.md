@@ -19,6 +19,10 @@ version has no heading here.
   a bundle it can't delete once, not on every pass.
 - CLI file links resolve context projects' items (the context dir applied);
   the "no project named" error names the context dir too.
+- `bundle create` reduces each `lsp.json` server command that is a path to
+  its bare name (`/opt/homebrew/bin/gopls` -> `gopls`), so the bundle's
+  language servers are found on the image's PATH instead of silently missing;
+  the rewrites are listed in the output (`lsp_rewritten`).
 
 ## [0.28.0-dev2] - 2026-11-23
 
