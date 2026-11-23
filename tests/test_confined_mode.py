@@ -21,6 +21,14 @@ def run(coro):
     return asyncio.run(coro)
 
 
+def _register_flag_env(monkeypatch):
+    """Register every variable crib.entry may set, so monkeypatch removes what
+    a flag sets at teardown (delenv of an unset var records nothing)."""
+    for v in ("CRIB_ROOT", "CRIB_STORE", "CRIB_WRITABLE"):
+        monkeypatch.setenv(v, "x")
+        monkeypatch.delenv(v)
+
+
 @pytest.fixture()
 def root(tmp_path, monkeypatch):
     r = tmp_path / "root"
@@ -63,8 +71,11 @@ def test_every_dir_is_under_the_root(root):
 
 def test_the_store_may_live_outside_the_root(root, tmp_path, monkeypatch):
     """The root is the file set; the store (index dir) is a disposable cache
-    that --store / $CRIB_INDEX_DIR may put elsewhere. Config and data stay put."""
-    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "scratch"))
+    that --store ($CRIB_STORE) may put elsewhere. Config and data stay put. An
+    inherited $CRIB_INDEX_DIR is ignored: it could point at the trusted index."""
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "trusted-index"))
+    assert Paths.resolve().index_dir == root / "index"
+    monkeypatch.setenv("CRIB_STORE", str(tmp_path / "scratch"))
     paths = Paths.resolve()
     assert paths.index_dir == tmp_path / "scratch"
     assert paths.duckdb_file.is_relative_to(tmp_path / "scratch")
@@ -152,17 +163,14 @@ def test_a_reopened_root_reconciles_its_transient_projects(crib):
 def test_the_cli_flag_sets_the_root(tmp_path, monkeypatch):
     import os
 
-    from crib import cli
+    from crib import cli, entry
 
-    # set-then-delete so monkeypatch RECORDS the var and removes what
-    # cli.main sets at teardown (delenv of an unset var records nothing)
-    monkeypatch.setenv(ROOT_ENV, "x")
-    monkeypatch.delenv(ROOT_ENV)
+    _register_flag_env(monkeypatch)
     seen = []
     monkeypatch.setattr(
         cli, "_run_inprocess", lambda args, cfg: seen.append(os.environ.get(ROOT_ENV))
     )
-    cli.main(["--root", str(tmp_path / "r"), "--no-daemon", "plan", "list", "-p", "x"])
+    entry.main(["--root", str(tmp_path / "r"), "--no-daemon", "plan", "list", "-p", "x"])
     assert seen == [str((tmp_path / "r").resolve())]
 
 
@@ -184,7 +192,7 @@ def test_the_entry_point_sets_env_flags_before_crib_loads(monkeypatch):
     own --store is not a global flag."""
     from crib import entry
 
-    for v in ("CRIB_ROOT", "CRIB_INDEX_DIR", "CRIB_WRITABLE"):
+    for v in ("CRIB_ROOT", "CRIB_STORE", "CRIB_WRITABLE"):
         monkeypatch.setenv(v, "x")
         monkeypatch.delenv(v)
     entry._apply_env_flags(["--json", "--root", "/tmp/r", "--writable=a",
@@ -192,8 +200,24 @@ def test_the_entry_point_sets_env_flags_before_crib_loads(monkeypatch):
     import os
 
     assert os.environ["CRIB_ROOT"] == str(Path("/tmp/r").resolve())
-    assert os.environ["CRIB_INDEX_DIR"] == str(Path("/tmp/s").resolve())
+    assert os.environ["CRIB_STORE"] == str(Path("/tmp/s").resolve())
     assert os.environ["CRIB_WRITABLE"] == "a,b"
-    monkeypatch.delenv("CRIB_INDEX_DIR")
+    monkeypatch.delenv("CRIB_STORE")
     entry._apply_env_flags(["project", "create", "x", "--store", "notes"])
-    assert "CRIB_INDEX_DIR" not in os.environ
+    assert "CRIB_STORE" not in os.environ
+
+
+def test_writable_is_refused_when_a_verb_runs_in_the_daemon(tmp_path, monkeypatch, capsys):
+    """--writable governs THIS process; a daemon-attached verb would ignore it
+    silently, so it is refused (pass --no-daemon)."""
+    from crib import cli, entry
+
+    _register_flag_env(monkeypatch)
+    for v in ("CRIB_CONFIG_DIR", "CRIB_DATA_DIR", "CRIB_INDEX_DIR"):
+        monkeypatch.setenv(v, str(tmp_path / v))
+    monkeypatch.setattr(cli, "_run_daemon", lambda a, c: pytest.fail("attached"))
+    import crib.sharedserver as ss
+
+    monkeypatch.setattr(ss, "available", lambda: True)
+    assert entry.main(["--writable", "a", "plan", "list", "-p", "x"]) == 2
+    assert "--no-daemon" in capsys.readouterr().err

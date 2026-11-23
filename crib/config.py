@@ -45,7 +45,7 @@ def _confined_locations(cfg: "Config") -> None:
     """In confined mode `$ROOT` names the root wherever it is mounted, so a
     bundle's stubs can point at `$ROOT/context/<p>` portably."""
     if (root := confined_root()) is not None:
-        cfg.locations.setdefault("ROOT", str(root))
+        cfg.locations["ROOT"] = str(root)  # the root's own config can't move it
 
 
 def _warn_unknown(config_file: Path, table: str, data: dict, known: set[str]) -> None:
@@ -659,7 +659,16 @@ class CribLink:
         A `.crib` is a hand-edited file that can sit above ANY directory, so a
         malformed one must not raise: it would break every crib command run
         anywhere below it. A bad file is warned about and treated as absent —
-        the walk continues upward."""
+        the walk continues upward.
+
+        In confined mode (--root) there is none to find: a checkout's `.crib`
+        may be the code under review, so it is never read (its project name,
+        globs, refs, `store:` and boundaries alike); the trusted copy under the
+        root is parsed directly (Crib._confined_link)."""
+        from .paths import confined_root
+
+        if confined_root() is not None:
+            return None
         start = start.resolve()
         for d in (start, *start.parents):
             f = d / ".crib"

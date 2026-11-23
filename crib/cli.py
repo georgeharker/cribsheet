@@ -1473,7 +1473,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="DIR",
         help="put the STORE (index dir: the DuckDB file and caches) at DIR; with "
         "--root it is the one thing kept outside the root (a disposable cache, "
-        "rebuilt from the root's files). Same as $CRIB_INDEX_DIR",
+        "rebuilt from the root's files). Same as $CRIB_STORE",
     )
     p.add_argument(
         "--writable",
@@ -4331,23 +4331,9 @@ def _generate_cmd(args: Any) -> int:
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
+    # --root/--store/--writable are applied to the environment by crib.entry,
+    # BEFORE crib's modules load (the facet registry resolves at import)
     args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
-    if args.root:
-        import os as _os
-
-        from .paths import ROOT_ENV
-
-        _os.environ[ROOT_ENV] = str(Path(args.root).expanduser().resolve())
-    if args.store:
-        import os as _os
-
-        _os.environ["CRIB_INDEX_DIR"] = str(Path(args.store).expanduser().resolve())
-    if args.writable:
-        import os as _os
-
-        from .access import WRITABLE_ENV
-
-        _os.environ[WRITABLE_ENV] = ",".join(args.writable)
     # --json is for machines: never styled, whatever the terminal
     _st.configure("never" if args.json else args.color)
 
@@ -4459,7 +4445,17 @@ def main(argv: list[str] | None = None) -> int:
         # confined mode (--root) runs verbs IN-PROCESS: a sandbox has no warm
         # daemon (and no sharedserver) to attach to, and must not reach one
         if cfg.daemon.enabled and not args.no_daemon and confined_root() is None:
+            import os
+
             from . import sharedserver
+            from .access import WRITABLE_ENV
+
+            if os.environ.get(WRITABLE_ENV) is not None:
+                # the allowlist governs THIS process; the daemon has its own
+                print("crib: --writable / $CRIB_WRITABLE applies to the process it is "
+                      "given to, but this verb runs in the daemon: pass --no-daemon",
+                      file=sys.stderr)
+                return 2
 
             if not sharedserver.available():
                 print(

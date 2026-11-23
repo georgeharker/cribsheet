@@ -278,7 +278,7 @@ def test_a_store_rebuilt_elsewhere_reembeds_nothing(
     bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"])
     counting.clear()
     monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
-    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "scratch"))
+    monkeypatch.setenv("CRIB_STORE", str(tmp_path / "scratch"))
     paths = Paths.resolve().ensure()
     cfg = Config.load(paths.config_file)
     store, close = _build_store(paths, cfg)
@@ -308,3 +308,35 @@ def test_no_vectors_skips_the_store(trusted, tmp_path, counting):
     )
     assert out["vectors"] is None and counting == []
     assert not (tmp_path / "b" / "data" / "embed-cache.parquet").exists()
+
+
+def test_the_trusted_source_root_is_never_carried(trusted, tmp_path):
+    """`.source_root` is the trusted machine's repo path: a sandbox would
+    revalidate against it (dropping records, or reading trusted code)."""
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
+                   vectors=False)
+    assert not list((tmp_path / "b").rglob(".source_root"))
+
+
+def test_a_read_only_projects_records_survive_revalidation(trusted, tmp_path,
+                                                           monkeypatch):
+    """Inside the sandbox a context project is read-only: revalidation and
+    file drops never touch its records, even if a source root says files are
+    gone."""
+    from crib.codeindex import SymbolIndex
+
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
+                   vectors=False)
+    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
+    paths = Paths.resolve()
+    si = SymbolIndex(paths.project_dir("llmkit"))
+    si.write({"fqn": "m.f", "name": "f", "kind": "function", "lang": "python",
+              "module": "m", "parent": "", "content_hash": "h", "file": "m.py",
+              "line": 1, "signature": "def f():", "description": "d",
+              "container": [], "calls": [], "called_by": [], "name_terms": ["f"],
+              "symbol_ref": "m.py#f"})
+    si.set_source_root(tmp_path / "gone")  # e.g. a path that isn't in the pod
+    box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
+    box._revalidate("llmkit")
+    box._drop_file("llmkit", "m.py")
+    assert [e["name"] for e in box.code.records("llmkit")] == ["f"]

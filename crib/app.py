@@ -426,7 +426,7 @@ class Crib:
             root = SymbolIndex(self.paths.project_dir(name)).source_root()
             # confined mode watches nothing outside the root (a source checkout
             # never sits inside it): indexing there is explicit
-            if root is not None and self.paths.root is None:
+            if root is not None and self.paths.root is None and self.access.allows(name):
                 self._code_watcher.watch_root(name, root)
         self._code_watcher.start()
         # Deferred describe: the code-watcher persists STRUCTURE eagerly and hands the
@@ -815,6 +815,8 @@ class Crib:
         provider = provider_id(self.config.generate, "elaborate")
         pending = attempted = backing_off = 0
         for name in self.projects():
+            if not self.access.allows(name):
+                continue  # read-only here: its records aren't ours to describe
             try:
                 si = SymbolIndex(self.paths.project_dir(name))
                 root = si.source_root()
@@ -2314,8 +2316,12 @@ class Crib:
     def _revalidate(self, proj: str) -> None:
         """Delegate to CodeStore, injecting the pipeline's per-file indexer. A
         query finding code changed is background work: it describes only when
-        [generate] mode is "on"."""
+        [generate] mode is "on". A project this instance holds read-only is
+        never revalidated (that would re-index, or drop, its records)."""
         import functools
+
+        if not self.access.allows(proj):
+            return
 
         # Never inline: a query must not wait on an LLM. Changed files are
         # re-indexed for structure now and queued for description (the daemon's
@@ -2343,7 +2349,8 @@ class Crib:
         return wanted if self._may_generate(background=True) else "none"
 
     def _drop_file(self, proj: str, relpath: str) -> None:
-        self.code.drop_file(proj, relpath)
+        if self.access.allows(proj):  # a read-only project's records stay
+            self.code.drop_file(proj, relpath)
 
     def _require_code_index(self, proj: str) -> None:
         """Raise a self-diagnosing error when `proj` has no code index — so a call
@@ -2421,6 +2428,10 @@ class Crib:
         BOUNDARIES: their code belongs to the nested project (a vendored
         submodule with a .crib, say), never to the parent's index. `refs:` is
         how the parent xrefs into it (cross-project refs)."""
+        if self.paths.root is not None:
+            # confined mode: a checkout's .crib (here, one planted in the code
+            # under review) must not hide files from the index
+            return []
         junk = self._code_ignore()
         out: list[Path] = []
         for dp, dirs, files in os.walk(root):
@@ -2445,12 +2456,20 @@ class Crib:
         # reaching in would index the same bytes twice under two identities.
         if (link := CribLink.find(root)) is not None and link.store_dir is not None:
             bounds.append(link.store_dir)
+        real_root = root.resolve()
+
+        def inside(p: Path) -> bool:
+            # a symlink whose target escapes the checkout is not its code (and
+            # would break every relpath taken from it)
+            return p.resolve().is_relative_to(real_root)
+
         for g in globs:
             for p in root.glob(g):
                 if (
                     p.is_file()
                     and not any(part in junk for part in p.relative_to(root).parts)
                     and not any(p.is_relative_to(b) for b in bounds)
+                    and inside(p)
                 ):
                     seen.add(p)
         # extensionless / unknown-extension files matched by the grammar map
@@ -2476,7 +2495,7 @@ class Crib:
             ]
             for fn in files:
                 p = Path(dp) / fn
-                if p in seen or p.suffix.lower() in known_exts:
+                if p in seen or p.suffix.lower() in known_exts or not inside(p):
                     continue  # globs already cover known extensions
                 lang = content_lang(p, grammar)
                 if lang and lang in served:
@@ -2583,8 +2602,30 @@ class Crib:
             lines += ["paths:", *[f'  - "{g}"' for g in globs]]
         if want_docs:
             lines += ["docs:", '  - "README.md"', '  - "docs/**/*.md"']
+        self._require_write(name, "create .crib")
         (root / ".crib").write_text("\n".join(lines) + "\n")
         return CribLink.find(root), True
+
+    def _require_write(self, project: str | None, verb: str) -> None:
+        """Refuse `verb` on `project` unless this instance may write it: the
+        writable allowlist (crib.access), and in confined mode (--root) the
+        project's home under the root. The one check every writing verb makes;
+        NoteStore makes the same per item."""
+        self.access.require(project, verb)
+        if (base := self.paths.root) is not None and project:
+            home = self.project_paths(project).data_root.resolve()
+            if not home.is_relative_to(base):
+                raise CribUserError(
+                    f"{verb} refused: confined mode (--root {base}) writes only "
+                    f"under its root; project {project!r} lives at {home}")
+
+    def _refuse_residency_when_confined(self, verb: str) -> None:
+        """Residency verbs write a `.crib` and a store into a repo: never in
+        confined mode, where the repo is the code under review."""
+        if self.paths.root is not None:
+            raise CribUserError(
+                f"{verb} refused in confined mode (--root): it writes into a "
+                "repo, which here is the code under review")
 
     def _confined_link(
         self, cwd: Path | None, project: str | None, want_code: bool, want_docs: bool
@@ -2643,7 +2684,7 @@ class Crib:
         explicit verb.)"""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
-        self.access.require(proj, "project_setup")
+        self._require_write(proj, "project_setup")
         new_project = proj not in self.projects()  # before indexing creates its dirs
         mapped = await self._sync_mappings(proj, link)
         docs = (
@@ -2713,7 +2754,7 @@ class Crib:
         """The body of `project_index` (which adds the facet summary)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
-        self.access.require(proj, "project_index")
+        self._require_write(proj, "project_index")
         await self._sync_mappings(proj, link)
         crib_file = link.root / ".crib"
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
@@ -3272,6 +3313,7 @@ class Crib:
         it with no cwd near the repo; the derived index tiers do NOT move.
         Idempotent: adopting an already-adopted project at the same store is a
         no-op."""
+        self._refuse_residency_when_confined("project_adopt")
         link = CribLink.find(cwd or Path.cwd())
         if link is None or link.root is None:
             raise CribUserError(
@@ -3280,7 +3322,7 @@ class Crib:
                 "`store:`, or run `crib project setup` first)"
             )
         proj = check_project_name(project or link.project)
-        self.access.require(proj, "project_adopt")
+        self._require_write(proj, "project_adopt")
         if project and link.project != proj:
             raise CribUserError(
                 f"the `.crib` at {link.root} names project {link.project!r}, not "
@@ -3390,8 +3432,9 @@ class Crib:
         ring) back into the global store and clear the stub's `store_root`. Use it
         when the repo is going away, or when the notes should stop travelling with
         it. Idempotent: releasing an already-global project is a no-op."""
+        self._refuse_residency_when_confined("project_release")
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "project_release")
+        self._require_write(proj, "project_release")
         mapped, kept = self._release_mapped(proj)
         extra = {**({"mapped": mapped} if mapped else {}),
                  **({"kept": kept} if kept else {})}
@@ -3508,6 +3551,8 @@ class Crib:
 
         if expires is not None and not transient:
             raise CribUserError("expires applies to a transient project: pass transient too")
+        if store is not None:
+            self._refuse_residency_when_confined("project_create with store=")
         if store is not None and transient:
             raise CribUserError(
                 "a transient project can't declare repo residency (store=): it is "
@@ -3561,7 +3606,7 @@ class Crib:
                     )
                 root = link.root
                 store_decl = link.store
-            self.access.require(name, "project_create")
+            self._require_write(name, "project_create")
             # The shared bucket never lives inside ONE repo — residency is a
             # repo's own memory, and `default` would silently adopt it into a
             # repo checkout (and into every clone's .crib).
@@ -3712,7 +3757,7 @@ class Crib:
                 "(residency is declared with store=<repo-relative path>)"
             )
         name = check_project_name(project)
-        self.access.require(name, "project_create")
+        self._require_write(name, "project_create")
         if self.paths.project_dir(name).exists():
             return {
                 "project": name,
@@ -3883,7 +3928,7 @@ class Crib:
                 "the default project"
             )
         proj = check_project_name(project)
-        self.access.require(proj, "project_delete")
+        self._require_write(proj, "project_delete")
         del cwd  # deliberately unused: the selector above is the whole answer
         plan = self._delete_plan(proj, force)
         if not plan["exists_anywhere"]:
@@ -4085,8 +4130,8 @@ class Crib:
         old = check_project_name(project)
         del cwd  # deliberately unused, same rule as delete
         new = check_project_name(to)
-        self.access.require(old, "project_rename")
-        self.access.require(new, "project_rename (to)")
+        self._require_write(old, "project_rename")
+        self._require_write(new, "project_rename (to)")
         if old == new:
             raise CribUserError(f"rename to the same name ({old!r}) does nothing")
         if old == self.config.default_project or new == self.config.default_project:
@@ -4452,6 +4497,7 @@ class Crib:
         The foreign residue — other projects citing this repo by the old
         spellings — is REPORTED (`foreign_refs`), never edited (rename's
         rule: each registry is per-project and machine-local)."""
+        self._refuse_residency_when_confined("project_relocate")
         from .config import CribLink, ProjectConfig, portable_path
         from .sources import SRC_PREFIX
         from .watch import PILLAR_SEGMENTS
@@ -4463,7 +4509,7 @@ class Crib:
                 "never the default project and never a cwd guess"
             )
         old = check_project_name(project)
-        self.access.require(old, "project_relocate")
+        self._require_write(old, "project_relocate")
         new_root = Path(project_path).expanduser().resolve()
         if not new_root.is_dir():
             raise CribUserError(f"no such directory: {new_root}")
@@ -4909,7 +4955,7 @@ class Crib:
         Per record, no ordering constraint against the entry conversion, re-running
         is the resume. DRY RUN unless `apply`."""
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "learning_migrate")
+        self._require_write(proj, "learning_migrate")
         return await self._anchored_facet(facet).convert_notes(proj, apply=apply)
 
     async def code_convert(
@@ -4930,7 +4976,7 @@ class Crib:
         from .symconvert import convert_entry, convertible, preserved
 
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "code_convert")
+        self._require_write(proj, "code_convert")
         store = SymbolIndex(self.paths.project_dir(proj))
         rows = store.records()
         # COLLISION GUARD. Distinct records whose cleaned identities derive ONE key
@@ -5014,7 +5060,7 @@ class Crib:
         explicitly. Idempotent; collisions are skipped and reported, never
         merged."""
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "project_migrate")
+        self._require_write(proj, "project_migrate")
         self.project_paths(proj).require()
         mig = self._migrate_legacy_layout(proj)
         rec = await self.reindex(project=proj)
@@ -5345,7 +5391,7 @@ class Crib:
         from .codeindex import SymbolIndex
 
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "project_forget")
+        self._require_write(proj, "project_forget")
         si_root = SymbolIndex(self.project_paths(proj).project_dir).root
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
@@ -6533,7 +6579,7 @@ class Crib:
         preserved across re-pulls. Provenance is byte-identical across machines so a
         git sync never conflicts on it (DESIGN §14)."""
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "import_files")
+        self._require_write(proj, "import_files")
         created = self.project_is_new(proj)
         today = datetime.date.today().isoformat()
 
@@ -6610,7 +6656,7 @@ class Crib:
             )
         mem_dir = claudemem.harness_memory_dir(src_root)
         proj = self.resolve_project(project, cwd)
-        self.access.require(proj, "import_claude_memory")
+        self._require_write(proj, "import_claude_memory")
         created = self.project_is_new(proj)
         prefix = f"claude-memory/{claudemem.hostslug()}/"
         today = datetime.date.today().isoformat()

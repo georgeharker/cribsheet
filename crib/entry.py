@@ -38,7 +38,7 @@ def _apply_env_flags(argv: list[str]) -> None:
         if name == "--root":
             os.environ["CRIB_ROOT"] = str(Path(value).expanduser().resolve())
         elif name == "--store":
-            os.environ["CRIB_INDEX_DIR"] = str(Path(value).expanduser().resolve())
+            os.environ["CRIB_STORE"] = str(Path(value).expanduser().resolve())
         elif name == "--writable":
             writable.append(value)
     if writable:

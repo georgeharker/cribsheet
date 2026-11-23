@@ -114,8 +114,12 @@ def _save_registry(paths: Paths, reg: dict[str, dict[str, Any]]) -> None:
 
 # ── create ───────────────────────────────────────────────────────────────────
 
+# Never copied: version rings, stubs and .crib (the bundle writes its own),
+# and `.source_root`, the TRUSTED machine's repo path: in the sandbox it would
+# be revalidated against (records dropped, or trusted code read). The overlay
+# gets the checkout as its source root on its first `project index`.
 _COPY_IGNORE = shutil.ignore_patterns(
-    ".versions", ".cribproject", ".gitignore", ".crib", "__pycache__"
+    ".versions", ".cribproject", ".gitignore", ".crib", "__pycache__", ".source_root"
 )
 
 

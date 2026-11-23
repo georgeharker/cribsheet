@@ -115,15 +115,16 @@ def test_reads_of_a_read_only_project_still_work(seeded):
 def test_the_cli_flag_sets_the_allowlist_for_this_process(dirs, monkeypatch):
     import os
 
-    from crib import cli
+    from crib import cli, entry
 
-    # set-then-delete: monkeypatch must record the var to remove what
-    # cli.main sets (delenv of an unset var records nothing)
-    monkeypatch.setenv(WRITABLE_ENV, "x")
-    monkeypatch.delenv(WRITABLE_ENV)
+    # set-then-delete: monkeypatch must record the vars to remove what
+    # crib.entry sets (delenv of an unset var records nothing)
+    for v in (WRITABLE_ENV, "CRIB_ROOT", "CRIB_STORE"):
+        monkeypatch.setenv(v, "x")
+        monkeypatch.delenv(v)
     seen = []
     monkeypatch.setattr(cli, "_run_inprocess",
                         lambda args, cfg: seen.append(os.environ.get(WRITABLE_ENV)))
-    cli.main(["--writable", "a", "--writable", "b", "--no-daemon", "plan", "list",
-              "-p", "x"])
+    entry.main(["--writable", "a", "--writable", "b", "--no-daemon", "plan", "list",
+                "-p", "x"])
     assert seen == ["a,b"]

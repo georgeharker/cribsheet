@@ -78,10 +78,15 @@ def confine(base: Path, *parts: str) -> Path:
 # CONFINED MODE (`--root` / $CRIB_ROOT): everything crib keeps lives under one
 # root, and wins over the per-dir overrides: config, data and index are its
 # `config/`, `data/` and `index/` (the index dir, i.e. the store, may be put
-# elsewhere with --store / $CRIB_INDEX_DIR: a disposable cache). The rest of the mode (no git sync, no
+# elsewhere with --store / $CRIB_STORE: a disposable cache). The rest of the
+# mode (no git sync, no
 # shared store, watchers only inside the root, the checkout's own .crib never
 # read or written, writes only under the root) keys off `confined_root()`.
 ROOT_ENV = "CRIB_ROOT"
+# `--store DIR`: where the store (index dir) lives. In confined mode it is the
+# ONLY way to move the store: an inherited $CRIB_INDEX_DIR could point it at the
+# trusted side's own index.
+STORE_ENV = "CRIB_STORE"
 _ROOT_SUBDIR = {"CRIB_CONFIG_DIR": "config", "CRIB_DATA_DIR": "data",
                 "CRIB_INDEX_DIR": "index"}
 
@@ -93,13 +98,14 @@ def confined_root() -> Path | None:
 
 
 def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:
+    store = os.environ.get(STORE_ENV) if env_override == "CRIB_INDEX_DIR" else None
     if (root := confined_root()) is not None:
         # the STORE (index dir: the DuckDB file + caches) is the one thing a
-        # confined instance may keep elsewhere (`--store` / $CRIB_INDEX_DIR,
-        # e.g. pod scratch): it is a disposable cache, rebuilt from the root
-        if env_override == "CRIB_INDEX_DIR" and (v := os.environ.get(env_override)):
-            return Path(v).expanduser()
-        return root / _ROOT_SUBDIR[env_override]
+        # confined instance may keep elsewhere (`--store`, e.g. pod scratch):
+        # a disposable cache, rebuilt from the root
+        return Path(store).expanduser() if store else root / _ROOT_SUBDIR[env_override]
+    if store:
+        return Path(store).expanduser()
     if v := os.environ.get(env_override):
         return Path(v).expanduser()
     if v := os.environ.get(xdg_var):

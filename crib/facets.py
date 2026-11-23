@@ -792,9 +792,10 @@ def system_file() -> Path:
     crib's config dir (paths.config_dir: `$CRIB_CONFIG_DIR`, else
     `$XDG_CONFIG_HOME/crib`, else ~/.config/crib), beside config.toml. Separate
     from it: it is read once, at import, before any config is loaded."""
-    from .paths import config_dir
+    from .paths import config_dir, confined_root
 
-    if f := os.environ.get("CRIB_FACETS_FILE"):
+    # confined mode (--root) reads only the root's own facets file
+    if confined_root() is None and (f := os.environ.get("CRIB_FACETS_FILE")):
         return Path(f).expanduser()
     return config_dir() / "facets.toml"
 
