@@ -9,6 +9,17 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Fixed
+
+- Bundles: `bundle create` says when `--expires` was lowered to the
+  `--max-retention` cap (`expires_capped`); a registry entry from 0.28.0-dev1
+  (no cap recorded) is capped at its creation plus 30 days; the sweep reports
+  a bundle it can't delete once, not on every pass.
+- CLI file links resolve context projects' items (the context dir applied);
+  the "no project named" error names the context dir too.
+
 ## [0.28.0-dev2] - 2026-11-23
 
 Security review of the 0.28.0-dev1 sandbox features (bundles, confined mode,

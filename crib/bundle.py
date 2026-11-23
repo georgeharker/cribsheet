@@ -46,6 +46,11 @@ REGISTRY = "bundles.json"
 VECTORS_FILE = "embed-cache.parquet"  # the bundle's vectors, under DIR/data
 FORMAT = 1
 _MANIFEST_MAX = 64 * 1024  # a manifest is a few lines; anything bigger is hostile
+# the cap a registry entry with no `max_expires` (one written by 0.28.0-dev1)
+# gets: `bundle create`'s default --max-retention, counted from its creation
+DEFAULT_RETENTION = datetime.timedelta(days=30)
+# bundles the sweep failed to delete and has said so (once per bundle per process)
+_SWEEP_WARNED: set[str] = set()
 
 
 # ── manifest ─────────────────────────────────────────────────────────────────
@@ -285,7 +290,8 @@ def create(
     cap = expiry.parse(max_retention)
     until = expiry.parse(expires) if expires else cap
     u_at, cap_at = expiry.when(until), expiry.when(cap)
-    if u_at is not None and cap_at is not None and u_at > cap_at:
+    capped = u_at is not None and cap_at is not None and u_at > cap_at
+    if capped:
         until = cap
     # Directories this create owns: the bundle (absent, or checked empty above)
     # and, only when context projects are copied to --context-to, that dir
@@ -296,7 +302,7 @@ def create(
         owned.append((ctx_dir, not ctx_dir.exists()))
     try:
         return _build(paths, cfg, bundle, base, proj, context, ctx_dir, context_to,
-                      context_mount, until, vectors, cap)
+                      context_mount, until, vectors, cap, capped)
     except BaseException:
         # a half-built bundle is unregistered, so nothing would ever clean it up
         # (and a retry would refuse the non-empty dir): remove what was made
@@ -314,7 +320,7 @@ def create(
 def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
            context: list[str], ctx_dir: Path, context_to: Path | None,
            context_mount: str | None, until: str | None, vectors: bool,
-           cap: str | None = None
+           cap: str | None = None, capped: bool = False
            ) -> dict[str, Any]:
     """`create`'s body, once the arguments are checked."""
     from .config import ProjectConfig
@@ -397,6 +403,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "context": context,
         "context_dir": str(ctx_dir) if context else None,
         "expires": until,
+        "expires_capped": capped,
         "files": files,
         "vectors": vec_rows,
     }
@@ -536,17 +543,27 @@ def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any
     return {"bundle": str(bundle), "expires": until}
 
 
+def _entry_cap(entry: dict[str, Any]) -> datetime.datetime | None:
+    """A registry entry's hard cap: its `max_expires`, or for an entry from
+    before caps (0.28.0-dev1) its creation plus DEFAULT_RETENTION."""
+    from . import expiry
+
+    if (cap := expiry.when(entry.get("max_expires"))) is not None:
+        return cap
+    if (made := expiry.when(entry.get("created"))) is not None:
+        return made + DEFAULT_RETENTION
+    return None
+
+
 def listing(paths: Paths, now: datetime.datetime | None = None) -> list[dict[str, Any]]:
     """Registered bundles with their state (live/due/missing/unreadable) and
     effective expiry: the manifest's, capped at the registry's `max_expires`."""
-    from . import expiry
-
     now = now or datetime.datetime.now(datetime.UTC)
     out = []
     for path, entry in sorted(registry(paths).items()):
         row: dict[str, Any] = {"bundle": path, **entry}
         b = Path(path)
-        cap = expiry.when(entry.get("max_expires"))
+        cap = _entry_cap(entry)
         if not b.is_dir():
             row["state"] = "missing"
         else:
@@ -594,6 +611,8 @@ def sweep(paths: Paths, now: datetime.datetime | None = None) -> list[str]:
                 delete(paths, Path(row["bundle"]))
                 gone.append(row["bundle"])
             except Exception as e:  # noqa: BLE001 — one bundle never blocks the rest
-                print(f"[crib] expired bundle {row['bundle']} not deleted: {e}",
-                      file=sys.stderr)
+                if row["bundle"] not in _SWEEP_WARNED:  # once, not every sweep
+                    _SWEEP_WARNED.add(row["bundle"])
+                    print(f"[crib] expired bundle {row['bundle']} not deleted: {e}",
+                          file=sys.stderr)
     return gone

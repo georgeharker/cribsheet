@@ -325,8 +325,10 @@ def _elicited(crib: Crib, chosen: str) -> ProjectResolution:
             raise CribUserError(
                 f"no project named {chosen!r} — one of: "
                 + ", ".join(sorted(crib.projects()))
-                + f" (projects dir: {crib.paths.projects_dir}; CRIB_DATA_DIR: "
-                f"{os.environ.get('CRIB_DATA_DIR')})"
+                + f" (projects dir: {crib.paths.projects_dir}"
+                + (f"; context dir: {crib.paths.context_dir}"
+                   if crib.paths.context_dir is not None else "")
+                + f"; CRIB_DATA_DIR: {os.environ.get('CRIB_DATA_DIR')})"
             )
         proj = chosen
     return ProjectResolution(proj, "elicited")

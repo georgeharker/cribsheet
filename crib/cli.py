@@ -279,10 +279,12 @@ def _code_link(d: dict) -> str | None:
     if proj not in _SOURCE_ROOTS:
         try:
             from .codeindex import SymbolIndex
+            from .config import Config
             from .paths import Paths
 
-            _SOURCE_ROOTS[proj] = SymbolIndex(
-                Paths.resolve().project_dir(proj)).source_root()
+            paths = Paths.resolve()  # with the context dir: context projects link too
+            paths = paths.with_context(Config.load(paths.config_file))
+            _SOURCE_ROOTS[proj] = SymbolIndex(paths.project_dir(proj)).source_root()
         except Exception:  # noqa: BLE001 — a link is a nicety, never a failure
             _SOURCE_ROOTS[proj] = None
     root = _SOURCE_ROOTS[proj]
@@ -304,8 +306,9 @@ def _item_link(project: Any, relpath: Any, store: str | None) -> str | None:
 
         if project not in _ITEM_PATHS:
             paths = Paths.resolve()
+            cfg = Config.load(paths.config_file)
             _ITEM_PATHS[project] = resolve_project_paths(
-                paths, Config.load(paths.config_file), str(project))
+                paths.with_context(cfg), cfg, str(project))
         path = _ITEM_PATHS[project].pillar_dir(store) / str(relpath)
         return _st.file_link(path) if path.is_file() else None
     except Exception:  # noqa: BLE001 — a link is a nicety, never a failure
@@ -4192,7 +4195,9 @@ def _bundle_cmd(args: Any) -> int:
                  f"{out['base']})\n  context {', '.join(out['context']) or '-'}"
                  + (f" at {out['context_dir']}" if out["context_dir"] else "")
                  + f"\n  files: {files}\n  vectors: {out['vectors']}\n"
-                 f"  expires {out['expires']}\n"
+                 f"  expires {out['expires']}"
+                 + (" (capped by --max-retention)" if out.get("expires_capped") else "")
+                 + "\n"
                  f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
     elif cmd == "list":
         out = bundles.listing(paths)

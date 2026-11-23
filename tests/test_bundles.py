@@ -620,3 +620,64 @@ def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
     finally:
         for p in [ctx, *ctx.rglob("*")]:
             os.chmod(p, p.stat().st_mode | stat.S_IWUSR)
+
+
+# ── nits from round 4 ───────────────────────────────────────────────────────
+
+
+def test_create_says_when_the_expiry_was_capped(trusted, tmp_path):
+    out = bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
+                         expires="60d", max_retention="1d", vectors=False)
+    assert out["expires_capped"] is True
+    out2 = bundles.create(trusted, Config(), tmp_path / "c", "toucan:pr-2", [],
+                          expires="1d", vectors=False)
+    assert out2["expires_capped"] is False
+
+
+def test_a_dev1_registry_entry_without_a_cap_gets_the_default(trusted, tmp_path):
+    """An entry written before `max_expires` existed is capped at created+30d."""
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
+    reg = bundles.registry(trusted)
+    entry = reg[str(b.resolve())]
+    del entry["max_expires"]
+    bundles._save_registry(trusted, reg)
+    m = bundles.read_manifest(b)
+    m["expires"] = "9999-01-01T00:00:00+00:00"
+    bundles.write_manifest(b, m)
+    made = datetime.datetime.fromisoformat(entry["created"])
+    row = bundles.listing(trusted)[0]
+    assert row["expires"] == (made + bundles.DEFAULT_RETENTION).isoformat(
+        timespec="seconds")
+    assert bundles.sweep(trusted, now=made + datetime.timedelta(days=31)) == [
+        str(b.resolve())]
+
+
+def test_the_sweep_reports_an_undeletable_bundle_once(trusted, tmp_path,
+                                                      monkeypatch, capsys):
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], expires="1d",
+                   vectors=False)
+
+    def stuck(paths, bundle):
+        raise OSError("busy")
+
+    monkeypatch.setattr(bundles, "delete", stuck)
+    monkeypatch.setattr(bundles, "_SWEEP_WARNED", set())
+    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
+    bundles.sweep(trusted, now=later)
+    bundles.sweep(trusted, now=later)
+    assert capsys.readouterr().err.count("not deleted") == 1
+
+
+def test_item_links_resolve_context_projects(trusted, tmp_path, monkeypatch):
+    """The CLI's file links find a context project's items in the context dir."""
+    from crib import cli, style
+
+    _create(trusted, tmp_path)
+    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
+    monkeypatch.setattr(style, "enabled", lambda: True)
+    monkeypatch.setattr(style, "file_link", lambda path: str(path))  # no tty here
+    monkeypatch.setattr(cli, "_ITEM_PATHS", {})
+    link = cli._item_link("llmkit", "ctx-note.md", "notes")
+    assert link is not None and "context/llmkit/notes/ctx-note.md" in link
