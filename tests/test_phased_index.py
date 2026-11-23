@@ -48,37 +48,65 @@ def _rec(crib, proj, name):
     return next(e for e in crib.code.records(proj) if e["name"] == name)
 
 
-def test_reresolve_rebuilds_callers_and_reports_dangling(crib):
-    # caller.py: `use` calls `kept` and `gone` (gone was removed from lib.py)
-    _sym(crib, "p", "caller.py", "use",
-         calls=["kept [lib.py]", "gone [lib.py]", "util [dep:u.py]"])
-    # lib.py: `kept`'s recorded callers are stale: `old` no longer calls it,
-    # and a caller from another project must survive
-    _sym(crib, "p", "lib.py", "kept",
-         called_by=["old [caller.py]", "far [dep:x.py]"])
-    _sym(crib, "p", "lib.py", "lonely", called_by=["use [caller.py]"])
+def test_reresolve_updates_only_edges_touching_changed_files(crib):
+    """lib.py was re-extracted (`changed`): its callers came from the language
+    server and stay. caller.py is unchanged: its stale caller entries from
+    changed files go, and the changed file's fresh calls are added. Edges
+    between unchanged files, and callers from other projects, are untouched."""
+    # changed lib.py: `helper` now calls `util` (an unchanged-file target),
+    # and the server recorded `use` and `main` as its callers
+    _sym(crib, "p", "lib.py", "helper", calls=["util [caller.py]"],
+         called_by=["use [caller.py]", "main [app.py]"])
+    # unchanged caller.py: `util`'s callers were recorded against the OLD lib.py
+    _sym(crib, "p", "caller.py", "util",
+         called_by=["old_helper [lib.py]", "keep [app.py]", "far [dep:x.py]"])
+    _sym(crib, "p", "caller.py", "use", calls=["helper [lib.py]", "gone [lib.py]"])
+    _sym(crib, "p", "app.py", "keep", calls=["util [caller.py]"])
     crib.code.refresh("p")
-    out = crib.indexer.reresolve_edges("p")
-    assert out["complete"] and out["records_updated"] == 2
-    assert sorted(_rec(crib, "p", "kept")["called_by"]) == [
-        "far [dep:x.py]", "use [caller.py]"]
-    assert _rec(crib, "p", "lonely")["called_by"] == []  # nobody calls it any more
+    out = crib.indexer.reresolve_edges("p", changed={"lib.py"})
+    assert sorted(_rec(crib, "p", "util")["called_by"]) == [
+        "far [dep:x.py]", "helper [lib.py]", "keep [app.py]"]
+    # the changed file's own callers are the server's, untouched
+    assert sorted(_rec(crib, "p", "helper")["called_by"]) == [
+        "main [app.py]", "use [caller.py]"]
     assert [d["callee"] for d in out["dangling"]] == ["gone [lib.py]"]
-    # idempotent: a second pass changes nothing
-    assert crib.indexer.reresolve_edges("p")["records_updated"] == 0
+    assert out["records_updated"] == 1
+    # idempotent
+    assert crib.indexer.reresolve_edges("p", changed={"lib.py"})["records_updated"] == 0
+
+
+def test_reresolve_keeps_callers_only_the_server_knows(crib):
+    """An unchanged record's callers from unchanged files (e.g. learned from the
+    call hierarchy, with no matching `calls` entry) survive a re-resolve."""
+    _sym(crib, "p", "a.py", "target", called_by=["dynamic [b.py]"])
+    _sym(crib, "p", "b.py", "dynamic")  # no calls recorded (a dynamic dispatch)
+    _sym(crib, "p", "c.py", "changed_fn")
+    crib.code.refresh("p")
+    crib.indexer.reresolve_edges("p", changed={"c.py"})
+    assert _rec(crib, "p", "target")["called_by"] == ["dynamic [b.py]"]
+
+
+def test_reresolve_with_same_named_symbols_touches_only_changed_files(crib):
+    """Two `run`s in one unchanged file: a re-resolve for an unrelated change
+    doesn't fan callers out between them."""
+    _sym(crib, "p", "m.py", "run", called_by=["a [x.py]"])
+    crib.code.refresh("p")
+    crib.indexer.reresolve_edges("p", changed={"other.py"})
+    assert _rec(crib, "p", "run")["called_by"] == ["a [x.py]"]
 
 
 def test_a_call_into_a_deleted_file_is_dangling(crib):
     _sym(crib, "p", "caller.py", "use", calls=["helper [old.py]", "ext [vendored.py]"])
     crib.code.refresh("p")
-    out = crib.indexer.reresolve_edges("p", deleted={"old.py"})
-    # old.py was the project's (deleted in this change); vendored.py never was
+    out = crib.indexer.reresolve_edges("p", changed=set(), deleted={"old.py"})
+    # old.py was deleted in this change; vendored.py was never the project's
     assert [d["callee"] for d in out["dangling"]] == ["helper [old.py]"]
 
 
 def _stub_sweep(crib, monkeypatch, files, complete=True):
     """The extract phase: report `files` as the checkout's files."""
-    async def sweep(proj, root, globs, budget_s=None, crib_at=None, describe_mode="inline"):
+    async def sweep(proj, root, globs, budget_s=None, crib_at=None, describe_mode="inline",
+                    files=None):
         assert describe_mode == "none"  # structure only in phase 1
         return {"files_indexed": len(files), "files_seen": len(files), "symbols": 0,
                 "described": 0, "describes_failed": 0, "complete": complete,
