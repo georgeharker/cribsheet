@@ -207,7 +207,8 @@ class Paths:
         `resolve_project_paths` rather than derived from here.
 
         A context project (`in_context`) lives whole in the context dir, which
-        takes precedence: the writable root can't shadow it."""
+        takes precedence: the writable root can't shadow it. Its derived tiers
+        are read there and never written (the dir may be a read-only mount)."""
         if self.in_context(project):
             assert self.context_dir is not None
             return self.context_dir / check_project_name(project)

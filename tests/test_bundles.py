@@ -605,6 +605,15 @@ def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
         r = run(box.reconcile_all())
         assert not r["skipped"]
         assert any("ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit"))
+        # the enrichment catch-up, with generation on, skips the context project
+        monkeypatch.setattr(box, "_may_generate", lambda **kw: True)
+        touched: list[str] = []
+        monkeypatch.setattr(box, "_skip_if_unavailable",
+                            lambda pp, why: touched.append(pp.project) or True)
+        run(box._keyword_backlog())
+        assert "llmkit" not in touched
+        with pytest.raises(CribUserError, match="read-only context project"):
+            run(box.enrich(project="llmkit"))
         box.close()
         assert {p: p.stat().st_mtime_ns for p in [ctx, *files]} == before
         assert sorted(ctx.rglob("*")) == sorted(files)

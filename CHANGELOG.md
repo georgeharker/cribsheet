@@ -9,7 +9,7 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
-## [Unreleased]
+## [0.28.0-dev2] - 2026-11-23
 
 Security review of the 0.28.0-dev1 sandbox features (bundles, confined mode,
 the writable allowlist). Read docs/bundles.md for the guarantees and what the
@@ -72,6 +72,8 @@ sandbox itself must provide.
   nothing of them is left in the writable root. A project there is read-only
   whatever `writable` says and can't be shadowed by the root. Replaces the
   dev1 layout (stubs with `$CONTEXT/<p>` in the root): rebuild dev1 bundles.
+  Enrichment (keywords, summaries, their catch-up) and the in-situ docs
+  re-sweep skip read-only projects, so a read-only mount is never written.
 
 - **Confined mode in a sandbox.** CLI verbs under `--root` now run
   in-process: they tried to attach to a warm daemon (needing `sharedserver`),

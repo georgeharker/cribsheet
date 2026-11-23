@@ -867,6 +867,8 @@ class Crib:
         ) or not self._may_generate(background=True):
             return
         for name in self.projects():
+            if not self._may_write(name):
+                continue  # read-only here: its enrichment tiers aren't ours to write
             if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
                 continue
             try:
@@ -1600,6 +1602,8 @@ class Crib:
         the notes reconcile never walks them — only this sweep does. Best-effort:
         a project with no registered repo (or a root that's since moved) simply has
         no in-situ docs to recover."""
+        if not self._may_write(project):
+            return 0  # read-only here: nothing of it is ours to re-sweep
         try:
             res = await self.index_docs_insitu(project=project)
         except Exception as e:  # noqa: BLE001 — no repo / moved root / unreadable doc
@@ -6067,6 +6071,7 @@ class Crib:
         )
 
         proj = self.resolve_project(project, cwd)
+        self._require_write(proj, "enrich")  # writes the project's enrichment tiers
         facets: list[dict[str, Any]] = []
         for table, builtins, root, labels in (
             (
@@ -6116,6 +6121,7 @@ class Crib:
         """Single-facet shim over `_generate_enrichment` (the `elaborate`/`summarize`
         verbs) — legacy flat result shape preserved."""
         proj = self.resolve_project(project, cwd)
+        self._require_write(proj, purpose)  # writes (and prunes) its index tier
         from .section_index import SectionIndex
 
         if prompt is None:
