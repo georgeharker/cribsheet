@@ -1466,6 +1466,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true", help="machine-readable output")
     p.add_argument(
         "--root",
+        dest="g_root",  # own dests: a subcommand's --store/--root must not collide
         metavar="DIR",
         help="CONFINED MODE: keep everything (config, store, index, notes) under "
         "DIR and write nothing outside it; no git sync, no shared store, "
@@ -1474,6 +1475,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--store",
+        dest="g_store",
         metavar="DIR",
         help="put the STORE (index dir: the DuckDB file and caches) at DIR; with "
         "--root it is the one thing kept outside the root (a disposable cache, "
@@ -1481,6 +1483,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--writable",
+        dest="g_writable",
         action="append",
         metavar="PROJECT",
         help="only these projects are writable for THIS process (repeatable; "
@@ -4345,11 +4348,11 @@ def _env_flags_unapplied(args: Any) -> str | None:
     def resolved(v: str) -> str:
         return str(Path(v).expanduser().resolve())
 
-    if args.root and os.environ.get("CRIB_ROOT") != resolved(args.root):
+    if args.g_root and os.environ.get("CRIB_ROOT") != resolved(args.g_root):
         return "--root was not applied: run the `crib` command (crib.entry)"
-    if args.store and os.environ.get("CRIB_STORE") != resolved(args.store):
+    if args.g_store and os.environ.get("CRIB_STORE") != resolved(args.g_store):
         return "--store was not applied: run the `crib` command (crib.entry)"
-    if args.writable and os.environ.get("CRIB_WRITABLE") != ",".join(args.writable):
+    if args.g_writable and os.environ.get("CRIB_WRITABLE") != ",".join(args.g_writable):
         return "--writable was not applied: run the `crib` command (crib.entry)"
     return None
 

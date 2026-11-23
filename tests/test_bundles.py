@@ -402,8 +402,7 @@ def test_trusted_expire_takes_the_overlay_from_the_registry(trusted, tmp_path):
 
     shutil.rmtree(ov)
     ov.symlink_to(trusted.project_dir("toucan"))
-    with pytest.raises(CribUserError, match="symlink"):
-        bundles.expire(b, "30d", trusted)
+    bundles.expire(b, "30d", trusted)  # writes only the manifest and registry
     assert (victim.read_text() if victim.exists() else None) == before
     with pytest.raises(CribUserError, match="not a registered bundle"):
         bundles.expire(tmp_path / "unregistered", "1d", trusted)
@@ -509,17 +508,21 @@ def test_trusted_expire_never_writes_through_a_planted_link(trusted, tmp_path):
     stub = ov / ".cribproject"
     stub.unlink()
     stub.symlink_to(victim)
-    with pytest.raises(CribUserError):
-        bundles.expire(b, "30d", trusted)
+    bundles.expire(b, "30d", trusted)  # the trusted side never touches the stub
     assert victim.read_text() == "precious\n"
 
 
-def test_trusted_expire_rewrites_a_regular_stub(trusted, tmp_path):
+def test_trusted_expire_moves_the_cap_and_leaves_the_stub(trusted, tmp_path):
+    """The operator's expire sets the registry cap (N-3); the stub, in the
+    sandbox's tree, is not written (N-2)."""
     b = tmp_path / "b"
     bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    out = bundles.expire(b, "20d", trusted)
     stub = b / "data" / "projects" / "toucan@pr-1" / ".cribproject"
-    assert not stub.is_symlink() and out["expires"] in stub.read_text()
+    before = stub.read_text()
+    out = bundles.expire(b, "60d", trusted)
+    assert stub.read_text() == before
+    assert bundles.registry(trusted)[str(b.resolve())]["max_expires"] == out["expires"]
+    assert bundles.listing(trusted)[0]["expires"] == out["expires"]
 
 
 def test_a_failed_create_never_touches_a_preexisting_context_to(trusted, tmp_path,

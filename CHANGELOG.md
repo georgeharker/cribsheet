@@ -57,6 +57,15 @@ sandbox itself must provide.
   from the root in confined mode; `--store` is refused when a verb would run
   in the daemon; the phased re-index treats a file emptied of symbols as
   changed.
+- **Third review round:** the global `--root`/`--store`/`--writable` no
+  longer collide with a subcommand's own option (`project create NAME --store
+  REL` works again); the trusted `bundle expire` writes only the manifest and
+  the registry, and moves the retention cap with the operator's expiry (the
+  overlay's stub, in the sandbox's tree, is never touched from the trusted
+  side); bundles copy `grammar.json` too.
+- `lsp.json` and `grammar.json` are read from crib's config dir as resolved
+  everywhere else, so `$XDG_CONFIG_HOME` now applies to them: with it set,
+  move them from `~/.config/crib` to `$XDG_CONFIG_HOME/crib`.
 
 - **Confined mode in a sandbox.** CLI verbs under `--root` now run
   in-process: they tried to attach to a warm daemon (needing `sharedserver`),

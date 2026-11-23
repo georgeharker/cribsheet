@@ -245,3 +245,14 @@ def test_lsp_and_grammar_config_come_from_the_root(root, tmp_path, monkeypatch):
 
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "trusted-config"))
     assert codeindex._config_dir() == root / "config"
+
+
+def test_a_subcommands_own_store_option_is_not_the_global_one(tmp_path, monkeypatch):
+    """`project create NAME --store REL` (in-repo residency) shares the
+    spelling, not the dest, of the global --store (N-1)."""
+    from crib import cli
+
+    _register_flag_env(monkeypatch)
+    args = cli.build_parser().parse_args(["project", "create", "demo", "--store", ".s"])
+    assert args.g_store is None and args.store == ".s"
+    assert cli._env_flags_unapplied(args) is None

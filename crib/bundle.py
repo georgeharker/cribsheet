@@ -369,7 +369,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     # the sandbox embeds with the SAME model, or its store refuses the vectors
     lines += ["", "[embed]", f"model = {json.dumps(cfg.embed.model)}"]
     (bpaths.config_dir / "config.toml").write_text("\n".join(lines) + "\n")
-    for extra in ("lsp.json", "facets.toml"):
+    for extra in ("lsp.json", "grammar.json", "facets.toml"):
         if (src := paths.config_dir / extra).is_file():
             shutil.copy2(src, bpaths.config_dir / extra)
 
@@ -487,13 +487,18 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
 
 
 def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any]:
-    """Set a bundle's expiry: rewrite its manifest and its overlay's stub.
+    """Set a bundle's expiry.
 
-    On the TRUSTED side (`paths`, not confined) the bundle must be registered
-    and the overlay is taken from the registry, never from the manifest (which
-    the sandbox may have rewritten); in confined mode only the root itself can
-    be extended. Nothing is written through a symlink."""
+    In confined mode (the sandbox, extending its own root) the manifest and the
+    overlay's stub are rewritten. On the TRUSTED side (`paths`, not confined)
+    the bundle must be registered, and only the manifest and the registry are
+    written: the registry's cap moves with the operator's expiry, and the stub
+    (inside the sandbox's writable tree, whose directories it can swap for
+    symlinks between a check and a write) is never touched; nothing trusted
+    reads it."""
     from . import expiry
+    import yaml
+
     from .config import ProjectConfig
 
     bundle = bundle.expanduser().resolve()
@@ -503,10 +508,17 @@ def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any
             raise CribUserError(f"confined mode: only this bundle ({root}) can be extended")
         overlay = read_manifest(bundle).get("overlay")
     else:
-        entry = registry(paths).get(str(bundle))
+        reg = registry(paths)
+        entry = reg.get(str(bundle))
         if entry is None:
             raise CribUserError(f"{bundle} is not a registered bundle (`crib bundle list`)")
-        overlay = entry.get("overlay")
+        until = expiry.parse(when)
+        m = read_manifest(bundle)
+        m["expires"] = until
+        write_manifest(bundle, m)
+        entry["max_expires"] = until  # the operator sets the cap, up or down
+        _save_registry(paths, reg)
+        return {"bundle": str(bundle), "expires": until}
     m = read_manifest(bundle)
     until = expiry.parse(when)
     m["expires"] = until
@@ -518,7 +530,10 @@ def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any
         if stub.exists() or stub.is_symlink():
             # read and written as the manifest is: a small regular file, never
             # through a symlink (the stub lives in the sandbox's writable root)
-            pcfg = ProjectConfig.loads(_read_small(stub), overlay, where=str(stub))
+            try:
+                pcfg = ProjectConfig.loads(_read_small(stub), overlay, where=str(stub))
+            except yaml.YAMLError as e:
+                raise CribUserError(f"{stub}: not readable YAML ({e})") from e
             pcfg.expires = until
             _replace_text(stub, pcfg.dumps())
     return {"bundle": str(bundle), "expires": until}
@@ -572,8 +587,9 @@ def delete(paths: Paths, bundle: Path) -> dict[str, Any]:
 
 
 def sweep(paths: Paths, now: datetime.datetime | None = None) -> list[str]:
-    """Delete every registered bundle whose manifest says it has expired (the
-    scheduled delete); a bundle whose manifest is unreadable is left alone."""
+    """Delete every registered bundle that is due (the scheduled delete): its
+    manifest's expiry, capped by the registry's `max_expires`, has passed; an
+    unreadable manifest is left alone until the cap passes."""
     gone = []
     for row in listing(paths, now):
         if row.get("state") == "due":
