@@ -149,7 +149,13 @@ class NoteStore:
         """The index policy of this facet's location in `project` (see
         IndexEngine.index_file): a mapping's ids and read-only flag."""
         loc = self.location(project)
-        return {} if loc is None else {"ids": loc.ids, "read_only": loc.read_only}
+        policy = {} if loc is None else {"ids": loc.ids, "read_only": loc.read_only}
+        if not self.access.allows(project):
+            # a project this instance holds read-only is indexed like a
+            # read-only location: never stamped (an unstamped note is reported
+            # and waits for a writable copy, so its identity never flips)
+            policy["read_only"] = True
+        return policy
 
     def _refuse_read_only(self, project: str, verb: str) -> None:
         """A project this instance holds read-only (crib/access.py), or a
@@ -463,7 +469,10 @@ class NoteStore:
             # not served until adopt moves its items: nothing to reconcile yet
             return {"project": project, "files": 0, "changed": 0, "removed": 0,
                     "skipped": [], "pending_move": why}
-        nd = self.dir(project)
+        # read-side: a reconcile must not create the pillar dir (a read-only
+        # home, e.g. a context project's mount, can't take it; a missing dir
+        # simply scans as empty)
+        nd = self.root(project)
         loc = self.location(project)
         policy = self._policy(project)
         if relpath:

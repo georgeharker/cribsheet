@@ -30,6 +30,13 @@ version has no heading here.
   With `--expires` (an ISO time, or `30m` / `2h` / `1d`) the daemon deletes it
   when due, through the ordinary delete path (a scheduled delete, checked at
   start and every 5 minutes). A transient project can't declare repo residency.
+- **Projects homed outside the store, including read-only ones.** A
+  project whose data tier lives at any absolute path (its stub's
+  `store_root`), such as a container's read-only mount of a context project,
+  now indexes and reads without writing there: a reconcile no longer creates
+  pillar directories, and a project this instance holds read-only is indexed
+  like a read-only location (a note without an `id` is reported as
+  `unstamped`, not stamped).
 
 ## [0.27.0] - 2026-11-22
 
