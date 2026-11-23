@@ -121,7 +121,7 @@ def test_the_sandbox_opens_it_confined(trusted, tmp_path, monkeypatch):
     run(box.store_note("review finding", title="Finding", project="toucan@pr-1"))
     from crib.access import ReadOnlyProject
 
-    with pytest.raises((ReadOnlyProject, CribUserError)):
+    with pytest.raises(ReadOnlyProject):
         run(box.store_note("nope", title="Nope", project="llmkit"))
 
 
@@ -475,3 +475,20 @@ def test_one_stuck_bundle_doesnt_block_the_sweep(trusted, tmp_path, monkeypatch)
     monkeypatch.setattr(bundles, "delete", flaky)
     later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
     assert [Path(g).name for g in bundles.sweep(trusted, now=later)] == ["b2"]
+
+
+def test_a_context_copy_mounted_elsewhere(trusted, tmp_path, monkeypatch):
+    """--context-to writes the context copy outside the bundle; --context-mount
+    says where the sandbox sees it; a confined instance reads it there."""
+    mount = tmp_path / "ro-mount"
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
+                   context_to=mount, context_mount=str(mount), vectors=False)
+    assert (mount / "llmkit" / "notes" / "ctx-note.md").exists()
+    assert not (tmp_path / "b" / "context").exists()
+    assert f'CONTEXT = "{mount}"' in (tmp_path / "b" / "config" / "config.toml").read_text()
+    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
+    paths = Paths.resolve()
+    box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
+    assert box.project_paths("llmkit").data_root == mount / "llmkit"
+    run(box.reconcile_all())
+    assert any("ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit"))

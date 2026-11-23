@@ -1889,8 +1889,6 @@ def build_parser() -> argparse.ArgumentParser:
     s = memsub.add_parser("history", help="git history for the tree (or a note)")
     s.add_argument("relpath", nargs="?")
 
-    # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
-    # help= → kept out of the listed commands (still a valid hidden subcommand).
     n_bundle = sub.add_parser(
         "bundle",
         help="self-contained, disposable crib roots handed to a sandbox "
@@ -1976,6 +1974,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="download the shared-mode DuckDB extensions now (containers, offline)",
     )
 
+    # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
+    # help= → kept out of the listed commands (still a valid hidden subcommand).
     s = sub.add_parser("merge-driver")
     s.add_argument("base")  # %O ancestor
     s.add_argument("current")  # %A ours / output file

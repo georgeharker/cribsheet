@@ -150,3 +150,27 @@ def test_a_failing_transient_delete_is_reported_once(crib, monkeypatch, capsys):
     assert run(crib.delete_expired_transients()) == []
     assert run(crib.delete_expired_transients()) == []
     assert capsys.readouterr().err.count("not deleted yet") == 1
+
+
+def test_the_daemons_sweeper_deletes_due_transients_and_sweeps_bundles(crib, monkeypatch):
+    """One cycle of `_transient_sweeper`: due transients deleted, the bundle
+    sweep run off the loop; in confined mode it doesn't sweep at all."""
+    import crib.bundle as bundles
+
+    run(crib.project_create(project="due", transient=True, expires="2020-01-01T00:00:00"))
+    swept = []
+    monkeypatch.setattr(bundles, "sweep", lambda paths, now=None: swept.append(1) or [])
+
+    class Stop(Exception):
+        pass
+
+    async def stop(_s):
+        raise Stop
+
+    monkeypatch.setattr("crib.app.asyncio.sleep", stop)
+    with pytest.raises(Stop):
+        run(crib._transient_sweeper(every_s=0))
+    assert "due" not in crib.projects() and swept == [1]
+
+    monkeypatch.setenv("CRIB_ROOT", str(crib.paths.data_dir))
+    run(crib._transient_sweeper(every_s=0))  # returns at once: no Stop raised

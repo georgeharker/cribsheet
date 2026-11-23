@@ -313,6 +313,7 @@ class Crib:
             config,
             self._enumerate_code_files,
             self._register_code_root,
+            self._require_write,
         )
         # The code-index pipeline (extract → describe → persist), over CodeStore +
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
@@ -3735,8 +3736,9 @@ class Crib:
                 "(residency is declared with store=<repo-relative path>)"
             )
         name = check_project_name(project)
-        self._require_write(name, "project_create")
-        if self.paths.project_dir(name).exists():
+        if not self.paths.project_dir(name).exists():
+            self._require_write(name, "project_create")
+        else:
             return {
                 "project": name,
                 "project_created": False,

@@ -16,7 +16,6 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from .access import WriteAccess
 from .config import CribLink
 from .describe_queue import DescribeQueue
 from .errors import CribUserError
@@ -149,7 +148,7 @@ class CodeIndexer:
         root = find_root(p)
         rel = str(p.relative_to(root))
         proj = self.services.resolve_project(project, cwd)
-        WriteAccess(self.services.config.writable).require(proj, "code_index")
+        self.services.require_write(proj, "code_index")
         return await asyncio.to_thread(
             self._index_code_file_tracked, root, rel, proj, patch_edges
         )

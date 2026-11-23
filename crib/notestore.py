@@ -19,12 +19,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from .access import WriteAccess
 from . import facets, notes
+from .access import WriteAccess
 from .chunk import kind_of
-from .facets import FacetSpec
 from .errors import CribUserError
-
+from .facets import FacetSpec
 from .notes import Note, NoteParseError
 from .paths import check_relpath, confine
 from .sources import SRC_PREFIX, SourceRoots
@@ -41,7 +40,6 @@ class PendingMove(CribUserError):
     """A mapped facet whose items still wait to be moved into the mapping."""
 
 
-
 class _NoRing:
     """The version ring of a transient project: keeps nothing."""
 
@@ -50,6 +48,7 @@ class _NoRing:
 
 
 _NO_RING = _NoRing()
+
 
 @dataclass(frozen=True)
 class StoreSpec:

@@ -358,6 +358,8 @@ The deep dives live in the docs — see **[Documentation](#documentation)** belo
   the bytes, and which verbs may write them.
 - **[docs/facets.md](docs/facets.md)** — custom facets: declare your own kinds of
   item, their fields, statuses and repo mappings.
+- **[docs/bundles.md](docs/bundles.md)** — crib for sandboxed review: bundles,
+  confined mode (`--root`), and what the sandbox itself must provide.
 - **[docs/vector-store.md](docs/vector-store.md)** — the DuckDB index: embedded vs
   shared mode, configuration, the per-machine caches, and recovery.
 - **[docs/migrating-to-duckdb.md](docs/migrating-to-duckdb.md)** — upgrading from

@@ -123,8 +123,51 @@ def test_the_cli_flag_sets_the_allowlist_for_this_process(dirs, monkeypatch):
         monkeypatch.setenv(v, "x")
         monkeypatch.delenv(v)
     seen = []
-    monkeypatch.setattr(cli, "_run_inprocess",
-                        lambda args, cfg: seen.append(os.environ.get(WRITABLE_ENV)))
-    entry.main(["--writable", "a", "--writable", "b", "--no-daemon", "plan", "list",
-                "-p", "x"])
+    monkeypatch.setattr(
+        cli,
+        "_run_inprocess",
+        lambda args, cfg: seen.append(os.environ.get(WRITABLE_ENV)),
+    )
+    entry.main(
+        ["--writable", "a", "--writable", "b", "--no-daemon", "plan", "list", "-p", "x"]
+    )
     assert seen == ["a,b"]
+
+
+def test_the_remaining_write_paths_refuse_too(seeded, dirs):
+    """Every other write path, held to the same allowlist (review of
+    0.28.0-dev1): note forget and move (into and out of a read-only project),
+    imports, project index/forget/migrate, and the store conversions."""
+    orig_note = seeded.list_items("orig", facet="note")["items"][0]["relpath"]
+    copy_note = seeded.list_items("copy", facet="note")["items"][0]["relpath"]
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.forget(orig_note, project="orig"))
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.move_note(orig_note, to_project="copy", project="orig"))
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.move_note(copy_note, to_project="orig", project="copy"))
+    src = dirs / "doc.md"
+    src.write_text("# Imported\n\nbody\n")
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.import_files([str(src)], project="orig"))
+    repo = dirs / "repo"
+    (repo / ".git").mkdir(parents=True)
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.project_index(project="orig", cwd=repo, wait_s=30))
+    assert not (repo / ".crib").exists()  # refused BEFORE a .crib is written
+    with pytest.raises(ReadOnlyProject):
+        seeded.project_forget(project="orig")
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.project_migrate(project="orig"))
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.code_convert(project="orig", apply=True))
+    with pytest.raises(ReadOnlyProject):
+        run(seeded.learning_migrate(project="orig", apply=True))
+    assert [i["relpath"] for i in seeded.list_items("orig", facet="note")["items"]] == [
+        orig_note
+    ]
+
+
+def test_create_of_an_existing_read_only_project_is_idempotent(seeded):
+    out = run(seeded.project_create(project="orig"))
+    assert out["project_created"] is False

@@ -59,6 +59,11 @@ class CachedEmbedder:
         self.hits = 0
         self.misses = 0
 
+    def use_storage(self, storage: EmbedStorage) -> None:
+        """Serve the cache from `storage` from now on (a bundle's build reads
+        through to the main store's cache: crib.bundle)."""
+        self._s = storage
+
     def __getattr__(self, name: str) -> Any:
         return getattr(self._inner, name)
 

@@ -11,7 +11,41 @@ version has no heading here.
 
 ## [Unreleased]
 
+Security review of the 0.28.0-dev1 sandbox features (bundles, confined mode,
+the writable allowlist). Read docs/bundles.md for the guarantees and what the
+sandbox itself must provide.
+
 ### Fixed
+
+- **Confined mode wrote into, and read, the checkout under review.**
+  `project_create --store`, `adopt`, `release` and `relocate` are refused
+  under `--root`; a checkout's `.crib` files are never read (a planted nested
+  `.crib` could hide files from the index, and `refs:`/`store:` were
+  honoured); files whose real path escapes the checkout are skipped; every
+  writing verb checks both the allowlist and the root.
+- **Bundles carried the trusted repo path**, which a sandbox revalidated
+  against (dropping a context project's records, or reading trusted code).
+  It is no longer copied, and read-only projects are never revalidated,
+  re-described or watched.
+- **A hostile bundle could hang or redirect the trusted side.** Manifests are
+  read as small regular files only (no symlink, no FIFO); `bundle expire`
+  takes the overlay from the registry and never writes through a symlink; the
+  bundle sweep runs off the daemon's loop and one bad bundle never blocks the
+  rest; a failed `bundle create` cleans up.
+- **The transient sweep trusted a synced stub.** Only a transient project this
+  machine created (its birth `.gitignore` present, its host this host) is
+  deleted on schedule or without trash.
+- **Environment leaks in confined mode:** the store moves only by `--store`
+  (`$CRIB_STORE`; an inherited `$CRIB_INDEX_DIR` is ignored),
+  `$CRIB_FACETS_FILE` is ignored, `$ROOT` can't be overridden, and
+  `python -m crib` applies `--root` before loading. `--writable` is refused
+  when a verb would run in the daemon (which ignores it).
+- **The phased re-index** now updates only the edges touching re-extracted
+  files, from the language server's data (same-named symbols no longer gain
+  each other's callers; callers only the server knew survive);
+  `--budget 0` means no time, not unbounded.
+- Expiry parsing gives a clear error for out-of-range values;
+  `transient: "false"` no longer reads as true.
 
 - **Confined mode in a sandbox.** CLI verbs under `--root` now run
   in-process: they tried to attach to a warm daemon (needing `sharedserver`),

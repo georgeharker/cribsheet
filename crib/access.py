@@ -4,7 +4,7 @@ An instance can be told that only some projects are writable: `writable = [...]`
 in config.toml, `$CRIB_WRITABLE` (comma-separated, wins over the file), or the
 global `--writable` CLI flag. Every other project is READ-ONLY for that
 instance: reads are untouched, writes are refused with the reason. Unset means
-every project is writable (the default, and every instance before this).
+every project is writable (the default).
 
 This is how an agent can be handed several projects (an overlay copy and the
 projects it needs for context) with writing confined to the copy. It is enforced

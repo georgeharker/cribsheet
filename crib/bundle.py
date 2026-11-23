@@ -453,7 +453,7 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
         if not isinstance(crib.embedder, CachedEmbedder):
             return None
         if main is not None:
-            crib.embedder._s = _ReadThrough(bstore, main)
+            crib.embedder.use_storage(_ReadThrough(bstore, main))
 
         async def index_all() -> None:
             for p in projects:
