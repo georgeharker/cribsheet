@@ -125,6 +125,25 @@ class Paths:
     config_dir: Path
     data_dir: Path
     index_dir: Path
+    # A second, READ-ONLY projects dir (config `context_dir`; a bundle's context
+    # projects): a project found there lives there whole (stub, notes, records)
+    # and is never written. Set by `with_context`.
+    context_dir: Path | None = None
+
+    def with_context(self, cfg: Any) -> "Paths":
+        """These paths with the config's `context_dir` (expanded) applied."""
+        from dataclasses import replace
+
+        from .config import expand_location
+
+        if not getattr(cfg, "context_dir", None):
+            return self
+        return replace(self, context_dir=expand_location(cfg.context_dir, cfg.locations))
+
+    def in_context(self, project: str) -> bool:
+        """Is `project` one of the read-only context projects?"""
+        return (self.context_dir is not None
+                and (self.context_dir / check_project_name(project)).is_dir())
 
     @classmethod
     def resolve(cls) -> Paths:
@@ -185,7 +204,13 @@ class Paths:
         reindex stays the universal recovery path and embeddings can never be
         committed to someone's repo. The DATA tier (notes + their version ring)
         is the part that may move, and it must be resolved through
-        `resolve_project_paths` rather than derived from here."""
+        `resolve_project_paths` rather than derived from here.
+
+        A context project (`in_context`) lives whole in the context dir, which
+        takes precedence: the writable root can't shadow it."""
+        if self.in_context(project):
+            assert self.context_dir is not None
+            return self.context_dir / check_project_name(project)
         return self.projects_dir / check_project_name(project)
 
     def notes_dir(self, project: str) -> Path:
@@ -333,7 +358,7 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
     from .config import ProjectConfig, expand_location
 
     name = check_project_name(project)
-    pdir = paths.projects_dir / name
+    pdir = paths.project_dir(name)
     pcfg = ProjectConfig.load(pdir / ".cribproject", name)
     token = pcfg.store_root
     mappings = _mappings(pcfg.mappings, cfg)

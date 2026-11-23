@@ -187,6 +187,8 @@ def _kinded(
 
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
+        # every component below gets THESE paths: the context dir applied
+        paths = paths.with_context(config)
         self.paths = paths
         self.config = config
         self.store = store
@@ -253,7 +255,7 @@ class Crib:
         # verbs refuse with the reason.
         self.pending_facets: dict[str, str] = store.facet_pending()
         # which projects this instance may write (crib/access.py; None = all)
-        self.access = WriteAccess(config.writable)
+        self.access = WriteAccess(config.writable, read_only=paths.in_context)
         self._sweep_warned: set[str] = set()  # scheduled-delete failures, reported once
         self.pillars: dict[str, NoteStore] = {
             spec.name: NoteStore(
@@ -6783,10 +6785,9 @@ class Crib:
             return False
 
     def projects(self) -> list[str]:
-        pd = self.paths.projects_dir
-        if not pd.is_dir():
-            return []
-        return sorted(p.name for p in pd.iterdir() if p.is_dir())
+        names = {p.name for d in (self.paths.projects_dir, self.paths.context_dir)
+                 if d is not None and d.is_dir() for p in d.iterdir() if p.is_dir()}
+        return sorted(names)
 
     def project_config(self, project: str) -> ProjectConfig:
         return ProjectConfig.load(self.project_paths(project).config_file, project)

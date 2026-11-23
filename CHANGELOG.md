@@ -66,6 +66,12 @@ sandbox itself must provide.
 - `lsp.json` and `grammar.json` are read from crib's config dir as resolved
   everywhere else, so `$XDG_CONFIG_HOME` now applies to them: with it set,
   move them from `~/.config/crib` to `$XDG_CONFIG_HOME/crib`.
+- **Read-only context projects live whole in their own dir:** a bundle's
+  context projects (stub, notes, records) go in `context_dir` (config; the
+  `--context-mount` / `--context-to` path), a read-only second projects dir;
+  nothing of them is left in the writable root. A project there is read-only
+  whatever `writable` says and can't be shadowed by the root. Replaces the
+  dev1 layout (stubs with `$CONTEXT/<p>` in the root): rebuild dev1 bundles.
 
 - **Confined mode in a sandbox.** CLI verbs under `--root` now run
   in-process: they tried to attach to a warm daemon (needing `sharedserver`),

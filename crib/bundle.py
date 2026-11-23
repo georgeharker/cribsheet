@@ -341,16 +341,13 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     if (trusted := _trusted_crib(paths, base, proj)) is not None:
         (pdir / ".crib").write_text(trusted)
 
-    # context projects: notes to the (read-only) context copy, records in the root
+    # context projects: each WHOLE (stub, notes, records) in the context dir,
+    # the bundle's read-only second projects dir; nothing of them in the root
     for p in context:
         home = ctx_dir / p
         home.mkdir(parents=True)
-        cdir = bpaths.project_dir(p)
-        cdir.mkdir(parents=True)
-        files[p] = _copy_project_files(paths, cfg, p, home, cdir)
-        ProjectConfig(name=p, created=now, store_root=f"$CONTEXT/{p}").save(
-            cdir / ".cribproject"
-        )
+        files[p] = _copy_project_files(paths, cfg, p, home, home)
+        ProjectConfig(name=p, created=now).save(home / ".cribproject")
 
     mount = context_mount or ("$ROOT/context" if not context_to else str(ctx_dir))
     lines = [
@@ -363,9 +360,9 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "[duckdb]",
         'mode = "embedded"',
         "",
-        "[locations]",
-        f"CONTEXT = {json.dumps(mount)}",
     ]
+    if context:  # the read-only projects dir, as the sandbox sees it
+        lines.insert(2, f"context_dir = {json.dumps(mount)}")
     # the sandbox embeds with the SAME model, or its store refuses the vectors
     lines += ["", "[embed]", f"model = {json.dumps(cfg.embed.model)}"]
     (bpaths.config_dir / "config.toml").write_text("\n".join(lines) + "\n")
@@ -452,7 +449,7 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
     bcfg = Config.load(bpaths.config_file)
     bcfg.locations["ROOT"] = str(bundle)
     if context_dir is not None:  # the copies as they sit HERE, not in the sandbox
-        bcfg.locations["CONTEXT"] = str(context_dir)
+        bcfg.context_dir = str(context_dir)
     bcfg.writable = None  # building the bundle's own cache, not a sandbox session
     bpaths.duckdb_file.parent.mkdir(parents=True, exist_ok=True)
     bstore = DuckDBStore.embedded(bpaths.duckdb_file)

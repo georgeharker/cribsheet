@@ -29,6 +29,23 @@ bundle's `config/config.toml` if the sandbox should describe symbols (e.g. an
 openai-compatible endpoint at a key-holding proxy; crib sends a placeholder
 bearer when no key is configured).
 
+### Writable and read-only projects
+
+A bundle has two projects dirs:
+
+```
+<bundle>/data/projects/<overlay>/   the writable project (in --root)
+<context dir>/<project>/            each read-only project, WHOLE: stub, notes,
+                                    design, plans, symbol records
+```
+
+The context dir is `context_dir` in the bundle's `config/config.toml` (from
+`--context-mount`; default `$ROOT/context`, or the `--context-to` path). It is
+the one base the read-only projects are rehomed by: mount the copy anywhere and
+set that line. A project found there is read-only whatever `writable` says, and
+a same-named dir in the root can't shadow it; crib never writes there, so it
+can be mounted read-only.
+
 In the **sandbox**:
 
 ```bash
@@ -48,7 +65,8 @@ With `--root DIR` (or `$CRIB_ROOT`):
 - crib writes nothing outside `DIR`, except the store if `--store` moves it
   (`$CRIB_STORE`; an inherited `$CRIB_INDEX_DIR` is ignored);
 - only the projects in the bundle's `writable` list accept writes; context
-  projects and anything homed outside `DIR` are read-only;
+  projects (the `context_dir`) and anything homed outside `DIR` are
+  read-only;
 - a checkout's own `.crib` files are never read or written (projects are
   named explicitly; a planted nested `.crib` can't hide files), and files
   whose real path escapes the checkout are skipped;

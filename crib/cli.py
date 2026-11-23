@@ -4291,7 +4291,7 @@ def _facets_cmd(args: Any) -> int:
         old = p.get("was_store")
         spec = facets.get(p["facet"])
         if old and spec is not None and old != spec.store and facets.by_store(old) is None:
-            roots = [crib.paths.projects_dir / n for n in crib.projects()]
+            roots = [crib.paths.project_dir(n) for n in crib.projects()]
             roots += [pp.data_root for n in crib.projects()
                       if (pp := crib.project_paths(n)).in_repo and pp.available]
             left = sorted({d for r in roots if (d := r / old).is_dir()

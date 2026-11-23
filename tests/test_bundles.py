@@ -79,13 +79,13 @@ def test_create_writes_a_self_contained_bundle(trusted, tmp_path):
     assert "project: toucan@pr-1" in trusted_crib and "src/**/*.py" in trusted_crib
     assert "store" not in trusted_crib  # residency never carried
     assert (b / "context" / "llmkit" / "notes" / "ctx-note.md").exists()
-    assert (
-        "$CONTEXT/llmkit"
-        in (b / "data" / "projects" / "llmkit" / ".cribproject").read_text()
-    )
+    # the context project lives WHOLE in the context dir, nothing in the root
+    assert (b / "context" / "llmkit" / ".cribproject").is_file()
+    assert "store_root" not in (b / "context" / "llmkit" / ".cribproject").read_text()
+    assert not (b / "data" / "projects" / "llmkit").exists()
     cfg = (b / "config" / "config.toml").read_text()
     assert 'writable = ["toucan@pr-1"]' in cfg and 'mode = "embedded"' in cfg
-    assert 'CONTEXT = "$ROOT/context"' in cfg
+    assert 'context_dir = "$ROOT/context"' in cfg
     assert (b / "config" / "lsp.json").exists()
     m = bundles.read_manifest(b)
     assert m["overlay"] == "toucan@pr-1" and m["context"] == ["llmkit"] and m["expires"]
@@ -333,6 +333,8 @@ def test_a_read_only_projects_records_survive_revalidation(
     )
     monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
     paths = Paths.resolve()
+    paths = paths.with_context(Config.load(paths.config_file))
+    assert paths.in_context("llmkit")
     si = SymbolIndex(paths.project_dir("llmkit"))
     si.write(
         {
@@ -484,7 +486,7 @@ def test_a_context_copy_mounted_elsewhere(trusted, tmp_path, monkeypatch):
                    context_to=mount, context_mount=str(mount), vectors=False)
     assert (mount / "llmkit" / "notes" / "ctx-note.md").exists()
     assert not (tmp_path / "b" / "context").exists()
-    assert f'CONTEXT = "{mount}"' in (tmp_path / "b" / "config" / "config.toml").read_text()
+    assert f'context_dir = "{mount}"' in (tmp_path / "b" / "config" / "config.toml").read_text()
     monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
     paths = Paths.resolve()
     box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
@@ -560,3 +562,52 @@ def test_the_registry_caps_a_bundles_life(trusted, tmp_path):
     later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
     assert bundles.listing(trusted, soon)[0]["state"] == "unreadable"
     assert bundles.sweep(trusted, now=later) == [str(b.resolve())]
+
+
+# ── context projects: a read-only second projects dir ───────────────────────
+
+
+def test_a_context_project_is_read_only_and_cannot_be_shadowed(trusted, tmp_path,
+                                                                monkeypatch):
+    _create(trusted, tmp_path)
+    b = tmp_path / "b"
+    cfgf = b / "config" / "config.toml"
+    # even listed as writable, and even with a same-named dir planted in the root
+    cfgf.write_text(cfgf.read_text().replace('writable = ["toucan@pr-1"]',
+                                             'writable = ["toucan@pr-1", "llmkit"]'))
+    (b / "data" / "projects" / "llmkit" / "notes").mkdir(parents=True)
+    monkeypatch.setenv(ROOT_ENV, str(b))
+    paths = Paths.resolve()
+    box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
+    assert box.paths.project_dir("llmkit") == b / "context" / "llmkit"
+    with pytest.raises(CribUserError, match="read-only context project"):
+        run(box.store_note("nope", title="Nope", project="llmkit"))
+
+
+def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
+                                                         monkeypatch):
+    """The pod mounts the context read-only: opening, reconciling and reading
+    never write there."""
+    import os
+    import stat
+
+    _create(trusted, tmp_path)
+    b = tmp_path / "b"
+    ctx = b / "context"
+    files = [p for p in ctx.rglob("*")]
+    for p in [ctx, *files]:
+        p.chmod(p.stat().st_mode & ~(stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
+    try:
+        before = {p: p.stat().st_mtime_ns for p in [ctx, *files]}
+        monkeypatch.setenv(ROOT_ENV, str(b))
+        paths = Paths.resolve()
+        box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
+        r = run(box.reconcile_all())
+        assert not r["skipped"]
+        assert any("ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit"))
+        box.close()
+        assert {p: p.stat().st_mtime_ns for p in [ctx, *files]} == before
+        assert sorted(ctx.rglob("*")) == sorted(files)
+    finally:
+        for p in [ctx, *ctx.rglob("*")]:
+            os.chmod(p, p.stat().st_mode | stat.S_IWUSR)

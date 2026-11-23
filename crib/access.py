@@ -20,7 +20,7 @@ overlays", part 5.
 from __future__ import annotations
 
 import os
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from .errors import CribUserError
 
@@ -32,16 +32,29 @@ class ReadOnlyProject(CribUserError):
 
 
 class WriteAccess:
-    """The writable-project allowlist: None allows every project."""
+    """The writable-project allowlist: None allows every project. A project
+    `read_only` says is read-only by LOCATION (a bundle's context projects,
+    crib.paths.Paths.in_context) is refused whatever the allowlist says."""
 
-    def __init__(self, writable: Iterable[str] | None = None) -> None:
+    def __init__(self, writable: Iterable[str] | None = None,
+                 read_only: Callable[[str], bool] | None = None) -> None:
         self.writable = frozenset(writable) if writable is not None else None
+        self._read_only = read_only
+
+    def _located_read_only(self, project: str | None) -> bool:
+        return bool(project) and self._read_only is not None and self._read_only(project)
 
     def allows(self, project: str | None) -> bool:
+        if self._located_read_only(project):
+            return False
         return self.writable is None or (project or "") in self.writable
 
     def require(self, project: str | None, what: str = "write") -> None:
         """Refuse `what` on `project` unless this instance may write it."""
+        if self._located_read_only(project):
+            raise ReadOnlyProject(
+                f"{what} refused: project {project!r} is a read-only context "
+                "project (config `context_dir`). Reads still work.")
         if self.writable is None or (project or "") in self.writable:
             return
         named = ", ".join(sorted(self.writable)) or "none"

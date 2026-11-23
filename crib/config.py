@@ -389,6 +389,9 @@ class Config:
     # The projects this instance may WRITE; None = every project (crib/access.py).
     # $CRIB_WRITABLE (comma-separated) wins over the file.
     writable: list[str] | None = None
+    # A read-only second projects dir (crib.paths.Paths.context_dir): a bundle's
+    # context projects. `$LOCATION` tokens ($ROOT) expand.
+    context_dir: str | None = None
 
     @classmethod
     def load(cls, config_file: Path) -> "Config":
@@ -438,6 +441,8 @@ class Config:
                 )
         if "watch" in data:
             cfg.watch = bool(data["watch"])
+        if isinstance(cd := data.get("context_dir"), str) and cd.strip():
+            cfg.context_dir = cd
         if "writable" in data:
             w = data["writable"]
             if isinstance(w, list) and all(isinstance(x, str) for x in w):
