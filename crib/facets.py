@@ -219,6 +219,8 @@ ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
 # every top-level command and built-in tool prefix is covered.
 RESERVED_NAMES = frozenset(
     {
+        "bundle",
+        "bundles",
         "facet",
         "facets",
         "info",

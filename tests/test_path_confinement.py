@@ -55,14 +55,15 @@ def test_confine_rejects_symlink_escape(tmp_path):
         confine(base, "link/secret.md")
 
 
-@pytest.mark.parametrize("bad", ["../evil", "a/b", "", ".", "..", "with space", "/abs"])
+@pytest.mark.parametrize("bad", ["../evil", "a/b", "", ".", "..", "with space", "/abs",
+                                 "@x", "x@", "a@b@c", "a@../b"])
 def test_check_project_name_rejects_paths(bad):
     with pytest.raises(ValueError, match="invalid project name"):
         check_project_name(bad)
 
 
 def test_check_project_name_allows_ordinary_names():
-    for ok in ("crib", "my-proj", "my_proj", "v1.2", "A9"):
+    for ok in ("crib", "my-proj", "my_proj", "v1.2", "A9", "toucan@pr-123"):
         assert check_project_name(ok) == ok
 
 

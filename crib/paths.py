@@ -21,7 +21,9 @@ from .errors import CribUserError
 if TYPE_CHECKING:
     from .config import Config
 
-_PROJECT_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+# One path-safe segment. A single '@' separates an OVERLAY from its base
+# (`toucan@pr-123`: a copy of `toucan` in a bundle); never leading or trailing.
+_PROJECT_RE = re.compile(r"^[A-Za-z0-9._-]+(@[A-Za-z0-9._-]+)?$")
 
 
 def check_project_name(project: str) -> str:

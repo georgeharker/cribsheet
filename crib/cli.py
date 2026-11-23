@@ -1884,6 +1884,33 @@ def build_parser() -> argparse.ArgumentParser:
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
     # help= → kept out of the listed commands (still a valid hidden subcommand).
+    n_bundle = sub.add_parser(
+        "bundle",
+        help="self-contained, disposable crib roots handed to a sandbox "
+        "(open one with `crib --root DIR`)",
+    )
+    bsub = n_bundle.add_subparsers(dest="bundle_cmd", required=True)
+    _bc = bsub.add_parser(
+        "create", help="write a bundle: a writable overlay copy + read-only context")
+    _bc.add_argument("dir", type=Path, help="the bundle directory (new or empty)")
+    _bc.add_argument("--overlay", required=True, metavar="BASE:NAME",
+                     help="copy project BASE as the writable project BASE@NAME")
+    _bc.add_argument("--context", action="append", default=[], metavar="PROJECT",
+                     help="a project to include read-only (repeatable)")
+    _bc.add_argument("--context-to", type=Path, metavar="DIR",
+                     help="where the context copies go (default DIR/context); "
+                     "the sandbox mounts it read-only")
+    _bc.add_argument("--context-mount", metavar="PATH",
+                     help="where --context-to appears inside the sandbox")
+    _bc.add_argument("--expires", default="7d", metavar="WHEN",
+                     help="ISO time or duration (30m/2h/7d); default 7d")
+    _be = bsub.add_parser("expire", help="set a bundle's expiry (also inside it)")
+    _be.add_argument("dir", type=Path, nargs="?",
+                     help="the bundle (default: the --root you're confined to)")
+    _be.add_argument("--expires", required=True, metavar="WHEN")
+    bsub.add_parser("list", help="registered bundles and their expiry")
+    _bd = bsub.add_parser("delete", help="remove a registered bundle now")
+    _bd.add_argument("dir", type=Path)
     n_facets = sub.add_parser(
         "facets", help="the facet registry: show it, conform the store to it"
     )
@@ -4114,6 +4141,51 @@ def _user_errors() -> tuple[type[BaseException], ...]:
     return (*out, ToolError)
 
 
+def _bundle_cmd(args: Any) -> int:
+    """`crib bundle create|expire|list|delete`: local, trusted-side admin (except
+    `expire`, which also works inside a confined bundle on its own root)."""
+    from . import bundle as bundles
+    from .config import Config
+    from .errors import CribUserError
+    from .paths import Paths
+
+    paths = Paths.resolve()
+    cmd = args.bundle_cmd
+    if cmd == "expire":
+        target = args.dir or paths.root
+        if target is None:
+            raise CribUserError("crib bundle expire: name the bundle directory")
+        out: Any = bundles.expire(target, args.expires)
+        human = f"{out['bundle']}: expires {out['expires']}"
+    elif paths.root is not None:
+        raise CribUserError(
+            f"crib bundle {cmd}: run on the trusted side, not in confined mode")
+    elif cmd == "create":
+        cfg = Config.load(paths.ensure().config_file)
+        out = bundles.create(paths, cfg, args.dir, args.overlay, args.context,
+                             args.context_to, args.context_mount, args.expires)
+        files = ", ".join(f"{p} {n}" for p, n in out["files"].items())
+        human = (f"bundle {out['bundle']}\n  overlay {out['overlay']} (writable, from "
+                 f"{out['base']})\n  context {', '.join(out['context']) or '-'}"
+                 + (f" at {out['context_dir']}" if out["context_dir"] else "")
+                 + f"\n  files: {files}\n  expires {out['expires']}\n"
+                 f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
+    elif cmd == "list":
+        out = bundles.listing(paths)
+        human = "\n".join(
+            f"{r['state']:10} {r['bundle']}  {r.get('overlay', '')}  "
+            f"expires {r.get('expires') or '-'}" for r in out) or "(no bundles)"
+    else:  # delete
+        out = bundles.delete(paths, args.dir)
+        human = f"deleted {out['bundle']}" + (
+            f" (+ {', '.join(out['removed'][1:])})" if len(out["removed"]) > 1 else "")
+    if args.json:
+        print(json.dumps(out, indent=2, default=str))
+    else:
+        print(human)
+    return 0
+
+
 def _facets_cmd(args: Any) -> int:
     """`crib facets show|init|sync`: local, against this machine's store."""
     from . import facets
@@ -4280,6 +4352,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "info":
         cmd_info(args.json)
         return 0
+    if args.cmd == "bundle":
+        from .errors import CribUserError
+
+        try:
+            return _bundle_cmd(args)
+        except CribUserError as e:
+            print(f"crib bundle: {e}", file=sys.stderr)
+            return 2
     if args.cmd == "facets":
         # Local: it reads and conforms this machine's store, never through the
         # daemon (which serves the facets it was started with).

@@ -49,6 +49,18 @@ version has no heading here.
   `--store DIR` (or `$CRIB_INDEX_DIR`) puts the store, a disposable cache,
   elsewhere (e.g. pod scratch); in confined mode it is the one thing kept
   outside the root.
+- **Bundles: `crib bundle create|expire|list|delete`.** A bundle is a
+  self-contained, disposable crib root for a sandbox: `crib bundle create DIR
+  --overlay toucan:pr-123 --context llmkit --expires 7d` copies project
+  `toucan` as the writable, transient project `toucan@pr-123`, copies
+  `llmkit` read-only for context (to `DIR/context`, or `--context-to` for a
+  read-only mount), and writes the bundle's config (embedded store, only the
+  overlay writable) and a manifest. Open it with `crib --root DIR`. The
+  trusted side registers each bundle and deletes it when its expiry passes
+  (the daemon's sweep) or on `crib bundle delete`; a session can extend it
+  with `crib bundle expire`. Only the expiry is read back from a bundle (it
+  is writable inside the sandbox); what a delete removes comes from the
+  registry. Project names may now contain one `@` (an overlay of a base).
 
 ## [0.27.0] - 2026-11-22
 

@@ -3756,9 +3756,18 @@ class Crib:
         return deleted
 
     async def _transient_sweeper(self, every_s: float = 300.0) -> None:
-        """The daemon's scheduled delete of expired transient projects."""
+        """The daemon's scheduled delete of expired transient projects, and of
+        expired registered bundles (crib.bundle; trusted side only)."""
+        from . import bundle as bundles
+
         while True:
             await self.delete_expired_transients()
+            if self.paths.root is None:
+                try:
+                    for gone in bundles.sweep(self.paths):
+                        print(f"[crib] expired bundle deleted: {gone}", file=sys.stderr)
+                except Exception as e:  # noqa: BLE001 — a sweep never kills the daemon
+                    print(f"[crib] bundle sweep failed: {e}", file=sys.stderr)
             await asyncio.sleep(every_s)
 
     def _pillar_note_count(self, pp: ProjectPaths) -> int:

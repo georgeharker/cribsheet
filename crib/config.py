@@ -41,6 +41,13 @@ def _generate_from_env(gen: GenerateConfig) -> None:
         gen.from_env = (*gen.from_env, "provider")
 
 
+def _confined_locations(cfg: "Config") -> None:
+    """In confined mode `$ROOT` names the root wherever it is mounted, so a
+    bundle's stubs can point at `$ROOT/context/<p>` portably."""
+    if (root := confined_root()) is not None:
+        cfg.locations.setdefault("ROOT", str(root))
+
+
 def _warn_unknown(config_file: Path, table: str, data: dict, known: set[str]) -> None:
     """One line naming the file, the table and every key we're ignoring — the
     only way a typo is ever noticed once it stops being fatal."""
@@ -395,6 +402,7 @@ class Config:
         if not config_file.exists():
             _generate_from_env(cfg.generate)
             cfg.writable = writable_from(cfg.writable)
+            _confined_locations(cfg)
             return cfg
         try:
             data = tomllib.loads(config_file.read_text())
@@ -456,6 +464,7 @@ class Config:
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
         _generate_from_env(cfg.generate)
         cfg.writable = writable_from(cfg.writable)
+        _confined_locations(cfg)
         return cfg
 
 
@@ -902,17 +911,23 @@ def portable_path(p: str | Path, locations: dict[str, str]) -> str:
     return str(ap)
 
 
-def expand_location(token: str, locations: dict[str, str]) -> Path:
+def expand_location(token: str, locations: dict[str, str], _depth: int = 0) -> Path:
     """Expand a `$NAME/rest` token back to a local absolute path. The inverse of
-    `portable_path`; an unknown name or a non-token is returned verbatim."""
+    `portable_path`; an unknown name or a non-token is returned verbatim. A
+    location may itself be a token (a bundle's `CONTEXT = "$ROOT/context"`):
+    it is expanded in turn, a few levels deep at most (a cycle stops there)."""
     if not token.startswith("$"):
         return Path(token)
     head, _, rest = token[1:].partition("/")
-    roots = {
-        "HOME": Path.home(),
-        **{k: Path(v).expanduser() for k, v in locations.items()},
-    }
-    root = roots.get(head)
+    if head in locations:  # a configured location wins, HOME included
+        value = locations[head]
+        root: Path | None = (
+            expand_location(value, locations, _depth + 1)
+            if value.startswith("$") and _depth < 4 else Path(value).expanduser())
+    elif head == "HOME":
+        root = Path.home()
+    else:
+        root = None
     if root is None:
         return Path(token)
     return root / rest if rest else root
