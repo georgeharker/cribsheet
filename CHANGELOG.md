@@ -23,6 +23,13 @@ version has no heading here.
   project lifecycle verbs. Unset, every project is writable, as before. The
   first piece of overlays for sandboxed review (an agent handed several
   projects writes only to its copy).
+- **Transient projects.** `crib project create NAME --transient [--expires
+  2h]` (MCP `project_create(transient=True, expires=...)`) makes a project for
+  one job: never git-synced (its directory carries a `*` .gitignore), no
+  version ring, skipped by the startup reconcile, and deleted without `.trash`.
+  With `--expires` (an ISO time, or `30m` / `2h` / `1d`) the daemon deletes it
+  when due, through the ordinary delete path (a scheduled delete, checked at
+  start and every 5 minutes). A transient project can't declare repo residency.
 
 ## [0.27.0] - 2026-11-22
 

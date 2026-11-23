@@ -75,7 +75,7 @@
   "plan status": "usage: crib plan status [-h] [-p PROJECT] [-P PROJECT_PATH] ref status\n\npositional arguments:\n  ref\n  status\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project adopt": "usage: crib project adopt [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project cancel": "usage: crib project cancel [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
-  "project create": "usage: crib project create [-h] [--store RELPATH] [-P PROJECT_PATH] [-p PROJECT_FLAG] [project]\n\npositional arguments:\n  project               the new project's name\n\noptions:\n  -h, --help            show this help message and exit\n  --store RELPATH       create the project IN-REPO at this repo-relative store path (writes .crib\n                        + the machine stub; anchor with -P/--project-path)\n  -P, --project-path PROJECT_PATH\n                        anchor --store at this repo (needed with --store; never the daemon's cwd)\n  -p, --project PROJECT_FLAG\n                        the new project's name (selector spelling)\n",
+  "project create": "usage: crib project create [-h] [--store RELPATH] [--transient] [--expires WHEN] [-P PROJECT_PATH]\n                           [-p PROJECT_FLAG]\n                           [project]\n\npositional arguments:\n  project               the new project's name\n\noptions:\n  -h, --help            show this help message and exit\n  --store RELPATH       create the project IN-REPO at this repo-relative store path (writes .crib\n                        + the machine stub; anchor with -P/--project-path)\n  --transient           a project for one job: never synced, no version ring, deleted without\n                        .trash (and by the daemon once --expires passes)\n  --expires WHEN        with --transient: an ISO time, or a duration like 30m / 2h / 1d\n  -P, --project-path PROJECT_PATH\n                        anchor --store at this repo (needed with --store; never the daemon's cwd)\n  -p, --project PROJECT_FLAG\n                        the new project's name (selector spelling)\n",
   "project delete": "usage: crib project delete [-h] [-p PROJECT_FLAG] [--force] [--yes] [project]\n\npositional arguments:\n  project               the project to delete (explicit; positional or -p; never the session\n                        default)\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT_FLAG\n                        the project to delete (selector spelling, same fact)\n  --force               accepted for compatibility; NO-OP \u2014 delete never removes anything from a\n                        user repo (its notes stay; release them first if they should follow the\n                        namespace)\n  --yes                 skip the interactive confirmation (for scripts; piped stdin refuses\n                        without it)\n",
   "project doctor": "usage: crib project doctor [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project forget": "usage: crib project forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--with-learnings]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --with-learnings      also drop attached learnings (default: keep them)\n",
@@ -3872,10 +3872,21 @@
   },
   "project_create": {
    "annotations": null,
-   "description": "Explicitly create a project: pillar skeleton + birth manifest\n(created/host in `.cribproject`). A DOORWAY, not a gate \u2014 writes still\ncreate implicitly; use this when a project should exist before its\nfirst write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative\npath>` + `project_path=<the repo dir>` writes the repo's `.crib`\n(`project:` + `store:`) and the machine stub, so the project is born\nin-repo (its pillar stores travel with the repo; commit them). The\nat-birth store must be empty \u2014 moving an existing global project's\nnotes into the repo is `project_adopt`, not this. Idempotent.\n\nThe name comes from you OR the repo's `.crib`/repo dir (a fresh repo\nwithout a `.crib`\nderives its name from the repo dir; this is why create runs with NO\nresolution policy: the default-project fallback would silently point\na repo-bound store at the shared bucket). The default project is\nrefused as a residency target.",
+   "description": "Explicitly create a project: pillar skeleton + birth manifest\n(created/host in `.cribproject`). A DOORWAY, not a gate \u2014 writes still\ncreate implicitly; use this when a project should exist before its\nfirst write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative\npath>` + `project_path=<the repo dir>` writes the repo's `.crib`\n(`project:` + `store:`) and the machine stub, so the project is born\nin-repo (its pillar stores travel with the repo; commit them). The\nat-birth store must be empty \u2014 moving an existing global project's\nnotes into the repo is `project_adopt`, not this. Idempotent.\n\nThe name comes from you OR the repo's `.crib`/repo dir (a fresh repo\nwithout a `.crib`\nderives its name from the repo dir; this is why create runs with NO\nresolution policy: the default-project fallback would silently point\na repo-bound store at the shared bucket). The default project is\nrefused as a residency target.\n\n`transient=True` makes a project for one job: never git-synced, no\nversion ring, not in the startup reconcile, deleted without `.trash`;\n`expires` (an ISO time, or a duration like `30m` / `2h` / `1d`) has the\ndaemon delete it when due. A transient project can't declare `store`.",
    "inputSchema": {
     "additionalProperties": false,
     "properties": {
+     "expires": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
      "project": {
       "anyOf": [
        {
@@ -3908,6 +3919,10 @@
        }
       ],
       "default": null
+     },
+     "transient": {
+      "default": false,
+      "type": "boolean"
      }
     },
     "type": "object"

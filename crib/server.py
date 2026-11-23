@@ -1016,6 +1016,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         project: str | None = None,
         store: str | None = None,
         project_path: str | None = None,
+        transient: bool = False,
+        expires: str | None = None,
     ) -> dict[str, Any]:
         """Explicitly create a project: pillar skeleton + birth manifest
         (created/host in `.cribproject`). A DOORWAY, not a gate — writes still
@@ -1032,8 +1034,14 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         derives its name from the repo dir; this is why create runs with NO
         resolution policy: the default-project fallback would silently point
         a repo-bound store at the shared bucket). The default project is
-        refused as a residency target."""
-        return await crib.project_create(project, cwd=_cwd(project_path), store=store)
+        refused as a residency target.
+
+        `transient=True` makes a project for one job: never git-synced, no
+        version ring, not in the startup reconcile, deleted without `.trash`;
+        `expires` (an ISO time, or a duration like `30m` / `2h` / `1d`) has the
+        daemon delete it when due. A transient project can't declare `store`."""
+        return await crib.project_create(project, cwd=_cwd(project_path), store=store,
+                                         transient=transient, expires=expires)
 
     @crib_tool("write")
     async def project_delete(project: str, force: bool = False) -> dict[str, Any]:

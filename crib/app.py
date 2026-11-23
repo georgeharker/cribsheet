@@ -182,6 +182,28 @@ def _kinded(
                              ("informed_by", informed_by)) if v}
     return out or None
 
+
+_DURATION = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+
+
+def _expiry(spec: str) -> str:
+    """`expires` as an ISO-8601 UTC time: an ISO time is taken as given (UTC
+    if it names no zone), a duration (`90s`, `30m`, `2h`, `1d`) counts from now."""
+    spec = spec.strip()
+    if spec and spec[-1] in _DURATION and spec[:-1].isdigit():
+        at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+            seconds=int(spec[:-1]) * _DURATION[spec[-1]])
+    else:
+        try:
+            at = datetime.datetime.fromisoformat(spec)
+        except ValueError as e:
+            raise CribUserError(
+                f"expires: {spec!r} is neither an ISO time nor a duration like "
+                "30m / 2h / 1d") from e
+        if at.tzinfo is None:
+            at = at.replace(tzinfo=datetime.UTC)
+    return at.astimezone(datetime.UTC).isoformat(timespec="seconds")
+
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
         self.paths = paths
@@ -411,6 +433,7 @@ class Crib:
         # the watcher only sees edits from now on, and reads refresh lazily.
         self._spawn_bg(loop, self._refresh_records_at_start(), "symbol refresh (startup)")
         self._spawn_bg(loop, self._keyword_backlog(), "keyword backlog")
+        self._spawn_bg(loop, self._transient_sweeper(), "transient expiry")
         # Is the platform delivering file events? (fseventsd can saturate and
         # delay them for minutes.) While it isn't, a catch-up sweep stands in.
         d = self.config.daemon
@@ -1498,7 +1521,11 @@ class Crib:
         note changes, then eagerly rebuild merge-dirtied code files (a pull
         that merged divergent symbol records lands here via the CLI's
         post-pull reconcile)."""
-        projects = sorted(set(self.projects()) | self._indexed_projects())
+        # a transient project is indexed only when asked (it is discarded whole)
+        projects = sorted(
+            p for p in set(self.projects()) | self._indexed_projects()
+            if not self._is_transient(p)
+        )
         total: dict[str, Any] = {
             "projects": len(projects),
             "changed": 0,
@@ -3377,6 +3404,8 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         store: str | None = None,
+        transient: bool = False,
+        expires: str | None = None,
     ) -> dict[str, Any]:
         """Explicitly create a project: pillar skeleton + birth manifest
         (`created`/`host` in `.cribproject`).
@@ -3398,6 +3427,13 @@ class Crib:
                 for seg in PILLAR_SEGMENTS:
                     (root / seg).mkdir(parents=True, exist_ok=True)
 
+        if expires is not None and not transient:
+            raise CribUserError("expires applies to a transient project: pass transient too")
+        if store is not None and transient:
+            raise CribUserError(
+                "a transient project can't declare repo residency (store=): it is "
+                "discarded whole, and a repo's notes are the repo's"
+            )
         if store is not None:
             # Residency: anchored at the CALLER's repo — never the process cwd
             # (the daemon's spawn dir is not a repo anyone meant). Same rule as
@@ -3606,20 +3642,74 @@ class Crib:
                 "message": f"{name} already exists (implicit birth on first "
                 "write, or a previous create) — nothing changed",
             }
+        until = _expiry(expires) if expires else None
         pdir = self.paths.project_dir(name)
         pdir.mkdir(parents=True, exist_ok=True)
+        if transient:
+            # never in the git memory sync: git skips everything under here
+            (pdir / ".gitignore").write_text("*\n")
         _skeleton(pdir)
         pcfg = ProjectConfig.load(pdir / ".cribproject", name)
         self._stamp_manifest(pcfg)
+        if transient:
+            pcfg.transient, pcfg.expires = True, until
         pcfg.save(pdir / ".cribproject")
+        self.project_paths.invalidate(name)
         return {
             "project": name,
             "project_created": True,
             "residency": "global",
+            **({"transient": True} if transient else {}),
+            **({"expires": until} if until else {}),
             "message": (
                 f"{name} created with an empty pillar skeleton + birth manifest"
+                + (" (transient" + (f", expires {until}" if until else "") + ")"
+                   if transient else "")
             ),
         }
+
+    def sweep_expired_transients(self, now: datetime.datetime | None = None) -> list[str]:
+        """Delete every transient project whose `expires` has passed (the
+        scheduled delete): the ordinary delete path (index rows, vectors,
+        stamps, bindings, files), with no .trash. Returns the names deleted."""
+        now = now or datetime.datetime.now(datetime.UTC)
+        gone: list[str] = []
+        for name in self.projects():
+            try:
+                pp = self.project_paths(name)
+            except Exception:  # noqa: BLE001 — an unreadable stub is not ours to delete
+                continue
+            if not (pp.transient and pp.expires):
+                continue
+            try:
+                due = datetime.datetime.fromisoformat(pp.expires)
+            except ValueError:
+                continue
+            if due.tzinfo is None:
+                due = due.replace(tzinfo=datetime.UTC)
+            if due <= now:
+                gone.append(name)
+        return gone
+
+    async def delete_expired_transients(
+        self, now: datetime.datetime | None = None
+    ) -> list[str]:
+        """`sweep_expired_transients`, deleting each due project."""
+        due = self.sweep_expired_transients(now)
+        deleted = []
+        for name in due:
+            try:
+                await self.project_delete(project=name, force=True)
+                deleted.append(name)
+            except CribUserError as e:  # e.g. a sweep still running: next time
+                print(f"[crib] transient {name!r} not deleted yet: {e}", file=sys.stderr)
+        return deleted
+
+    async def _transient_sweeper(self, every_s: float = 300.0) -> None:
+        """The daemon's scheduled delete of expired transient projects."""
+        while True:
+            await self.delete_expired_transients()
+            await asyncio.sleep(every_s)
 
     def _pillar_note_count(self, pp: ProjectPaths) -> int:
         """*.md count across every pillar of a project (delete/rename reports)."""
@@ -3739,7 +3829,10 @@ class Crib:
             # The global tree (machine-local stub + derived caches) travels to
             # the trash — it is shared-git/data-root state, undo for free.
             # The user repo's store is deliberately NOT touched here.
-            if plan["tree_exists"]:
+            if plan["tree_exists"] and self._is_transient(proj):
+                # a transient project is discarded whole: no undo copy
+                shutil.rmtree(self.paths.project_dir(proj))
+            elif plan["tree_exists"]:
                 tdir = self.paths.trash_dir
                 tdir.mkdir(parents=True, exist_ok=True)
                 stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -6535,6 +6628,12 @@ class Crib:
 
     def history(self, relpath: str | None = None) -> list[str]:
         return self.git.history(relpath)
+
+    def _is_transient(self, project: str) -> bool:
+        try:
+            return self.project_paths(project).transient
+        except Exception:  # noqa: BLE001 — an unknown/invalid name is not transient
+            return False
 
     def projects(self) -> list[str]:
         pd = self.paths.projects_dir

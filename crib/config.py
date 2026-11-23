@@ -484,6 +484,12 @@ class ProjectConfig:
     # registry's one location mechanism): noun -> {root: `$LOCATION/...` token,
     # glob, read_only, ids}. Machine-local for the same reason as store_root.
     mappings: dict[str, dict[str, Any]] | None = None
+    # A TRANSIENT project (`project_create --transient`): made for one job and
+    # discarded. Never git-synced (its dir carries a `*` .gitignore), no version
+    # ring, not in the startup reconcile, deleted without .trash; when `expires`
+    # (an ISO-8601 UTC time) passes, the daemon deletes it (a scheduled delete).
+    transient: bool | None = None
+    expires: str | None = None
 
     @classmethod
     def load(cls, path: Path, fallback_name: str) -> "ProjectConfig":
@@ -504,6 +510,8 @@ class ProjectConfig:
             created=data.get("created"),
             host=data.get("host"),
             mappings=m if isinstance(m := data.get("mappings"), dict) and m else None,
+            transient=bool(data["transient"]) if "transient" in data else None,
+            expires=str(data["expires"]) if data.get("expires") else None,
         )
 
     def save(self, path: Path) -> None:
@@ -520,6 +528,8 @@ class ProjectConfig:
             "created",
             "host",
             "mappings",
+            "transient",
+            "expires",
         ):
             if (value := getattr(self, key)) is not None:
                 data[key] = value

@@ -1581,6 +1581,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="create the project IN-REPO at this repo-relative store path "
         "(writes .crib + the machine stub; anchor with -P/--project-path)",
     )
+    _sp.add_argument(
+        "--transient", action="store_true",
+        help="a project for one job: never synced, no version ring, deleted "
+        "without .trash (and by the daemon once --expires passes)",
+    )
+    _sp.add_argument(
+        "--expires", metavar="WHEN",
+        help="with --transient: an ISO time, or a duration like 30m / 2h / 1d",
+    )
     # -P anchors --store at a repo, not the project; -p NAMES it, same fact as
     # the positional (separate dest, merged + conflict-guarded in the build).
     _sp.add_argument(
@@ -3535,13 +3544,15 @@ VERBS: dict[str, Verb] = {
             # can do that, so the CLI must not block it.
             "project": _proj_named(a, "create", optional=True),
             "store": getattr(a, "store", None),
+            "transient": getattr(a, "transient", False),
+            "expires": getattr(a, "expires", None),
         },
         _E_project("create"),
         is_async=True,
         # matches the server's "none" (create does its own naming: no
         # session-default fallback may point a repo-bound store at `default`)
         policy="none",
-        mcp="project=None store=None project_path=None",
+        mcp="project=None store=None project_path=None transient=False expires=None",
     ),
     "project rename": Verb(
         "project_rename",

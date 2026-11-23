@@ -41,6 +41,16 @@ class PendingMove(CribUserError):
     """A mapped facet whose items still wait to be moved into the mapping."""
 
 
+
+class _NoRing:
+    """The version ring of a transient project: keeps nothing."""
+
+    def stash(self, note_id: str, content: str) -> None:
+        return None
+
+
+_NO_RING = _NoRing()
+
 @dataclass(frozen=True)
 class StoreSpec:
     """What distinguishes one pillar store from another — everything else is the
@@ -301,7 +311,9 @@ class NoteStore:
         and `forget` would drop its only copy."""
         raw = path.read_text()
         fallback = fallback_id or derived_ulid(project, relpath)
-        ring = self.versions_for(project)
+        # a transient project keeps no history: it is discarded whole
+        ring = (_NO_RING if self.project_paths(project).transient
+                else self.versions_for(project))
         if self._policy(project).get("ids") == "derived":
             ring.stash(fallback, raw)  # the id is the path's (a file's own `id:` isn't crib's)
             return fallback

@@ -240,6 +240,10 @@ class ProjectPaths:
     # Mapped facets, by STORE segment (`routines`): their items live at the
     # mapping, not under the data root.
     mappings: Mapping[str, FacetLocation] = field(default_factory=dict)
+    # a transient project (see ProjectConfig.transient): no version ring, not
+    # synced, not reconciled at startup, deleted when `expires` passes
+    transient: bool = False
+    expires: str | None = None
 
     @property
     def in_repo(self) -> bool:
@@ -301,7 +305,7 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
         # note id across every project (DESIGN §8) — unchanged for global projects.
         return ProjectPaths(
             name, pdir, pdir / "notes", paths.versions_dir, data_root=pdir,
-            mappings=mappings,
+            mappings=mappings, transient=bool(pcfg.transient), expires=pcfg.expires,
         )
     root = expand_location(token, cfg.locations)
     return ProjectPaths(
@@ -314,6 +318,8 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
         store_token=token,
         available=root.is_dir(),
         mappings=mappings,
+        transient=bool(pcfg.transient),
+        expires=pcfg.expires,
     )
 
 
