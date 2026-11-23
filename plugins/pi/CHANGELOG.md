@@ -9,6 +9,81 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.28.0-dev2] - 2026-11-23
+
+Security review of the 0.28.0-dev1 sandbox features (bundles, confined mode,
+the writable allowlist). Read docs/bundles.md for the guarantees and what the
+sandbox itself must provide.
+
+### Fixed
+
+- **Confined mode wrote into, and read, the checkout under review.**
+  `project_create --store`, `adopt`, `release` and `relocate` are refused
+  under `--root`; a checkout's `.crib` files are never read (a planted nested
+  `.crib` could hide files from the index, and `refs:`/`store:` were
+  honoured); files whose real path escapes the checkout are skipped; every
+  writing verb checks both the allowlist and the root.
+- **Bundles carried the trusted repo path**, which a sandbox revalidated
+  against (dropping a context project's records, or reading trusted code).
+  It is no longer copied, and read-only projects are never revalidated,
+  re-described or watched.
+- **A hostile bundle could hang or redirect the trusted side.** Manifests are
+  read as small regular files only (no symlink, no FIFO); `bundle expire`
+  takes the overlay from the registry and never writes through a symlink; the
+  bundle sweep runs off the daemon's loop and one bad bundle never blocks the
+  rest; a failed `bundle create` cleans up.
+- **The transient sweep trusted a synced stub.** Only a transient project this
+  machine created (its birth `.gitignore` present, its host this host) is
+  deleted on schedule or without trash.
+- **Environment leaks in confined mode:** the store moves only by `--store`
+  (`$CRIB_STORE`; an inherited `$CRIB_INDEX_DIR` is ignored),
+  `$CRIB_FACETS_FILE` is ignored, `$ROOT` can't be overridden, and
+  `python -m crib` applies `--root` before loading. `--writable` is refused
+  when a verb would run in the daemon (which ignores it).
+- **The phased re-index** now updates only the edges touching re-extracted
+  files, from the language server's data (same-named symbols no longer gain
+  each other's callers; callers only the server knew survive);
+  `--budget 0` means no time, not unbounded.
+- Expiry parsing gives a clear error for out-of-range values;
+  `transient: "false"` no longer reads as true.
+- **Second review round:** trusted-side `bundle expire` reads and rewrites
+  the overlay's stub as it does the manifest (a small regular file, replaced
+  atomically, so a planted symlink at the stub or a temp name is never
+  written through); a failed `bundle create` removes only what it made (a
+  `--context-to` given without `--context` is never touched); a bundle's life
+  is capped by `--max-retention` (default 30d), held in the trusted registry;
+  global flags can't be abbreviated (`--ro` would have run unconfined), and
+  `cli.main` refuses env flags it can't apply; `lsp.json`/`grammar.json` come
+  from the root in confined mode; `--store` is refused when a verb would run
+  in the daemon; the phased re-index treats a file emptied of symbols as
+  changed.
+- **Third review round:** the global `--root`/`--store`/`--writable` no
+  longer collide with a subcommand's own option (`project create NAME --store
+  REL` works again); the trusted `bundle expire` writes only the manifest and
+  the registry, and moves the retention cap with the operator's expiry (the
+  overlay's stub, in the sandbox's tree, is never touched from the trusted
+  side); bundles copy `grammar.json` too.
+- `lsp.json` and `grammar.json` are read from crib's config dir as resolved
+  everywhere else, so `$XDG_CONFIG_HOME` now applies to them: with it set,
+  move them from `~/.config/crib` to `$XDG_CONFIG_HOME/crib`.
+- **Read-only context projects live whole in their own dir:** a bundle's
+  context projects (stub, notes, records) go in `context_dir` (config; the
+  `--context-mount` / `--context-to` path), a read-only second projects dir;
+  nothing of them is left in the writable root. A project there is read-only
+  whatever `writable` says and can't be shadowed by the root. Replaces the
+  dev1 layout (stubs with `$CONTEXT/<p>` in the root): rebuild dev1 bundles.
+  Enrichment (keywords, summaries, their catch-up) and the in-situ docs
+  re-sweep skip read-only projects, so a read-only mount is never written.
+
+- **Confined mode in a sandbox.** CLI verbs under `--root` now run
+  in-process: they tried to attach to a warm daemon (needing `sharedserver`),
+  which a sandbox doesn't have. A bundle's config also says
+  `[daemon] enabled = false`.
+- **`--root`, `--store` and `--writable` take effect before crib loads.** The
+  facet registry is read at import, so `--root` used to leave it read from the
+  default config dir (outside the root). The `crib` command now applies these
+  global flags first (`crib.entry`).
+
 ## [0.28.0-dev1] - 2026-11-22
 
 Dev release: crib for sandboxed review. Bundles (`crib bundle`), confined
