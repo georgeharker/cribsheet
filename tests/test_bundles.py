@@ -492,3 +492,68 @@ def test_a_context_copy_mounted_elsewhere(trusted, tmp_path, monkeypatch):
     assert box.project_paths("llmkit").data_root == mount / "llmkit"
     run(box.reconcile_all())
     assert any("ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit"))
+
+
+# ── re-review fixes ──────────────────────────────────────────────────────────
+
+
+def test_trusted_expire_never_writes_through_a_planted_link(trusted, tmp_path):
+    """The sandbox plants symlinks at the overlay stub and at a temp-file name:
+    the trusted `expire` writes neither target (B-1)."""
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
+    victim = tmp_path / "victim.txt"
+    victim.write_text("precious\n")
+    ov = b / "data" / "projects" / "toucan@pr-1"
+    (ov / "..cribproject.new").symlink_to(victim)
+    stub = ov / ".cribproject"
+    stub.unlink()
+    stub.symlink_to(victim)
+    with pytest.raises(CribUserError):
+        bundles.expire(b, "30d", trusted)
+    assert victim.read_text() == "precious\n"
+
+
+def test_trusted_expire_rewrites_a_regular_stub(trusted, tmp_path):
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
+    out = bundles.expire(b, "20d", trusted)
+    stub = b / "data" / "projects" / "toucan@pr-1" / ".cribproject"
+    assert not stub.is_symlink() and out["expires"] in stub.read_text()
+
+
+def test_a_failed_create_never_touches_a_preexisting_context_to(trusted, tmp_path,
+                                                                monkeypatch):
+    """--context-to given without --context: a failure leaves it alone (B-2)."""
+    mine = tmp_path / "mine"
+    mine.mkdir()
+    (mine / "precious.txt").write_text("keep me")
+
+    def boom(*a, **k):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(bundles, "_build_vectors", boom)
+    with pytest.raises(KeyboardInterrupt):
+        bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
+                       context_to=mine)
+    assert (mine / "precious.txt").read_text() == "keep me"
+    assert not (tmp_path / "b").exists()
+
+
+def test_the_registry_caps_a_bundles_life(trusted, tmp_path):
+    """The manifest (sandbox-writable) can't extend past --max-retention, and an
+    unreadable manifest is due once the cap passes (S-4)."""
+    b = tmp_path / "b"
+    out = bundles.create(trusted, Config(), b, "toucan:pr-1", [], expires="7d",
+                         max_retention="1d", vectors=False)
+    cap = bundles.registry(trusted)[str(b.resolve())]["max_expires"]
+    assert out["expires"] == cap  # clamped at create
+    m = bundles.read_manifest(b)
+    m["expires"] = "9999-01-01T00:00:00+00:00"
+    bundles.write_manifest(b, m)
+    assert bundles.listing(trusted)[0]["expires"] == cap
+    (b / "bundle.toml").unlink()
+    soon = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
+    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
+    assert bundles.listing(trusted, soon)[0]["state"] == "unreadable"
+    assert bundles.sweep(trusted, now=later) == [str(b.resolve())]

@@ -405,7 +405,7 @@ class Crib:
             root = SymbolIndex(self.paths.project_dir(name)).source_root()
             # confined mode watches nothing outside the root (a source checkout
             # never sits inside it): indexing there is explicit
-            if root is not None and self.paths.root is None and self.access.allows(name):
+            if root is not None and self.paths.root is None and self._may_write(name):
                 self._code_watcher.watch_root(name, root)
         self._code_watcher.start()
         # Deferred describe: the code-watcher persists STRUCTURE eagerly and hands the
@@ -794,7 +794,7 @@ class Crib:
         provider = provider_id(self.config.generate, "elaborate")
         pending = attempted = backing_off = 0
         for name in self.projects():
-            if not self.access.allows(name):
+            if not self._may_write(name):
                 continue  # read-only here: its records aren't ours to describe
             try:
                 si = SymbolIndex(self.paths.project_dir(name))
@@ -2299,7 +2299,7 @@ class Crib:
         never revalidated (that would re-index, or drop, its records)."""
         import functools
 
-        if not self.access.allows(proj):
+        if not self._may_write(proj):
             return
 
         # Never inline: a query must not wait on an LLM. Changed files are
@@ -2328,7 +2328,7 @@ class Crib:
         return wanted if self._may_generate(background=True) else "none"
 
     def _drop_file(self, proj: str, relpath: str) -> None:
-        if self.access.allows(proj):  # a read-only project's records stay
+        if self._may_write(proj):  # a read-only project's records stay
             self.code.drop_file(proj, relpath)
 
     def _require_code_index(self, proj: str) -> None:
@@ -2598,6 +2598,22 @@ class Crib:
                     f"{verb} refused: confined mode (--root {base}) writes only "
                     f"under its root; project {project!r} lives at {home}")
 
+    def _may_write(self, project: str | None) -> bool:
+        """`_require_write` as a test: may this instance write `project`?"""
+        try:
+            self._require_write(project, "write")
+        except CribUserError:
+            return False
+        return True
+
+    def _crib_file(self, project: str, root: Path) -> Path:
+        """The `.crib` a project's index is scoped by: the repo's, or in
+        confined mode the trusted copy under the root (a checkout's own is
+        never consulted there)."""
+        if self.paths.root is not None:
+            return self.paths.project_dir(project) / ".crib"
+        return root / ".crib"
+
     def _refuse_residency_when_confined(self, verb: str) -> None:
         """Residency verbs write a `.crib` and a store into a repo: never in
         confined mode, where the repo is the code under review."""
@@ -2735,7 +2751,7 @@ class Crib:
         proj = project or link.project
         self._require_write(proj, "project_index")
         await self._sync_mappings(proj, link)
-        crib_file = link.root / ".crib"
+        crib_file = self._crib_file(proj, link.root)
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
         running = self.code_jobs.get(proj)
         if running is not None and not running["task"].done():
@@ -2831,7 +2847,7 @@ class Crib:
         new_project = proj not in self.projects()  # before indexing creates its dirs
         docs = await self.index_docs_insitu(proj, root) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(root)
-        crib_file = root / ".crib"
+        crib_file = self._crib_file(proj, root)
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
         if phased if phased is not None else self.paths.root is not None:
             code = await self.indexer.index_phased(
@@ -3814,9 +3830,8 @@ class Crib:
                 await self.project_delete(project=name, force=True)
                 deleted.append(name)
             except Exception as e:  # noqa: BLE001 — one project never stops the sweep
-                key = f"{name}: {e}"
-                if key not in self._sweep_warned:
-                    self._sweep_warned.add(key)
+                if name not in self._sweep_warned:  # once per project
+                    self._sweep_warned.add(name)
                     print(f"[crib] transient {name!r} not deleted yet: {e}",
                           file=sys.stderr)
         return deleted

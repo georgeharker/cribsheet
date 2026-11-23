@@ -1448,7 +1448,11 @@ def _dep_kind_arg(s: Any) -> None:
 def build_parser() -> argparse.ArgumentParser:
     from . import __version__
 
-    p = argparse.ArgumentParser(prog="crib", description="markdown memory")
+    # no abbreviations: crib.entry applies --root/--store/--writable by their
+    # full names before loading, so a prefix (`--ro`) would parse here but leave
+    # the process unconfined
+    p = argparse.ArgumentParser(prog="crib", description="markdown memory",
+                                allow_abbrev=False)
     p.add_argument("--version", action="version", version=f"crib {__version__}")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
     p.add_argument(
@@ -1909,6 +1913,10 @@ def build_parser() -> argparse.ArgumentParser:
                      help="where --context-to appears inside the sandbox")
     _bc.add_argument("--expires", default="7d", metavar="WHEN",
                      help="ISO time or duration (30m/2h/7d); default 7d")
+    _bc.add_argument("--max-retention", default="30d", metavar="WHEN",
+                     help="hard cap on the bundle's life, kept on the trusted side: "
+                     "an expiry set or extended in the sandbox never passes it "
+                     "(default 30d)")
     _bc.add_argument("--no-vectors", dest="vectors", action="store_false",
                      help="skip building the bundle's store and vector file "
                      "(a sandbox then re-embeds with the model in its image)")
@@ -4175,7 +4183,7 @@ def _bundle_cmd(args: Any) -> int:
         cfg = Config.load(paths.ensure().config_file)
         out = bundles.create(paths, cfg, args.dir, args.overlay, args.context,
                              args.context_to, args.context_mount, args.expires,
-                             vectors=args.vectors)
+                             vectors=args.vectors, max_retention=args.max_retention)
         files = ", ".join(f"{p} {n}" for p, n in out["files"].items())
         human = (f"bundle {out['bundle']}\n  overlay {out['overlay']} (writable, from "
                  f"{out['base']})\n  context {', '.join(out['context']) or '-'}"
@@ -4328,12 +4336,33 @@ def _generate_cmd(args: Any) -> int:
     return 0 if all(r["ok"] for r in rows) else 1
 
 
+def _env_flags_unapplied(args: Any) -> str | None:
+    """Why the environment doesn't reflect --root/--store/--writable (they are
+    applied by crib.entry; calling cli.main directly with them would run
+    unconfined or unrestricted while appearing not to), or None."""
+    import os
+
+    def resolved(v: str) -> str:
+        return str(Path(v).expanduser().resolve())
+
+    if args.root and os.environ.get("CRIB_ROOT") != resolved(args.root):
+        return "--root was not applied: run the `crib` command (crib.entry)"
+    if args.store and os.environ.get("CRIB_STORE") != resolved(args.store):
+        return "--store was not applied: run the `crib` command (crib.entry)"
+    if args.writable and os.environ.get("CRIB_WRITABLE") != ",".join(args.writable):
+        return "--writable was not applied: run the `crib` command (crib.entry)"
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
     # --root/--store/--writable are applied to the environment by crib.entry,
     # BEFORE crib's modules load (the facet registry resolves at import)
     args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
+    if (why := _env_flags_unapplied(args)) is not None:
+        print(f"crib: {why}", file=_sys.stderr)
+        return 2
     # --json is for machines: never styled, whatever the terminal
     _st.configure("never" if args.json else args.color)
 
@@ -4450,12 +4479,13 @@ def main(argv: list[str] | None = None) -> int:
             from . import sharedserver
             from .access import WRITABLE_ENV
 
-            if os.environ.get(WRITABLE_ENV) is not None:
-                # the allowlist governs THIS process; the daemon has its own
-                print("crib: --writable / $CRIB_WRITABLE applies to the process it is "
-                      "given to, but this verb runs in the daemon: pass --no-daemon",
-                      file=sys.stderr)
-                return 2
+            for env, flag in ((WRITABLE_ENV, "--writable"), ("CRIB_STORE", "--store")):
+                if os.environ.get(env) is not None:
+                    # governs THIS process; the daemon has its own setting
+                    print(f"crib: {flag} / ${env} applies to the process it is "
+                          "given to, but this verb runs in the daemon: pass "
+                          "--no-daemon", file=sys.stderr)
+                    return 2
 
             if not sharedserver.available():
                 print(

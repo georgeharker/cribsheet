@@ -245,6 +245,7 @@ def create(
     context_mount: str | None = None,
     expires: str | None = "7d",
     vectors: bool = True,
+    max_retention: str = "30d",
 ) -> dict[str, Any]:
     """Write a bundle at `bundle` (see the module docstring) and register it.
 
@@ -279,16 +280,27 @@ def create(
     ctx_dir = context_to.expanduser().resolve() if context_to else bundle / "context"
     if context and context_to and ctx_dir.exists() and any(ctx_dir.iterdir()):
         raise CribUserError(f"{ctx_dir} exists and isn't empty")
-    until = expiry.parse(expires) if expires else None
-    made_bundle = not bundle.exists()
-    made_ctx = bool(context and context_to) and not ctx_dir.exists()
+    # The HARD cap, held only in the trusted registry: the manifest (rewritable
+    # in the sandbox) can shorten or extend the expiry, never past this.
+    cap = expiry.parse(max_retention)
+    until = expiry.parse(expires) if expires else cap
+    u_at, cap_at = expiry.when(until), expiry.when(cap)
+    if u_at is not None and cap_at is not None and u_at > cap_at:
+        until = cap
+    # Directories this create owns: the bundle (absent, or checked empty above)
+    # and, only when context projects are copied to --context-to, that dir
+    # (likewise absent or checked empty). Nothing else is ever cleaned up: a
+    # --context-to given without --context is not touched at all.
+    owned = [(bundle, not bundle.exists())]
+    if context and context_to:
+        owned.append((ctx_dir, not ctx_dir.exists()))
     try:
         return _build(paths, cfg, bundle, base, proj, context, ctx_dir, context_to,
-                      context_mount, until, vectors)
+                      context_mount, until, vectors, cap)
     except BaseException:
         # a half-built bundle is unregistered, so nothing would ever clean it up
         # (and a retry would refuse the non-empty dir): remove what was made
-        for d, made in ((bundle, made_bundle), (ctx_dir, made_ctx)):
+        for d, made in owned:
             if d.is_dir():
                 if made:
                     shutil.rmtree(d, ignore_errors=True)
@@ -301,7 +313,8 @@ def create(
 
 def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
            context: list[str], ctx_dir: Path, context_to: Path | None,
-           context_mount: str | None, until: str | None, vectors: bool
+           context_mount: str | None, until: str | None, vectors: bool,
+           cap: str | None = None
            ) -> dict[str, Any]:
     """`create`'s body, once the arguments are checked."""
     from .config import ProjectConfig
@@ -377,6 +390,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "created": now,
         "overlay": proj,
         "context_dir": str(ctx_dir) if context else None,
+        "max_expires": cap,
     }
     _save_registry(paths, reg)
     return {
@@ -501,29 +515,38 @@ def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any
         stub = bundle / "data" / "projects" / check_project_name(overlay) / ".cribproject"
         if not _no_symlink_between(bundle, stub):
             raise CribUserError(f"{stub}: reached through a symlink; not written")
-        if stub.is_file():
-            pcfg = ProjectConfig.load(stub, overlay)
+        if stub.exists() or stub.is_symlink():
+            # read and written as the manifest is: a small regular file, never
+            # through a symlink (the stub lives in the sandbox's writable root)
+            pcfg = ProjectConfig.loads(_read_small(stub), overlay, where=str(stub))
             pcfg.expires = until
-            tmp = stub.with_name(f".{stub.name}.new")
-            pcfg.save(tmp)
-            os.replace(tmp, stub)
+            _replace_text(stub, pcfg.dumps())
     return {"bundle": str(bundle), "expires": until}
 
 
 def listing(paths: Paths, now: datetime.datetime | None = None) -> list[dict[str, Any]]:
+    """Registered bundles with their state (live/due/missing/unreadable) and
+    effective expiry: the manifest's, capped at the registry's `max_expires`."""
+    from . import expiry
+
     now = now or datetime.datetime.now(datetime.UTC)
     out = []
     for path, entry in sorted(registry(paths).items()):
         row: dict[str, Any] = {"bundle": path, **entry}
         b = Path(path)
+        cap = expiry.when(entry.get("max_expires"))
         if not b.is_dir():
             row["state"] = "missing"
         else:
             try:
                 at = manifest_expiry(b)
             except CribUserError as e:
-                row["state"], row["error"] = "unreadable", str(e)
+                # unreadable (perhaps on purpose): due once the cap passes
+                row["state"] = "due" if cap and cap <= now else "unreadable"
+                row["error"] = str(e)
             else:
+                if cap and (at is None or at > cap):
+                    at = cap  # the manifest can't extend past the trusted cap
                 row["expires"] = at.isoformat(timespec="seconds") if at else None
                 row["state"] = "due" if at and at <= now else "live"
         out.append(row)

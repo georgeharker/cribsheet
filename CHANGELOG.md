@@ -46,6 +46,17 @@ sandbox itself must provide.
   `--budget 0` means no time, not unbounded.
 - Expiry parsing gives a clear error for out-of-range values;
   `transient: "false"` no longer reads as true.
+- **Second review round:** trusted-side `bundle expire` reads and rewrites
+  the overlay's stub as it does the manifest (a small regular file, replaced
+  atomically, so a planted symlink at the stub or a temp name is never
+  written through); a failed `bundle create` removes only what it made (a
+  `--context-to` given without `--context` is never touched); a bundle's life
+  is capped by `--max-retention` (default 30d), held in the trusted registry;
+  global flags can't be abbreviated (`--ro` would have run unconfined), and
+  `cli.main` refuses env flags it can't apply; `lsp.json`/`grammar.json` come
+  from the root in confined mode; `--store` is refused when a verb would run
+  in the daemon; the phased re-index treats a file emptied of symbols as
+  changed.
 
 - **Confined mode in a sandbox.** CLI verbs under `--root` now run
   in-process: they tried to attach to a warm daemon (needing `sharedserver`),

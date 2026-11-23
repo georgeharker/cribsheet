@@ -202,7 +202,11 @@ def _warn(msg: str) -> None:
 
 
 def _config_dir() -> Path:
-    return Path(os.environ.get("CRIB_CONFIG_DIR", os.path.expanduser("~/.config/crib")))
+    """crib's config dir (lsp.json, grammar.json): the one resolver, so confined
+    mode (--root) reads the root's own, and $XDG_CONFIG_HOME is honoured."""
+    from .paths import config_dir
+
+    return config_dir()
 
 
 def _default_request_timeout() -> float:

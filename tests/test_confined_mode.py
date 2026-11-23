@@ -221,3 +221,27 @@ def test_writable_is_refused_when_a_verb_runs_in_the_daemon(tmp_path, monkeypatc
     monkeypatch.setattr(ss, "available", lambda: True)
     assert entry.main(["--writable", "a", "plan", "list", "-p", "x"]) == 2
     assert "--no-daemon" in capsys.readouterr().err
+
+
+def test_abbreviated_env_flags_are_rejected(root):
+    """`--ro` would parse as --root but escape crib.entry's env handling (S-1)."""
+    from crib import cli
+
+    with pytest.raises(SystemExit):
+        cli.main(["--ro", str(root), "plan", "list", "-p", "x"])
+
+
+def test_cli_main_refuses_env_flags_it_cannot_apply(tmp_path, monkeypatch, capsys):
+    from crib import cli
+
+    _register_flag_env(monkeypatch)
+    assert cli.main(["--root", str(tmp_path / "r"), "plan", "list", "-p", "x"]) == 2
+    assert "crib.entry" in capsys.readouterr().err
+
+
+def test_lsp_and_grammar_config_come_from_the_root(root, tmp_path, monkeypatch):
+    """lsp.json decides which binaries run: confined mode reads the root's (S-2)."""
+    from crib import codeindex
+
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "trusted-config"))
+    assert codeindex._config_dir() == root / "config"

@@ -110,3 +110,33 @@ def test_a_confined_session_writes_nothing_outside_its_root(world):
         if close is not None:
             close()
     assert _snapshot(base, root) == before
+
+
+def test_a_confined_project_index_writes_only_under_the_root(world, monkeypatch):
+    """`project index` in confined mode (phased; the extract stubbed: no
+    language server here) records its source root and runs its phases without
+    writing outside the root, the checkout included."""
+    base, root, co, before = world
+    paths = Paths.resolve().ensure()
+    cfg = Config.load(paths.config_file)
+    store, close = _build_store(paths, cfg)
+    try:
+        crib = Crib(paths, cfg, store)
+        run(crib.project_create(project="pr"))
+
+        async def sweep(proj, r, globs, budget_s=None, crib_at=None,
+                        describe_mode="inline", files=None):
+            from crib.codeindex import SymbolIndex
+
+            SymbolIndex(paths.project_dir(proj)).set_source_root(r)
+            return {"files_indexed": 0, "files_seen": 0, "symbols": 0, "described": 0,
+                    "describes_failed": 0, "complete": True, "remaining": 0}
+
+        monkeypatch.setattr(crib.indexer, "_index_project_code", sweep)
+        out = run(crib.project_index(project="pr", cwd=co, wait_s=30))
+        assert "phases" in out  # phased by default under --root
+        crib.close()
+    finally:
+        if close is not None:
+            close()
+    assert _snapshot(base, root) == before

@@ -504,10 +504,15 @@ class ProjectConfig:
     def load(cls, path: Path, fallback_name: str) -> "ProjectConfig":
         if not path.exists():
             return cls(name=fallback_name)
-        data = yaml.safe_load(path.read_text()) or {}
+        return cls.loads(path.read_text(), fallback_name, where=str(path))
+
+    @classmethod
+    def loads(cls, text: str, fallback_name: str, where: str = "<stub>") -> "ProjectConfig":
+        """A stub from its text (a caller that reads it safely, crib.bundle)."""
+        data = yaml.safe_load(text) or {}
         if not isinstance(data, dict):  # hand-edited into something else
             _warn(
-                f"ignoring {path}: expected a YAML mapping, got {type(data).__name__}"
+                f"ignoring {where}: expected a YAML mapping, got {type(data).__name__}"
             )
             return cls(name=fallback_name)
         return cls(
@@ -530,6 +535,11 @@ class ProjectConfig:
         `project adopt` had to record a `store_root`, so this deliberately dumps
         only the fields this dataclass declares — a hand-added key it doesn't know
         would be dropped, which is why nothing but the migration verbs writes it."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(self.dumps())
+
+    def dumps(self) -> str:
+        """The stub's YAML text (see `save`)."""
         data = {"name": self.name}
         for key in (
             "embed_model",
@@ -544,8 +554,7 @@ class ProjectConfig:
         ):
             if (value := getattr(self, key)) is not None:
                 data[key] = value
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(yaml.safe_dump(data, sort_keys=False))
+        return yaml.safe_dump(data, sort_keys=False)
 
 
 @dataclass(frozen=True)

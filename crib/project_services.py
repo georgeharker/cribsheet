@@ -28,17 +28,13 @@ class ProjectServices:
     def __init__(self, refs: Refs, code: CodeStore, paths: Paths, config: Config,
                  enumerate_code_files: Callable[[Path, list[str]], list[Path]],
                  register_code_root: Callable[[str, str | Path], None],
-                 require_write: Callable[[str | None, str], None] | None = None) -> None:
+                 require_write: Callable[[str | None, str], None]) -> None:
         self.refs = refs
         self.code = code
         self.paths = paths
         self.config = config
         self._enumerate = enumerate_code_files
         self._register = register_code_root
-        if require_write is None:
-            from .access import WriteAccess
-
-            require_write = WriteAccess(config.writable).require
         # the one write check (Crib._require_write: the allowlist, and in
         # confined mode the root) for writes made from the code pipeline
         self.require_write = require_write

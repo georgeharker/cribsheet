@@ -191,3 +191,25 @@ def test_the_cli_passes_budget_and_phased():
     assert call["budget_s"] == 30.0 and call["phased"] is True
     args = cli.build_parser().parse_args(["project", "index", "-p", "x"])
     assert cli.VERBS["project index"].build(args)["phased"] is None
+
+
+def test_a_file_emptied_of_symbols_counts_as_changed(crib, monkeypatch, tmp_path):
+    """lib.py is still on disk but its last symbol was removed: its old edges
+    into other records go (S-3)."""
+    _sym(crib, "p", "lib.py", "helper", calls=["util [caller.py]"])
+    _sym(crib, "p", "caller.py", "util", called_by=["helper [lib.py]"])
+    crib.code.refresh("p")
+
+    async def sweep(proj, root, globs, budget_s=None, crib_at=None, describe_mode="inline",
+                    **_kw):
+        crib.code.drop_file("p", "lib.py")  # the re-extract found no symbols
+        crib.code.refresh("p")
+        return {"files_indexed": 2, "files_seen": 2, "symbols": 0, "described": 0,
+                "describes_failed": 0, "complete": True, "remaining": 0}
+
+    monkeypatch.setattr(crib.indexer, "_index_project_code", sweep)
+    monkeypatch.setattr(crib.indexer.services, "enumerate_code_files",
+                        lambda root, globs: [root / "lib.py", root / "caller.py"])
+    out = run(crib.indexer.index_phased("p", tmp_path, ["**/*.py"]))
+    assert "lib.py" in out["phases"]["extract"]["changed_files"]
+    assert _rec(crib, "p", "util")["called_by"] == []

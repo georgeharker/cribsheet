@@ -35,6 +35,8 @@ def _apply_env_flags(argv: list[str]) -> None:
         i += 1
         if value is None:
             continue
+        if name in ("--root", "--store") and not value.strip():
+            raise SystemExit(f"crib: {name} needs a directory")
         if name == "--root":
             os.environ["CRIB_ROOT"] = str(Path(value).expanduser().resolve())
         elif name == "--store":

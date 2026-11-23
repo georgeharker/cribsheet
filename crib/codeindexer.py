@@ -622,7 +622,10 @@ class CodeIndexer:
             self.code.drop_file(proj, rel)
         after = file_hashes()
         # the files this pass re-extracted: their records' hash moved (or new)
-        changed = {f for f, h in after.items() if before.get(f) != h}
+        # (a file emptied of symbols has no `after` entry but is still on disk:
+        # it changed, and its old edges must go too)
+        changed = {f for f in before.keys() | after.keys()
+                   if before.get(f) != after.get(f)} - set(deleted)
         phases: dict[str, Any] = {
             "extract": {"complete": extract["complete"],
                         "remaining_files": extract["remaining"],
