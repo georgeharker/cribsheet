@@ -106,7 +106,7 @@ def test_a_call_into_a_deleted_file_is_dangling(crib):
 def _stub_sweep(crib, monkeypatch, files, complete=True):
     """The extract phase: report `files` as the checkout's files."""
     async def sweep(proj, root, globs, budget_s=None, crib_at=None, describe_mode="inline",
-                    files=None):
+                    **_kw):  # `files=` too; the checkout is `files` above
         assert describe_mode == "none"  # structure only in phase 1
         return {"files_indexed": len(files), "files_seen": len(files), "symbols": 0,
                 "described": 0, "describes_failed": 0, "complete": complete,
