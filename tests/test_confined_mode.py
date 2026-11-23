@@ -25,8 +25,9 @@ def root(tmp_path, monkeypatch):
     r = tmp_path / "root"
     r.mkdir()
     monkeypatch.setenv(ROOT_ENV, str(r))
-    # per-dir overrides must LOSE to the root
+    # per-dir overrides LOSE to the root (the index dir, below, is the exception)
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "elsewhere-data"))
+    monkeypatch.delenv("CRIB_INDEX_DIR", raising=False)
     monkeypatch.delenv("CRIB_WRITABLE", raising=False)
     return r.resolve()
 
@@ -57,6 +58,16 @@ def test_every_dir_is_under_the_root(root):
         root / "data",
         root / "index",
     )
+
+
+def test_the_store_may_live_outside_the_root(root, tmp_path, monkeypatch):
+    """The root is the file set; the store (index dir) is a disposable cache
+    that --store / $CRIB_INDEX_DIR may put elsewhere. Config and data stay put."""
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "scratch"))
+    paths = Paths.resolve()
+    assert paths.index_dir == tmp_path / "scratch"
+    assert paths.duckdb_file.is_relative_to(tmp_path / "scratch")
+    assert paths.data_dir == root / "data" and paths.config_dir == root / "config"
 
 
 def test_the_shared_store_is_refused(root):

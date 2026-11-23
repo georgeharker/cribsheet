@@ -1469,6 +1469,13 @@ def build_parser() -> argparse.ArgumentParser:
         "written (projects are named). Same as $CRIB_ROOT",
     )
     p.add_argument(
+        "--store",
+        metavar="DIR",
+        help="put the STORE (index dir: the DuckDB file and caches) at DIR; with "
+        "--root it is the one thing kept outside the root (a disposable cache, "
+        "rebuilt from the root's files). Same as $CRIB_INDEX_DIR",
+    )
+    p.add_argument(
         "--writable",
         action="append",
         metavar="PROJECT",
@@ -4246,6 +4253,10 @@ def main(argv: list[str] | None = None) -> int:
         from .paths import ROOT_ENV
 
         _os.environ[ROOT_ENV] = str(Path(args.root).expanduser().resolve())
+    if args.store:
+        import os as _os
+
+        _os.environ["CRIB_INDEX_DIR"] = str(Path(args.store).expanduser().resolve())
     if args.writable:
         import os as _os
 

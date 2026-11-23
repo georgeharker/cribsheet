@@ -46,6 +46,9 @@ version has no heading here.
   can be placed in the project's directory under DIR. A reopened root rebuilds
   its store from its files, its transient projects included. Built for
   sandboxed review: crib runs against a disposable root.
+  `--store DIR` (or `$CRIB_INDEX_DIR`) puts the store, a disposable cache,
+  elsewhere (e.g. pod scratch); in confined mode it is the one thing kept
+  outside the root.
 
 ## [0.27.0] - 2026-11-22
 

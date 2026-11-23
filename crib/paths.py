@@ -75,7 +75,8 @@ def confine(base: Path, *parts: str) -> Path:
 
 # CONFINED MODE (`--root` / $CRIB_ROOT): everything crib keeps lives under one
 # root, and wins over the per-dir overrides: config, data and index are its
-# `config/`, `data/` and `index/`. The rest of the mode (no git sync, no
+# `config/`, `data/` and `index/` (the index dir, i.e. the store, may be put
+# elsewhere with --store / $CRIB_INDEX_DIR: a disposable cache). The rest of the mode (no git sync, no
 # shared store, watchers only inside the root, the checkout's own .crib never
 # read or written, writes only under the root) keys off `confined_root()`.
 ROOT_ENV = "CRIB_ROOT"
@@ -91,6 +92,11 @@ def confined_root() -> Path | None:
 
 def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:
     if (root := confined_root()) is not None:
+        # the STORE (index dir: the DuckDB file + caches) is the one thing a
+        # confined instance may keep elsewhere (`--store` / $CRIB_INDEX_DIR,
+        # e.g. pod scratch): it is a disposable cache, rebuilt from the root
+        if env_override == "CRIB_INDEX_DIR" and (v := os.environ.get(env_override)):
+            return Path(v).expanduser()
         return root / _ROOT_SUBDIR[env_override]
     if v := os.environ.get(env_override):
         return Path(v).expanduser()
