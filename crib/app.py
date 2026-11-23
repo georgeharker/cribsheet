@@ -204,6 +204,10 @@ def _expiry(spec: str) -> str:
             at = at.replace(tzinfo=datetime.UTC)
     return at.astimezone(datetime.UTC).isoformat(timespec="seconds")
 
+
+# A bundle's portable embedding-cache rows (crib.bundle), under its data dir.
+BUNDLE_VECTORS = "embed-cache.parquet"
+
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
         self.paths = paths
@@ -222,6 +226,19 @@ class Crib:
             build_embedder(embed_cfg, stored_dim=_stored_dim(store)),
             store,
         )
+        # A bundle (crib.bundle) carries its vectors as a file: a fresh store
+        # (e.g. on --store scratch) loads it, so the rebuild re-embeds nothing.
+        if (
+            paths.root is not None
+            and (vecs := paths.data_dir / BUNDLE_VECTORS).is_file()
+            and callable(getattr(store, "ec_import", None))
+            and store.ec_count() == 0  # type: ignore[attr-defined]
+        ):
+            try:
+                n = store.ec_import(vecs)  # type: ignore[attr-defined]
+                print(f"[crib] bundle vectors loaded: {n}", file=sys.stderr)
+            except Exception as e:  # noqa: BLE001 — a cache: re-embedding still works
+                print(f"[crib] bundle vectors not loaded: {e}", file=sys.stderr)
         # The keyword_index / summary_index enrichments, mapped into the store
         # (crib.enrichments): what the BM25 corpus and the alias index read.
         from .enrichments import Enrichments

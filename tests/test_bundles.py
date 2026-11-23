@@ -199,6 +199,112 @@ def test_a_location_may_be_a_token_itself():
     from crib.config import expand_location
 
     locs = {"ROOT": "/mnt/bundle", "CONTEXT": "$ROOT/context"}
-    assert expand_location("$CONTEXT/llmkit", locs) == Path("/mnt/bundle/context/llmkit")
+    assert expand_location("$CONTEXT/llmkit", locs) == Path(
+        "/mnt/bundle/context/llmkit"
+    )
     cyc = {"A": "$B/x", "B": "$A/y"}
     expand_location("$A/z", cyc)  # a cycle terminates (whatever it yields)
+
+
+# ── 5b: the bundle's vectors ─────────────────────────────────────────────────
+
+
+class _CountingEmbedder:
+    """A cacheable (non-hash) embedder that counts what it computes."""
+
+    model_id = "test-counting"
+    dim = 8
+
+    def __init__(self, calls):
+        self.calls = calls
+
+    def _vec(self, t):
+        import hashlib
+
+        d = hashlib.sha256(t.encode()).digest()
+        v = [b / 255.0 for b in d[: self.dim]]
+        n = sum(x * x for x in v) ** 0.5 or 1.0
+        return [x / n for x in v]
+
+    def embed(self, texts):
+        self.calls.extend(texts)
+        return [self._vec(t) for t in texts]
+
+    def embed_query(self, texts):
+        return [self._vec(t) for t in texts]
+
+
+@pytest.fixture()
+def counting(monkeypatch):
+    calls: list[str] = []
+    monkeypatch.setattr(
+        "crib.app.build_embedder", lambda cfg, stored_dim=None: _CountingEmbedder(calls)
+    )
+    return calls
+
+
+def test_create_builds_the_bundle_store_and_its_vector_file(
+    trusted, tmp_path, counting
+):
+    out = bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"])
+    b = tmp_path / "b"
+    assert out["vectors"] and out["vectors"] > 0
+    assert (b / "data" / "embed-cache.parquet").is_file()
+    assert (b / "index" / "duckdb" / "crib.duckdb").is_file()  # a ready store too
+    assert counting  # first time: computed
+
+
+def test_vectors_read_through_the_main_cache(trusted, tmp_path, counting):
+    """A second bundle of the same projects computes nothing: every vector is
+    found in the main store's cache (filled here from the first bundle)."""
+    from crib.store_duckdb import DuckDBStore
+
+    bundles.create(trusted, Config(), tmp_path / "b1", "toucan:pr-1", ["llmkit"])
+    main = DuckDBStore.embedded(trusted.duckdb_file)
+    main.ec_import(tmp_path / "b1" / "data" / "embed-cache.parquet")
+    main.close()
+    counting.clear()
+    out = bundles.create(trusted, Config(), tmp_path / "b2", "toucan:pr-2", ["llmkit"])
+    assert out["vectors"] and counting == []
+
+
+def test_a_store_rebuilt_elsewhere_reembeds_nothing(
+    trusted, tmp_path, counting, monkeypatch
+):
+    """The sandbox keeps its store on scratch (--store): the fresh store loads
+    the bundle's vector file, and the rebuild computes nothing."""
+    from crib.app import _build_store
+
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"])
+    counting.clear()
+    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "scratch"))
+    paths = Paths.resolve().ensure()
+    cfg = Config.load(paths.config_file)
+    store, close = _build_store(paths, cfg)
+    try:
+        box = Crib(paths, cfg, store)
+        from crib.store_duckdb import DuckDBStore
+
+        assert isinstance(store, DuckDBStore)
+        assert store.ec_count() > 0  # loaded from the bundle's file
+        run(box.reconcile_all())
+        for p in ("toucan@pr-1", "llmkit"):
+            box.code.refresh(p)
+            box.code.fill_vectors(p)
+        assert counting == []
+        assert any(
+            "base-note" in h.relpath
+            for h in box.lookup("sprockets", project="toucan@pr-1")
+        )
+    finally:
+        if close is not None:
+            close()
+
+
+def test_no_vectors_skips_the_store(trusted, tmp_path, counting):
+    out = bundles.create(
+        trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False
+    )
+    assert out["vectors"] is None and counting == []
+    assert not (tmp_path / "b" / "data" / "embed-cache.parquet").exists()

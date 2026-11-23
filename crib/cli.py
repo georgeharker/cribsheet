@@ -1904,6 +1904,9 @@ def build_parser() -> argparse.ArgumentParser:
                      help="where --context-to appears inside the sandbox")
     _bc.add_argument("--expires", default="7d", metavar="WHEN",
                      help="ISO time or duration (30m/2h/7d); default 7d")
+    _bc.add_argument("--no-vectors", dest="vectors", action="store_false",
+                     help="skip building the bundle's store and vector file "
+                     "(a sandbox then re-embeds with the model in its image)")
     _be = bsub.add_parser("expire", help="set a bundle's expiry (also inside it)")
     _be.add_argument("dir", type=Path, nargs="?",
                      help="the bundle (default: the --root you're confined to)")
@@ -4163,12 +4166,14 @@ def _bundle_cmd(args: Any) -> int:
     elif cmd == "create":
         cfg = Config.load(paths.ensure().config_file)
         out = bundles.create(paths, cfg, args.dir, args.overlay, args.context,
-                             args.context_to, args.context_mount, args.expires)
+                             args.context_to, args.context_mount, args.expires,
+                             vectors=args.vectors)
         files = ", ".join(f"{p} {n}" for p, n in out["files"].items())
         human = (f"bundle {out['bundle']}\n  overlay {out['overlay']} (writable, from "
                  f"{out['base']})\n  context {', '.join(out['context']) or '-'}"
                  + (f" at {out['context_dir']}" if out["context_dir"] else "")
-                 + f"\n  files: {files}\n  expires {out['expires']}\n"
+                 + f"\n  files: {files}\n  vectors: {out['vectors']}\n"
+                 f"  expires {out['expires']}\n"
                  f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
     elif cmd == "list":
         out = bundles.listing(paths)

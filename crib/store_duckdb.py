@@ -1428,6 +1428,37 @@ class DuckDBStore:
             )
         return {h: [float(x) for x in v] for h, v in rows}
 
+    def ec_count(self) -> int:
+        """How many vectors the cache holds (every model)."""
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            ((n,),) = ex.run(f"SELECT count(*) FROM {EMBED_CACHE}")
+        return int(n)
+
+    def ec_export(self, path: Path | str) -> int:
+        """Write the whole cache to a Parquet file (a bundle's portable vectors,
+        crib.bundle); how many rows. Embedded stores only: a shared-server
+        client may not write files."""
+        target = str(Path(path)).replace("'", "''")
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            ex.run(f"COPY (SELECT model, h, vec FROM {EMBED_CACHE} ORDER BY model, h) "
+                   f"TO '{target}' (FORMAT parquet)")
+        return self.ec_count()
+
+    def ec_import(self, path: Path | str) -> int:
+        """Load cache rows from a Parquet file written by `ec_export`, keeping
+        any already present; how many rows the cache then holds."""
+        source = str(Path(path)).replace("'", "''")
+
+        def write(ex: Any) -> None:
+            # pi-lens-ignore: python-sql-injection
+            ex.run(f"INSERT INTO {EMBED_CACHE} SELECT model, h, vec "
+                   f"FROM read_parquet('{source}') ON CONFLICT DO NOTHING")
+
+        self._transaction(write)
+        return self.ec_count()
+
     def ec_prune(self, keep_model: str) -> int:
         """Drop cached vectors from every embedder but `keep_model`; how many."""
 

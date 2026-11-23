@@ -61,6 +61,11 @@ version has no heading here.
   with `crib bundle expire`. Only the expiry is read back from a bundle (it
   is writable inside the sandbox); what a delete removes comes from the
   registry. Project names may now contain one `@` (an overlay of a base).
+  `create` also builds the bundle's own store (in `DIR/index`) and writes
+  its vectors to `DIR/data/embed-cache.parquet`, embedding through the main
+  store's cache so only never-seen text is computed; a sandbox that keeps
+  its store elsewhere (`--store`) loads the file and re-embeds nothing.
+  `--no-vectors` skips this. The bundle's config records the embedding model.
 
 ## [0.27.0] - 2026-11-22
 

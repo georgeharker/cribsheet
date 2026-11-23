@@ -189,6 +189,7 @@ def create(
     context_to: Path | None = None,
     context_mount: str | None = None,
     expires: str | None = "7d",
+    vectors: bool = True,
 ) -> dict[str, Any]:
     """Write a bundle at `bundle` (see the module docstring) and register it.
 
@@ -259,7 +260,7 @@ def create(
         )
 
     mount = context_mount or ("$ROOT/context" if not context_to else str(ctx_dir))
-    cfg = [
+    lines = [
         "# A crib BUNDLE: open with `crib --root <this dir> [--store SCRATCH]`.",
         "writable = [" + json.dumps(proj) + "]",
         "",
@@ -269,7 +270,9 @@ def create(
         "[locations]",
         f"CONTEXT = {json.dumps(mount)}",
     ]
-    (bpaths.config_dir / "config.toml").write_text("\n".join(cfg) + "\n")
+    # the sandbox embeds with the SAME model, or its store refuses the vectors
+    lines += ["", "[embed]", f"model = {json.dumps(cfg.embed.model)}"]
+    (bpaths.config_dir / "config.toml").write_text("\n".join(lines) + "\n")
     for extra in ("lsp.json", "facets.toml"):
         if (src := paths.config_dir / extra).is_file():
             shutil.copy2(src, bpaths.config_dir / extra)
@@ -284,6 +287,8 @@ def create(
             "context": context,
         },
     )
+    vec_rows = (_build_vectors(paths, cfg, bundle, [proj, *context],
+                               ctx_dir if context else None) if vectors else None)
     reg = registry(paths)
     reg[str(bundle)] = {
         "created": now,
@@ -299,7 +304,86 @@ def create(
         "context_dir": str(ctx_dir) if context else None,
         "expires": until,
         "files": files,
+        "vectors": vec_rows,
     }
+
+
+# ── vectors ──────────────────────────────────────────────────────────────────
+
+
+class _ReadThrough:
+    """Embedding-cache storage for building a bundle: the bundle's own store
+    first, then the MAIN store's cache (copied in on a hit), so only text never
+    embedded anywhere is computed. Writes go to the bundle's store only."""
+
+    def __init__(self, local: Any, upstream: Any) -> None:
+        self.local, self.upstream = local, upstream
+
+    def ec_get(self, model: str, hashes: list[str]) -> dict[str, list[float]]:
+        got = self.local.ec_get(model, hashes)
+        if missing := [h for h in hashes if h not in got]:
+            try:
+                found = self.upstream.ec_get(model, missing)
+            except Exception:  # noqa: BLE001 — the main cache is an optimisation
+                found = {}
+            if found:
+                self.local.ec_put(model, list(found.items()))
+                got.update(found)
+        return got
+
+    def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
+        self.local.ec_put(model, rows)
+
+
+def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
+                   context_dir: Path | None) -> int | None:
+    """Index the bundle's projects into its OWN store (DIR/index, ready for a
+    sandbox that keeps the store in the root), embedding through the main
+    store's cache, then export that store's cache, i.e. exactly the bundle's
+    vectors, to DIR/data/embed-cache.parquet: a store rebuilt elsewhere
+    (`--store`) loads it and re-embeds nothing. None with the hash embedder
+    (nothing worth carrying)."""
+    import asyncio
+
+    from .app import BUNDLE_VECTORS, Crib, _build_store
+    from .config import Config
+    from .embedcache import CachedEmbedder
+    from .store_duckdb import DuckDBStore
+
+    bpaths = Paths(config_dir=bundle / "config", data_dir=bundle / "data",
+                   index_dir=bundle / "index")
+    bcfg = Config.load(bpaths.config_file)
+    bcfg.locations["ROOT"] = str(bundle)
+    if context_dir is not None:  # the copies as they sit HERE, not in the sandbox
+        bcfg.locations["CONTEXT"] = str(context_dir)
+    bcfg.writable = None  # building the bundle's own cache, not a sandbox session
+    bpaths.duckdb_file.parent.mkdir(parents=True, exist_ok=True)
+    bstore = DuckDBStore.embedded(bpaths.duckdb_file)
+    main: Any = None
+    close_main: Any = None
+    try:
+        main, close_main = _build_store(paths, cfg)
+    except Exception:  # noqa: BLE001 — e.g. an embedded store a daemon holds
+        main = None
+    try:
+        crib = Crib(bpaths, bcfg, bstore)
+        if not isinstance(crib.embedder, CachedEmbedder):
+            return None
+        if main is not None:
+            crib.embedder._s = _ReadThrough(bstore, main)
+
+        async def index_all() -> None:
+            for p in projects:
+                await crib.reindex(project=p)
+                crib.code.refresh(p)
+                crib.code.fill_vectors(p)
+
+        asyncio.run(index_all())
+        return bstore.ec_export(bpaths.data_dir / BUNDLE_VECTORS)
+    finally:
+        bstore.close()
+        if close_main is not None:
+            close_main()
 
 
 # ── lifecycle ────────────────────────────────────────────────────────────────
