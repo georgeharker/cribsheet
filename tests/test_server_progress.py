@@ -33,8 +33,9 @@ def test_quick_index_returns_without_interval_lag(crib, monkeypatch):
     full `_PROGRESS_EVERY_S` interval even when the task finished in milliseconds."""
     calls: dict = {}
 
-    async def fake_index(project=None, cwd=None, budget_s=None):
+    async def fake_index(project=None, cwd=None, budget_s=None, phased=None):
         calls["budget_s"] = budget_s
+        calls["phased"] = phased
         return {"project": project, "created": False, "complete": True}
 
     monkeypatch.setattr(crib, "project_index", fake_index)
@@ -49,6 +50,7 @@ def test_quick_index_returns_without_interval_lag(crib, monkeypatch):
     elapsed, res = asyncio.run(body())
     assert elapsed < 1.0                       # well under the 2s progress interval
     assert calls["budget_s"] == 7.5            # budget reaches Crib.project_index
+    assert calls["phased"] is None             # unset: Crib decides (confined → on)
 
 
 def test_progress_streams_on_the_join_face(crib, monkeypatch):
@@ -65,7 +67,8 @@ def test_progress_streams_on_the_join_face(crib, monkeypatch):
     monkeypatch.setattr("crib.app._PROGRESS_EVERY_S", 0.05)
     crib.code.sweeps["other"] = {"done": 90, "total": 100}  # someone else's sweep
 
-    async def fake_index(project=None, cwd=None, budget_s=None, wait_s=None):
+    async def fake_index(project=None, cwd=None, budget_s=None, wait_s=None,
+                         phased=None):
         # a real sweep: registers its code_jobs entry (what project_wait joins)
         # and (the polling contract) returns a handle at once unless blocke�
         async def sweep():

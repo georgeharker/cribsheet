@@ -79,7 +79,7 @@
   "project delete": "usage: crib project delete [-h] [-p PROJECT_FLAG] [--force] [--yes] [project]\n\npositional arguments:\n  project               the project to delete (explicit; positional or -p; never the session\n                        default)\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT_FLAG\n                        the project to delete (selector spelling, same fact)\n  --force               accepted for compatibility; NO-OP \u2014 delete never removes anything from a\n                        user repo (its notes stay; release them first if they should follow the\n                        namespace)\n  --yes                 skip the interactive confirmation (for scripts; piped stdin refuses\n                        without it)\n",
   "project doctor": "usage: crib project doctor [-h] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project forget": "usage: crib project forget [-h] [-p PROJECT] [-P PROJECT_PATH] [--with-learnings]\n\noptions:\n  -h, --help            show this help message and exit\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n  --with-learnings      also drop attached learnings (default: keep them)\n",
-  "project index": "usage: crib project index [-h] [--budget BUDGET_S] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
+  "project index": "usage: crib project index [-h] [--budget BUDGET_S] [--phased | --no-phased] [-p PROJECT]\n                          [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  --budget BUDGET_S     soft deadline; unfinished files are deferred\n  --phased, --no-phased\n                        index in phases under the one --budget: changed files' structure, then\n                        edges re-resolved (dangling calls reported), then descriptions (default:\n                        on with --root)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project items": "usage: crib project items [-h] [-k K] [--kind KINDS] [--tag TAGS] [-p PROJECT] [-P PROJECT_PATH]\n\noptions:\n  -h, --help            show this help message and exit\n  -k K\n  --kind KINDS          only this facet: note/design/plan/learning/... (repeatable)\n  --tag TAGS            only items with this tag (repeatable: any)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
   "project list": "usage: crib project list [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
   "project lookup": "usage: crib project lookup [-h] [-k K] [--kind KINDS] [--status STATUS] [-p PROJECT]\n                           [-P PROJECT_PATH]\n                           query\n\npositional arguments:\n  query\n\noptions:\n  -h, --help            show this help message and exit\n  -k K\n  --kind KINDS          note/design/plan/learning (repeatable)\n  --status STATUS       only decisions/plans in this status (repeatable)\n  -p, --project PROJECT\n  -P, --project-path PROJECT_PATH\n",
@@ -4030,7 +4030,7 @@
   },
   "project_index": {
    "annotations": null,
-   "description": "(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it\ndeclares under `docs:` \u2014 those are indexed IN-SITU (searchable via\nnote_lookup; the repo keeps the only copy). It differs from\nproject_setup only in not COPYING files into crib-owned notes. Use to\nindex a repo for code_lookup/code_dossier, or to refresh after edits\n(cheap: unchanged files are skipped). Pass\n`project_path=<the repo dir>` (a `.crib` is auto-created if missing); a\nbare `project=<name>` re-indexes an ALREADY-INDEXED project from its\nrecorded root.\n\nTHE SWEEP RUNS DAEMON-OWNED and this call returns at once \u2014 a RUNNING\nHANDLE (`running: true` + done/total) or, for an instant sweep, its full\nresult. DON'T WAIT: poll `project_status` (its `jobs` section: never\nerrors, never blocks, reports failed jobs); re-invoke to join; a\ncompleted sweep's re-invoke returns its full result. `budget_s=<seconds>`\nbounds the WORK (not the call): files not reached are deferred\n(`complete=false, remaining=N`) \u2014 re-invoke to continue (finished files\nre-skip via the content-hash gate).",
+   "description": "(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it\ndeclares under `docs:` \u2014 those are indexed IN-SITU (searchable via\nnote_lookup; the repo keeps the only copy). It differs from\nproject_setup only in not COPYING files into crib-owned notes. Use to\nindex a repo for code_lookup/code_dossier, or to refresh after edits\n(cheap: unchanged files are skipped). Pass\n`project_path=<the repo dir>` (a `.crib` is auto-created if missing); a\nbare `project=<name>` re-indexes an ALREADY-INDEXED project from its\nrecorded root.\n\nTHE SWEEP RUNS DAEMON-OWNED and this call returns at once \u2014 a RUNNING\nHANDLE (`running: true` + done/total) or, for an instant sweep, its full\nresult. DON'T WAIT: poll `project_status` (its `jobs` section: never\nerrors, never blocks, reports failed jobs); re-invoke to join; a\ncompleted sweep's re-invoke returns its full result. `budget_s=<seconds>`\nbounds the WORK (not the call): files not reached are deferred\n(`complete=false, remaining=N`) \u2014 re-invoke to continue (finished files\nre-skip via the content-hash gate). `phased` (default: on in confined\nmode, `crib --root`) does the work in phases under the one budget:\nchanged files' structure, then edges re-resolved (`dangling` lists\ncalls whose target is gone), then descriptions; `phases` reports what\neach left unfinished.",
    "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -4038,6 +4038,17 @@
       "anyOf": [
        {
         "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null
+     },
+     "phased": {
+      "anyOf": [
+       {
+        "type": "boolean"
        },
        {
         "type": "null"

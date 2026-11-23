@@ -816,6 +816,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         project: str | None = None,
         project_path: str | None = None,
         budget_s: float | None = None,
+        phased: bool | None = None,
     ) -> dict[str, Any]:
         """(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it
         declares under `docs:` — those are indexed IN-SITU (searchable via
@@ -834,9 +835,13 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         completed sweep's re-invoke returns its full result. `budget_s=<seconds>`
         bounds the WORK (not the call): files not reached are deferred
         (`complete=false, remaining=N`) — re-invoke to continue (finished files
-        re-skip via the content-hash gate)."""
+        re-skip via the content-hash gate). `phased` (default: on in confined
+        mode, `crib --root`) does the work in phases under the one budget:
+        changed files' structure, then edges re-resolved (`dangling` lists
+        calls whose target is gone), then descriptions; `phases` reports what
+        each left unfinished."""
         res = await crib.project_index(
-            project, cwd=_cwd(project_path), budget_s=budget_s
+            project, cwd=_cwd(project_path), budget_s=budget_s, phased=phased
         )  # the polling contract — a RUNNING HANDLE at once (wait_s=None)
         return res
 

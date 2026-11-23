@@ -578,6 +578,138 @@ class CodeIndexer:
             self.code.bump_epoch(proj)  # queries now see fresh descriptions
         return {"described": patched, "file": rel}
 
+    async def index_phased(
+        self,
+        proj: str,
+        root: Path,
+        globs: list[str],
+        budget_s: float | None = None,
+        crib_at: float | None = None,
+    ) -> dict[str, Any]:
+        """Re-index a project in PHASES under one budget, the most useful work
+        first (design "Transient projects, out-of-store homes, and code overlays":
+        a bundle's overlay re-indexed in the sandbox against a PR checkout):
+
+          1. extract: changed/added files' STRUCTURE (hash-gated: unchanged files
+             cost nothing), then the records of files that are gone are dropped;
+          2. reresolve: every record's in-project callers rebuilt from every
+             record's calls, and calls that now point at nothing reported as
+             DANGLING (still called, removed or renamed);
+          3. describe: symbols still waiting for a description, file by file.
+
+        Each phase reports what it left unfinished; a phase the budget never
+        reached says so. The top-level counts are the extract sweep's, so the
+        result reads like a plain index."""
+        loop = asyncio.get_event_loop()
+        deadline = (loop.time() + budget_s) if budget_s else None
+
+        def remaining() -> float | None:
+            return None if deadline is None else max(deadline - loop.time(), 0.001)
+
+        def spent() -> bool:
+            return deadline is not None and loop.time() >= deadline
+
+        rel_of = {}
+        prior_files = {str(e["file"]) for e in self.code.records(proj) if e.get("file")}
+        extract = await self._index_project_code(
+            proj, root, globs, remaining(), crib_at, describe_mode="none")
+        for f in self.services.enumerate_code_files(root, globs):
+            rel_of[str(f.resolve().relative_to(root.resolve()))] = f
+        deleted = sorted(prior_files - set(rel_of)) if extract["complete"] else []
+        for rel in deleted:
+            self.code.drop_file(proj, rel)
+        phases: dict[str, Any] = {
+            "extract": {"complete": extract["complete"],
+                        "remaining_files": extract["remaining"],
+                        "deleted_files": deleted},
+        }
+        if spent():
+            phases["reresolve"] = {"complete": False, "reason": "budget spent"}
+        else:
+            phases["reresolve"] = await asyncio.to_thread(
+                self.reresolve_edges, proj, set(deleted))
+        phases["describe"] = await self._describe_pending(proj, root, spent)
+        out = {**extract, "phases": phases}
+        out["complete"] = all(ph.get("complete") for ph in phases.values())
+        if dangling := phases["reresolve"].get("dangling"):
+            out["dangling"] = dangling
+        return out
+
+    def reresolve_edges(self, proj: str, deleted: set[str] | None = None) -> dict[str, Any]:
+        """Rebuild every record's IN-PROJECT `called_by` from every record's
+        `calls` (an edge is `name [file]`, resolved against (name, file)), and
+        report calls whose target is a project file (present, or `deleted`) but
+        no symbol: dangling. Callers from other projects (`proj:file`) are kept
+        as recorded. Only records whose callers change are rewritten."""
+        from .codeindex import SymbolIndex
+        from .symbols import decode_edge, encode_edge
+
+        with self.code.lock(proj):
+            recs = self.code.records(proj)
+            files = {str(e["file"]) for e in recs if e.get("file")} | (deleted or set())
+            by_key: dict[tuple[str, str], list[int]] = {}
+            for i, e in enumerate(recs):
+                by_key.setdefault((str(e.get("name")), str(e.get("file"))), []).append(i)
+            incoming: list[set[str]] = [set() for _ in recs]
+            dangling: list[dict[str, Any]] = []
+            for e in recs:
+                me = encode_edge(str(e.get("name")), str(e.get("file")))
+                for c in e.get("calls") or []:
+                    cproj, name, rel, _ = decode_edge(c, proj)
+                    if cproj != proj:
+                        continue
+                    hits = by_key.get((name, rel))
+                    if hits:
+                        for i in hits:
+                            incoming[i].add(me)
+                    elif rel in files:
+                        dangling.append({"caller": me, "callee": c,
+                                         "file": e.get("file"), "line": e.get("line")})
+            store = SymbolIndex(self.paths.project_dir(proj))
+            updated = 0
+            for i, e in enumerate(recs):
+                old = list(e.get("called_by") or [])
+                external = {c for c in old if decode_edge(c, proj)[0] != proj}
+                new = sorted(external | incoming[i])
+                if new != sorted(old):
+                    e["called_by"] = new
+                    store.write(e)
+                    updated += 1
+            if updated:
+                self.code.bump_epoch(proj)
+        if updated:
+            self.code.refresh(proj)
+        return {"complete": True, "records_updated": updated,
+                "dangling": sorted(dangling, key=lambda d: (str(d["file"]),
+                                                             str(d["caller"])))}
+
+    async def _describe_pending(self, proj: str, root: Path, spent: Any) -> dict[str, Any]:
+        """Describe the project's symbols still waiting for one (content but no
+        description), file by file, until `spent()`."""
+        if self.config.generate.resolved_mode() == "off":
+            return {"complete": True, "skipped": "[generate] mode = off"}
+        by_file: dict[str, dict[str, dict]] = {}
+        for e in self.code.records(proj):
+            if e.get("content_hash") and not e.get("description") and e.get("file"):
+                by_file.setdefault(str(e["file"]), {})[symbol_key(e)] = e
+        described = files_done = 0
+        failed: list[dict[str, str]] = []
+        todo = sorted(by_file)
+        for n, rel in enumerate(todo):
+            if spent():
+                return {"complete": False, "described": described,
+                        "files_described": files_done, "remaining_files": len(todo) - n,
+                        **({"failed": failed} if failed else {})}
+            try:
+                r = await self._describe_and_patch(proj, root, rel, by_file[rel])
+                described += r.get("described", 0)
+                files_done += 1
+            except Exception as exc:  # noqa: BLE001 — one file's LLM failure: go on
+                failed.append({"file": rel, "error": str(exc)})
+        return {"complete": not failed, "described": described,
+                "files_described": files_done, "remaining_files": len(failed),
+                **({"failed": failed} if failed else {})}
+
     async def _index_project_code(
         self,
         proj: str,
@@ -585,6 +717,7 @@ class CodeIndexer:
         globs: list[str],
         budget_s: float | None = None,
         crib_at: float | None = None,
+        describe_mode: str = "inline",
     ) -> dict[str, Any]:
         """Index every source file under `globs`. Non-code files self-skip (NoServer).
 
@@ -656,7 +789,7 @@ class CodeIndexer:
                         proj,
                         False,
                         prior_by_file.get(rel, []),
-                        "inline",
+                        describe_mode,
                     )
                     if (r or {}).get("descriptions_error"):
                         # live desc-fail visibility: a rate-limited describe must

@@ -66,6 +66,19 @@ version has no heading here.
   store's cache so only never-seen text is computed; a sandbox that keeps
   its store elsewhere (`--store`) loads the file and re-embeds nothing.
   `--no-vectors` skips this. The bundle's config records the embedding model.
+- **Phased re-index: `crib project index --phased` (MCP `phased=True`), on by
+  default with `--root`.** The work runs in phases under the one `--budget`,
+  most useful first: changed files' structure; then edges re-resolved (every
+  record's callers rebuilt from every record's calls, so a caller in an
+  unchanged file links to a changed function), with `dangling` listing calls
+  whose target is gone (removed or renamed, still called); then
+  descriptions. Records of deleted files are dropped. `phases` reports what
+  each phase left unfinished.
+
+### Fixed
+
+- `crib project index --budget` was parsed but never passed on, so the CLI's
+  budget was silently ignored.
 
 ## [0.27.0] - 2026-11-22
 

@@ -2668,6 +2668,7 @@ class Crib:
         cwd: Path | None = None,
         budget_s: float | None = None,
         wait_s: float | None = None,
+        phased: bool | None = None,
     ) -> dict[str, Any]:
         """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
         (ensuring a `.crib` first). Cheap re-run via the content-hash gate.
@@ -2687,8 +2688,13 @@ class Crib:
 
         `budget_s` bounds the WORK: files not reached are deferred
         (`complete=False, remaining=N`) — re-invoke to continue (finished files
-        re-skip via the content-hash gate)."""
-        res = await self._project_index(project, cwd, budget_s, wait_s)
+        re-skip via the content-hash gate).
+
+        `phased` (default: on in confined mode) runs the work in phases under
+        the one budget: changed files' structure, then edges re-resolved (and
+        dangling calls reported), then descriptions; each phase reports what it
+        left (crib.codeindexer index_phased)."""
+        res = await self._project_index(project, cwd, budget_s, wait_s, phased)
         # every answer, a running handle included, says what the repo's facet
         # mappings hold (the sweep below is code; mapped facets index apart)
         if "facets" not in res and res.get("project"):
@@ -2702,6 +2708,7 @@ class Crib:
         cwd: Path | None = None,
         budget_s: float | None = None,
         wait_s: float | None = None,
+        phased: bool | None = None,
     ) -> dict[str, Any]:
         """The body of `project_index` (which adds the facet summary)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
@@ -2758,7 +2765,7 @@ class Crib:
                 ),
             }
         task = asyncio.create_task(
-            self._project_index_now(proj, link, created, budget_s)
+            self._project_index_now(proj, link, created, budget_s, phased)
         )
         # RETAINED (not popped on finish): the poll needs the completed row
         # (complete: true + the final counts) so 'finished OK' is distinguishable
@@ -2790,6 +2797,7 @@ class Crib:
         link: CribLink,
         created: bool,
         budget_s: float | None,
+        phased: bool | None = None,
     ) -> dict[str, Any]:
         """The unguarded sweep body — the caller (project_index) owns
         resolution, join/cancel, and passes the link + created flag in
@@ -2805,9 +2813,13 @@ class Crib:
         globs = link.paths or self._detect_code_globs(root)
         crib_file = root / ".crib"
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
-        code = await self._index_project_code(
-            proj, root, globs, budget_s, crib_at=crib_at
-        )
+        if phased if phased is not None else self.paths.root is not None:
+            code = await self.indexer.index_phased(
+                proj, root, globs, budget_s, crib_at=crib_at)
+        else:
+            code = await self._index_project_code(
+                proj, root, globs, budget_s, crib_at=crib_at
+            )
         # No learning re-attach here. The sweep converts ENTRIES as a side effect
         # (every write normalizes identity), and the learnings join reads bindings,
         # so notes stay correct WITHOUT being rewritten — rebinding note files under

@@ -1556,6 +1556,13 @@ def build_parser() -> argparse.ArgumentParser:
                 dest="budget_s",
                 help="soft deadline; unfinished files are deferred",
             )
+        if _v == "index":
+            _sp.add_argument(
+                "--phased", action=argparse.BooleanOptionalAction, default=None,
+                help="index in phases under the one --budget: changed files' "
+                "structure, then edges re-resolved (dangling calls reported), "
+                "then descriptions (default: on with --root)",
+            )
         if _v == "wait":
             # the polling contract: `project index` returns a running handle and
             # the CLI emitter follows it to completion — no --wait-s there; the
@@ -3486,11 +3493,12 @@ VERBS: dict[str, Verb] = {
         # once (no wait_s — a blocking call can't survive proxy caps); the CLI
         # emitter follows it to completion (a terminal may block) via
         # project_wait when the handle says running.
-        lambda a: {"project": _proj_of(a)},
+        lambda a: {"project": _proj_of(a), "budget_s": getattr(a, "budget_s", None),
+                   "phased": getattr(a, "phased", None)},
         _E_project("index"),
         is_async=True,
         policy="source",
-        mcp=f"{_PROJ} budget_s=None",
+        mcp=f"{_PROJ} budget_s=None phased=None",
     ),
     "project wait": Verb(
         "project_wait",
