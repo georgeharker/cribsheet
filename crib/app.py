@@ -22,6 +22,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
+from .access import WriteAccess
 from . import __version__, claudemem, facets, notes
 from .chunk import (
     CHUNK_SCHEMA_VERSION,
@@ -235,9 +236,12 @@ class Crib:
         # (`crib facets sync`) is PENDING: no store, not indexed or watched; its
         # verbs refuse with the reason.
         self.pending_facets: dict[str, str] = store.facet_pending()
+        # which projects this instance may write (crib/access.py; None = all)
+        self.access = WriteAccess(config.writable)
         self.pillars: dict[str, NoteStore] = {
             spec.name: NoteStore(
-                paths, store, self.index, self.versions, self.project_paths, spec
+                paths, store, self.index, self.versions, self.project_paths, spec,
+                access=self.access,
             )
             for noun, spec in STORE_SPECS.items()
             if noun not in self.pending_facets
@@ -2545,6 +2549,7 @@ class Crib:
         explicit verb.)"""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
+        self.access.require(proj, "project_setup")
         new_project = proj not in self.projects()  # before indexing creates its dirs
         mapped = await self._sync_mappings(proj, link)
         docs = (
@@ -2607,6 +2612,7 @@ class Crib:
         """The body of `project_index` (which adds the facet summary)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
+        self.access.require(proj, "project_index")
         await self._sync_mappings(proj, link)
         crib_file = link.root / ".crib"
         crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
@@ -3168,6 +3174,7 @@ class Crib:
                 "`store:`, or run `crib project setup` first)"
             )
         proj = check_project_name(project or link.project)
+        self.access.require(proj, "project_adopt")
         if project and link.project != proj:
             raise CribUserError(
                 f"the `.crib` at {link.root} names project {link.project!r}, not "
@@ -3278,6 +3285,7 @@ class Crib:
         when the repo is going away, or when the notes should stop travelling with
         it. Idempotent: releasing an already-global project is a no-op."""
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "project_release")
         mapped, kept = self._release_mapped(proj)
         extra = {**({"mapped": mapped} if mapped else {}),
                  **({"kept": kept} if kept else {})}
@@ -3380,7 +3388,7 @@ class Crib:
         project of that name already exists (moving notes into a repo is
         adopt's job), so it can never be a silent merge.
 
-        Idempotent: an existing project reports `created: false` and changes
+        Idempotent: an existing project reports `project_created: false` and changes
         nothing. Writes do NOT require this verb — the implicit creation on
         first write stays (an absent manifest just means "born implicitly")."""
         from .watch import PILLAR_SEGMENTS
@@ -3438,6 +3446,7 @@ class Crib:
                     )
                 root = link.root
                 store_decl = link.store
+            self.access.require(name, "project_create")
             # The shared bucket never lives inside ONE repo — residency is a
             # repo's own memory, and `default` would silently adopt it into a
             # repo checkout (and into every clone's .crib).
@@ -3588,6 +3597,7 @@ class Crib:
                 "(residency is declared with store=<repo-relative path>)"
             )
         name = check_project_name(project)
+        self.access.require(name, "project_create")
         if self.paths.project_dir(name).exists():
             return {
                 "project": name,
@@ -3695,6 +3705,7 @@ class Crib:
                 "the default project"
             )
         proj = check_project_name(project)
+        self.access.require(proj, "project_delete")
         del cwd  # deliberately unused: the selector above is the whole answer
         plan = self._delete_plan(proj, force)
         if not plan["exists_anywhere"]:
@@ -3893,6 +3904,8 @@ class Crib:
         old = check_project_name(project)
         del cwd  # deliberately unused, same rule as delete
         new = check_project_name(to)
+        self.access.require(old, "project_rename")
+        self.access.require(new, "project_rename (to)")
         if old == new:
             raise CribUserError(f"rename to the same name ({old!r}) does nothing")
         if old == self.config.default_project or new == self.config.default_project:
@@ -4269,6 +4282,7 @@ class Crib:
                 "never the default project and never a cwd guess"
             )
         old = check_project_name(project)
+        self.access.require(old, "project_relocate")
         new_root = Path(project_path).expanduser().resolve()
         if not new_root.is_dir():
             raise CribUserError(f"no such directory: {new_root}")
@@ -4714,6 +4728,7 @@ class Crib:
         Per record, no ordering constraint against the entry conversion, re-running
         is the resume. DRY RUN unless `apply`."""
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "learning_migrate")
         return await self._anchored_facet(facet).convert_notes(proj, apply=apply)
 
     async def code_convert(
@@ -4734,6 +4749,7 @@ class Crib:
         from .symconvert import convert_entry, convertible, preserved
 
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "code_convert")
         store = SymbolIndex(self.paths.project_dir(proj))
         rows = store.records()
         # COLLISION GUARD. Distinct records whose cleaned identities derive ONE key
@@ -4817,6 +4833,7 @@ class Crib:
         explicitly. Idempotent; collisions are skipped and reported, never
         merged."""
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "project_migrate")
         self.project_paths(proj).require()
         mig = self._migrate_legacy_layout(proj)
         rec = await self.reindex(project=proj)
@@ -5147,6 +5164,7 @@ class Crib:
         from .codeindex import SymbolIndex
 
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "project_forget")
         si_root = SymbolIndex(self.project_paths(proj).project_dir).root
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
@@ -6334,6 +6352,7 @@ class Crib:
         preserved across re-pulls. Provenance is byte-identical across machines so a
         git sync never conflicts on it (DESIGN §14)."""
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "import_files")
         created = self.project_is_new(proj)
         today = datetime.date.today().isoformat()
 
@@ -6410,6 +6429,7 @@ class Crib:
             )
         mem_dir = claudemem.harness_memory_dir(src_root)
         proj = self.resolve_project(project, cwd)
+        self.access.require(proj, "import_claude_memory")
         created = self.project_is_new(proj)
         prefix = f"claude-memory/{claudemem.hostslug()}/"
         today = datetime.date.today().isoformat()

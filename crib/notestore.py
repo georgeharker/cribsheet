@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from .access import WriteAccess
 from . import facets, notes
 from .chunk import kind_of
 from .facets import FacetSpec
@@ -76,8 +77,11 @@ class NoteStore:
     def __init__(self, paths: Paths, store: Store, index: IndexEngine,
                  versions: VersionRing,
                  project_paths: ProjectPathResolver,
-                 spec: StoreSpec = NOTES_SPEC) -> None:
+                 spec: StoreSpec = NOTES_SPEC,
+                 access: WriteAccess | None = None) -> None:
         self.paths = paths
+        # which projects this instance may write (crib/access.py); None = all
+        self.access = access or WriteAccess()
         self.store = store
         self.index = index
         self.versions = versions
@@ -138,7 +142,9 @@ class NoteStore:
         return {} if loc is None else {"ids": loc.ids, "read_only": loc.read_only}
 
     def _refuse_read_only(self, project: str, verb: str) -> None:
-        """A read-only mapped location is indexed and searched, never written."""
+        """A project this instance holds read-only (crib/access.py), or a
+        read-only mapped location, is indexed and searched, never written."""
+        self.access.require(project, verb)
         loc = self.location(project)
         if loc is not None and loc.read_only:
             noun = self.spec.facet or "note"

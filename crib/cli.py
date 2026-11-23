@@ -1461,6 +1461,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--json", action="store_true", help="machine-readable output")
     p.add_argument(
+        "--writable",
+        action="append",
+        metavar="PROJECT",
+        help="only these projects are writable for THIS process (repeatable; "
+        "everything else is read-only); for `serve`/--mcp and --no-daemon "
+        "verbs. A daemon-attached call follows the daemon's own setting. "
+        "Same as $CRIB_WRITABLE or `writable = [...]` in config.toml",
+    )
+    p.add_argument(
         "--color",
         choices=("auto", "always", "never"),
         default="auto",
@@ -4208,6 +4217,12 @@ def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
     args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
+    if args.writable:
+        import os as _os
+
+        from .access import WRITABLE_ENV
+
+        _os.environ[WRITABLE_ENV] = ",".join(args.writable)
     # --json is for machines: never styled, whatever the terminal
     _st.configure("never" if args.json else args.color)
 

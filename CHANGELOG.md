@@ -9,6 +9,21 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Added
+
+- **Per-project read-only overrides.** A crib instance can be told which
+  projects it may write: `writable = ["p", ...]` in `config.toml`,
+  `$CRIB_WRITABLE` (comma-separated; wins over the file), or the global
+  `--writable PROJECT` flag (repeatable; for `serve`/`--mcp` and `--no-daemon`
+  verbs). Every other project is read-only for that instance: reads work,
+  writes are refused with the reason. Enforced at every write path: notes,
+  declared facets, decisions, plans, learnings, code indexing, imports and the
+  project lifecycle verbs. Unset, every project is writable, as before. The
+  first piece of overlays for sandboxed review (an agent handed several
+  projects writes only to its copy).
+
 ## [0.27.0] - 2026-11-22
 
 **Breaking for agents:** `project_use` and `project_current` are gone; name the

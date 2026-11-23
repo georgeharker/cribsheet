@@ -33,6 +33,9 @@ about a repo, so it errors rather than quietly filing into the default project.
 to run in-process instead of attaching to the warm daemon (see [Server & daemon](#server--daemon)),
 `--color auto|always|never` for styled human output (auto: a colour terminal, not
 `NO_COLOR`).
+`--writable PROJECT` (repeatable) makes every other project read-only for that
+process (`serve`/`--mcp`, `--no-daemon` verbs); also `$CRIB_WRITABLE` or
+`writable = [...]` in config.toml.
 Content-taking verbs (`note store`/`append`/`edit`, `learning add`/`edit`) accept `-`
 to read the content from stdin.
 

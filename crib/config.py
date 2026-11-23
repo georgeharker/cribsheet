@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from .access import writable_from
 from .errors import CribUserError
 from .paths import check_project_name, confine
 
@@ -378,6 +379,9 @@ class Config:
     # (HOME is always implied) so an imported note's `source_repo` reads the same
     # on every machine instead of conflicting on the absolute prefix (DESIGN §14).
     locations: dict[str, str] = field(default_factory=dict)
+    # The projects this instance may WRITE; None = every project (crib/access.py).
+    # $CRIB_WRITABLE (comma-separated) wins over the file.
+    writable: list[str] | None = None
 
     @classmethod
     def load(cls, config_file: Path) -> "Config":
@@ -390,6 +394,7 @@ class Config:
         cfg = cls()
         if not config_file.exists():
             _generate_from_env(cfg.generate)
+            cfg.writable = writable_from(cfg.writable)
             return cfg
         try:
             data = tomllib.loads(config_file.read_text())
@@ -425,6 +430,12 @@ class Config:
                 )
         if "watch" in data:
             cfg.watch = bool(data["watch"])
+        if "writable" in data:
+            w = data["writable"]
+            if isinstance(w, list) and all(isinstance(x, str) for x in w):
+                cfg.writable = list(w)
+            else:
+                _warn(f"{config_file}: writable must be a list of project names — ignored")
         for name, kind in sub.items():
             if t := data.get(name):
                 if not isinstance(t, dict):
@@ -444,6 +455,7 @@ class Config:
         if isinstance(loc := data.get("locations"), dict):
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
         _generate_from_env(cfg.generate)
+        cfg.writable = writable_from(cfg.writable)
         return cfg
 
 
