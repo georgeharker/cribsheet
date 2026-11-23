@@ -9,7 +9,11 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
-## [Unreleased]
+## [0.28.0-dev1] - 2026-11-22
+
+Dev release: crib for sandboxed review. Bundles (`crib bundle`), confined
+mode (`crib --root`), per-project read-only overrides (`--writable`),
+transient projects, and a phased re-index.
 
 ### Added
 
