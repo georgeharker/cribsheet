@@ -9,6 +9,81 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.28.0-dev1] - 2026-11-22
+
+Dev release: crib for sandboxed review. Bundles (`crib bundle`), confined
+mode (`crib --root`), per-project read-only overrides (`--writable`),
+transient projects, and a phased re-index.
+
+### Added
+
+- **Per-project read-only overrides.** A crib instance can be told which
+  projects it may write: `writable = ["p", ...]` in `config.toml`,
+  `$CRIB_WRITABLE` (comma-separated; wins over the file), or the global
+  `--writable PROJECT` flag (repeatable; for `serve`/`--mcp` and `--no-daemon`
+  verbs). Every other project is read-only for that instance: reads work,
+  writes are refused with the reason. Enforced at every write path: notes,
+  declared facets, decisions, plans, learnings, code indexing, imports and the
+  project lifecycle verbs. Unset, every project is writable, as before. The
+  first piece of overlays for sandboxed review (an agent handed several
+  projects writes only to its copy).
+- **Transient projects.** `crib project create NAME --transient [--expires
+  2h]` (MCP `project_create(transient=True, expires=...)`) makes a project for
+  one job: never git-synced (its directory carries a `*` .gitignore), no
+  version ring, skipped by the startup reconcile, and deleted without `.trash`.
+  With `--expires` (an ISO time, or `30m` / `2h` / `1d`) the daemon deletes it
+  when due, through the ordinary delete path (a scheduled delete, checked at
+  start and every 5 minutes). A transient project can't declare repo residency.
+- **Projects homed outside the store, including read-only ones.** A
+  project whose data tier lives at any absolute path (its stub's
+  `store_root`), such as a container's read-only mount of a context project,
+  now indexes and reads without writing there: a reconcile no longer creates
+  pillar directories, and a project this instance holds read-only is indexed
+  like a read-only location (a note without an `id` is reported as
+  `unstamped`, not stamped).
+- **Confined mode: `crib --root DIR` (or `$CRIB_ROOT`).** Everything crib
+  keeps (config, store, index, notes) lives under DIR, and nothing is written
+  outside it. Only the embedded store runs (the shared server is refused), git
+  memory sync and history are refused, watchers watch only inside DIR (no code
+  watcher on a checkout, no harness-memory mirror), and a checkout's own
+  `.crib` is never read or written: projects are named, and a trusted `.crib`
+  can be placed in the project's directory under DIR. A reopened root rebuilds
+  its store from its files, its transient projects included. Built for
+  sandboxed review: crib runs against a disposable root.
+  `--store DIR` (or `$CRIB_INDEX_DIR`) puts the store, a disposable cache,
+  elsewhere (e.g. pod scratch); in confined mode it is the one thing kept
+  outside the root.
+- **Bundles: `crib bundle create|expire|list|delete`.** A bundle is a
+  self-contained, disposable crib root for a sandbox: `crib bundle create DIR
+  --overlay toucan:pr-123 --context llmkit --expires 7d` copies project
+  `toucan` as the writable, transient project `toucan@pr-123`, copies
+  `llmkit` read-only for context (to `DIR/context`, or `--context-to` for a
+  read-only mount), and writes the bundle's config (embedded store, only the
+  overlay writable) and a manifest. Open it with `crib --root DIR`. The
+  trusted side registers each bundle and deletes it when its expiry passes
+  (the daemon's sweep) or on `crib bundle delete`; a session can extend it
+  with `crib bundle expire`. Only the expiry is read back from a bundle (it
+  is writable inside the sandbox); what a delete removes comes from the
+  registry. Project names may now contain one `@` (an overlay of a base).
+  `create` also builds the bundle's own store (in `DIR/index`) and writes
+  its vectors to `DIR/data/embed-cache.parquet`, embedding through the main
+  store's cache so only never-seen text is computed; a sandbox that keeps
+  its store elsewhere (`--store`) loads the file and re-embeds nothing.
+  `--no-vectors` skips this. The bundle's config records the embedding model.
+- **Phased re-index: `crib project index --phased` (MCP `phased=True`), on by
+  default with `--root`.** The work runs in phases under the one `--budget`,
+  most useful first: changed files' structure; then edges re-resolved (every
+  record's callers rebuilt from every record's calls, so a caller in an
+  unchanged file links to a changed function), with `dangling` listing calls
+  whose target is gone (removed or renamed, still called); then
+  descriptions. Records of deleted files are dropped. `phases` reports what
+  each phase left unfinished.
+
+### Fixed
+
+- `crib project index --budget` was parsed but never passed on, so the CLI's
+  budget was silently ignored.
+
 ## [0.27.0] - 2026-11-22
 
 **Breaking for agents:** `project_use` and `project_current` are gone; name the
