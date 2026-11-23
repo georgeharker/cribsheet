@@ -11,11 +11,18 @@ The floors come from the first seeded run (recorded below, per the standing
 re-tune rule: re-measure + record, never silently). The enrichment TOMLs are
 frozen at the working tree they were exported from: if the indexed docs change,
 section hashes drift and this test fails loudly — regenerate the fixtures with
-`scripts/derive_clean_corpus.py --export-enrichments`, deliberately."""
+`scripts/derive_clean_corpus.py --export-enrichments`, deliberately.
+
+OPT-IN (`CRIB_EVAL_CORPUS=1`): 638 queries, each reranked by the cross-encoder
+on CPU, take ~3 min on a developer machine and ~20 min on a hosted runner,
+which made it the whole tail of every CI run. Run it for changes to retrieval,
+chunking, enrichment or the fixtures: locally with the env var, or in CI with
+the "Retrieval quality (clean corpus)" workflow (eval-corpus.yml)."""
 
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -40,6 +47,12 @@ ENRICH = ROOT / "scripts" / "eval_data" / "enrichments"
 # silently re-tune.
 FLOOR_MRR = 0.80
 FLOOR_RECALL = 0.88
+
+pytestmark = pytest.mark.skipif(
+    not os.environ.get("CRIB_EVAL_CORPUS"),
+    reason="opt-in: the full clean-corpus eval (~3 min local, ~20 min on a "
+    "hosted runner); set CRIB_EVAL_CORPUS=1",
+)
 
 
 @pytest.fixture()

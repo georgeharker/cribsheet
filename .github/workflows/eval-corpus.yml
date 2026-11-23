@@ -1,0 +1,41 @@
+name: Retrieval quality (clean corpus)
+
+# The full clean-corpus eval (tests/test_eval_clean_corpus.py): the public-repo
+# gold set, seeded from this repo's own fixtures, every query reranked by the
+# cross-encoder. Opt-in, NOT part of `CI`: ~20 min on a hosted runner, and only
+# changes to retrieval, chunking, enrichment or the eval fixtures need it. Run it
+# from the Actions tab (or `gh workflow run eval-corpus.yml --ref <branch>`).
+# Unlike the large set (eval-large.yml) it needs no private store, so it runs on
+# a hosted runner.
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    eval:
+        name: retrieval quality (clean corpus, n=638)
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  # the test worktree-checks out the corpus's pinned source_sha
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v10.1.0
+              with:
+                  python-version: "3.14"
+
+            - name: Install (project + dev group, from uv.lock)
+              run: uv sync
+
+            - name: Clean-corpus quality floors
+              env:
+                  CRIB_EVAL_CORPUS: "1"
+              run: >-
+                  uv run pytest -q --durations=5
+                  tests/test_eval_clean_corpus.py

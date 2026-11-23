@@ -390,3 +390,8 @@ exercise, not install profiles.
 ```bash
 pip install pytest && pytest -q
 ```
+
+Two retrieval evals are opt-in, for changes to retrieval, chunking, enrichment or
+the eval fixtures: the clean public corpus (`CRIB_EVAL_CORPUS=1`, ~3 min locally;
+in CI, run the "Retrieval quality (clean corpus)" workflow by hand) and the large
+gold set (`CRIB_EVAL_LARGE=1`, needs a seeded store; see `eval-large.yml`).
