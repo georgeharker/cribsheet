@@ -159,8 +159,15 @@ class NoteStore:
 
     def _refuse_read_only(self, project: str, verb: str) -> None:
         """A project this instance holds read-only (crib/access.py), or a
-        read-only mapped location, is indexed and searched, never written."""
+        read-only mapped location, is indexed and searched, never written.
+        In confined mode (--root) nothing outside the root is written either."""
         self.access.require(project, verb)
+        if (base := self.paths.root) is not None:
+            home = self.root(project).resolve()
+            if not home.is_relative_to(base):
+                raise CribUserError(
+                    f"{verb} refused: confined mode (--root {base}) writes only "
+                    f"under its root; project {project!r} lives at {home}")
         loc = self.location(project)
         if loc is not None and loc.read_only:
             noun = self.spec.facet or "note"

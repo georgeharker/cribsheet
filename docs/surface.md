@@ -36,6 +36,8 @@ to run in-process instead of attaching to the warm daemon (see [Server & daemon]
 `--writable PROJECT` (repeatable) makes every other project read-only for that
 process (`serve`/`--mcp`, `--no-daemon` verbs); also `$CRIB_WRITABLE` or
 `writable = [...]` in config.toml.
+`--root DIR` (or `$CRIB_ROOT`) is confined mode: everything under DIR, nothing
+written outside it, a checkout's own `.crib` never read, projects named explicitly.
 Content-taking verbs (`note store`/`append`/`edit`, `learning add`/`edit`) accept `-`
 to read the content from stdin.
 

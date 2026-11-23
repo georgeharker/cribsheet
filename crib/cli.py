@@ -1461,6 +1461,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--json", action="store_true", help="machine-readable output")
     p.add_argument(
+        "--root",
+        metavar="DIR",
+        help="CONFINED MODE: keep everything (config, store, index, notes) under "
+        "DIR and write nothing outside it; no git sync, no shared store, "
+        "watchers only inside DIR, a checkout's own .crib never read or "
+        "written (projects are named). Same as $CRIB_ROOT",
+    )
+    p.add_argument(
         "--writable",
         action="append",
         metavar="PROJECT",
@@ -3914,6 +3922,10 @@ def _run_git(args: Any, cfg: Any) -> int:
     verb = args.memory_verb  # `crib memory setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
     paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
+    if paths.root is not None:
+        print(f"crib memory {verb}: refused in confined mode (--root): the root "
+              "is disposable and never git-synced", file=sys.stderr)
+        return 1
     if (refusal := _in_repo_guard(paths, cfg, _cwd_of(args))) is not None:
         print(refusal, file=sys.stderr)
         return 1
@@ -4228,6 +4240,12 @@ def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
     args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
+    if args.root:
+        import os as _os
+
+        from .paths import ROOT_ENV
+
+        _os.environ[ROOT_ENV] = str(Path(args.root).expanduser().resolve())
     if args.writable:
         import os as _os
 

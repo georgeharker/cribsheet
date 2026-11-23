@@ -244,7 +244,9 @@ class CodeIndexer:
         # likewise a nested `.crib` bounds another project (watcher events for
         # files inside it must not index into the parent). Strictly UNDER root:
         # an ancestor .crib above a rootless project must not skip everything.
-        link = CribLink.find(abs_p.parent)
+        # (confined mode reads no .crib from a checkout: one inside the code
+        # under review could hide files from it)
+        link = CribLink.find(abs_p.parent) if self.services.paths.root is None else None
         if link is not None and link.root is not None:
             lroot = link.root.resolve()
             if lroot != root.resolve() and lroot.is_relative_to(root.resolve()):

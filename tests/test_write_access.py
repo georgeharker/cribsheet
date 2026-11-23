@@ -117,6 +117,10 @@ def test_the_cli_flag_sets_the_allowlist_for_this_process(dirs, monkeypatch):
 
     from crib import cli
 
+    # set-then-delete: monkeypatch must record the var to remove what
+    # cli.main sets (delenv of an unset var records nothing)
+    monkeypatch.setenv(WRITABLE_ENV, "x")
+    monkeypatch.delenv(WRITABLE_ENV)
     seen = []
     monkeypatch.setattr(cli, "_run_inprocess",
                         lambda args, cfg: seen.append(os.environ.get(WRITABLE_ENV)))

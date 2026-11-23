@@ -37,6 +37,15 @@ version has no heading here.
   pillar directories, and a project this instance holds read-only is indexed
   like a read-only location (a note without an `id` is reported as
   `unstamped`, not stamped).
+- **Confined mode: `crib --root DIR` (or `$CRIB_ROOT`).** Everything crib
+  keeps (config, store, index, notes) lives under DIR, and nothing is written
+  outside it. Only the embedded store runs (the shared server is refused), git
+  memory sync and history are refused, watchers watch only inside DIR (no code
+  watcher on a checkout, no harness-memory mirror), and a checkout's own
+  `.crib` is never read or written: projects are named, and a trusted `.crib`
+  can be placed in the project's directory under DIR. A reopened root rebuilds
+  its store from its files, its transient projects included. Built for
+  sandboxed review: crib runs against a disposable root.
 
 ## [0.27.0] - 2026-11-22
 

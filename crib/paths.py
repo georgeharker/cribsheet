@@ -73,7 +73,25 @@ def confine(base: Path, *parts: str) -> Path:
     return out
 
 
+# CONFINED MODE (`--root` / $CRIB_ROOT): everything crib keeps lives under one
+# root, and wins over the per-dir overrides: config, data and index are its
+# `config/`, `data/` and `index/`. The rest of the mode (no git sync, no
+# shared store, watchers only inside the root, the checkout's own .crib never
+# read or written, writes only under the root) keys off `confined_root()`.
+ROOT_ENV = "CRIB_ROOT"
+_ROOT_SUBDIR = {"CRIB_CONFIG_DIR": "config", "CRIB_DATA_DIR": "data",
+                "CRIB_INDEX_DIR": "index"}
+
+
+def confined_root() -> Path | None:
+    """The confined-mode root, or None for a normal instance."""
+    v = os.environ.get(ROOT_ENV)
+    return Path(v).expanduser().resolve() if v else None
+
+
 def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:
+    if (root := confined_root()) is not None:
+        return root / _ROOT_SUBDIR[env_override]
     if v := os.environ.get(env_override):
         return Path(v).expanduser()
     if v := os.environ.get(xdg_var):
@@ -103,6 +121,11 @@ class Paths:
         )
 
     # --- derived locations -------------------------------------------------
+    @property
+    def root(self) -> Path | None:
+        """The confined-mode root (`--root` / $CRIB_ROOT), or None."""
+        return confined_root()
+
     @property
     def config_file(self) -> Path:
         return self.config_dir / "config.toml"

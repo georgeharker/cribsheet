@@ -395,9 +395,9 @@ class Crib:
             self.paths.projects_dir,
             self._on_fs_change,
             loop,
-            self._in_repo_store_roots(),
+            self._in_root(self._in_repo_store_roots()),
             on_records=self._on_record_change,
-            mapped=self._mapped_facet_roots(),
+            mapped=self._in_root(self._mapped_facet_roots()),
         )
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
@@ -407,7 +407,9 @@ class Crib:
 
         for name in self.projects():  # `projects()` returns plain names
             root = SymbolIndex(self.paths.project_dir(name)).source_root()
-            if root is not None:
+            # confined mode watches nothing outside the root (a source checkout
+            # never sits inside it): indexing there is explicit
+            if root is not None and self.paths.root is None:
                 self._code_watcher.watch_root(name, root)
         self._code_watcher.start()
         # Deferred describe: the code-watcher persists STRUCTURE eagerly and hands the
@@ -572,6 +574,14 @@ class Crib:
                     continue
                 roots[(name, store)] = loc.root
         return roots
+
+    def _in_root(self, roots: dict[Any, Path]) -> dict[Any, Path]:
+        """`roots` limited to those under the confined-mode root (all of them in
+        a normal instance): confined mode watches nothing outside its root."""
+        if (base := self.paths.root) is None:
+            return roots
+        return {k: v for k, v in roots.items()
+                if Path(v).resolve().is_relative_to(base)}
 
     def _in_repo_store_roots(self) -> dict[str, Path]:
         """`{project: data root}` for every project adopted into a repo whose
@@ -872,6 +882,8 @@ class Crib:
         No-op without bindings (`crib import-memory` opts repos in)."""
         if self._mirror is not None or not self.config.memory.watch:
             return
+        if self.paths.root is not None:
+            return  # confined mode: harness memory lives outside the root
         from .memmirror import MemoryMirror
 
         async def sync(root: Path, project: str) -> Any:
@@ -1524,7 +1536,9 @@ class Crib:
         # a transient project is indexed only when asked (it is discarded whole)
         projects = sorted(
             p for p in set(self.projects()) | self._indexed_projects()
-            if not self._is_transient(p)
+            # ...except in confined mode, where the root's transient projects
+            # ARE the content and a reopened root rebuilds its store from them
+            if self.paths.root is not None or not self._is_transient(p)
         )
         total: dict[str, Any] = {
             "projects": len(projects),
@@ -2484,6 +2498,8 @@ class Crib:
         incidental (the CLI ships the shell cwd with every call), so the project's
         registered root wins; with no registered root to prefer it's an error —
         never index one project's repo into another."""
+        if self.paths.root is not None:
+            return self._confined_link(cwd, project, want_code, want_docs), False
         base = Path(cwd).resolve() if cwd else None
         link = CribLink.find(base) if base is not None else None
         if project and (link is None or link.project != project):
@@ -2552,6 +2568,40 @@ class Crib:
             lines += ["docs:", '  - "README.md"', '  - "docs/**/*.md"']
         (root / ".crib").write_text("\n".join(lines) + "\n")
         return CribLink.find(root), True
+
+    def _confined_link(
+        self, cwd: Path | None, project: str | None, want_code: bool, want_docs: bool
+    ) -> CribLink:
+        """Confined mode's `.crib`: the TRUSTED copy the export wrote into the
+        project's directory in the root, anchored at the checkout the caller
+        names. The checkout's own `.crib` is never read or written (it may be
+        the code under review); residency (`store:`), facet mappings and refs
+        are ignored even in the trusted copy: a confined instance indexes code
+        and docs into its own root, nothing else. Without a trusted copy the
+        code globs are detected, never recorded in the checkout."""
+        import dataclasses
+
+        if not project:
+            raise CribUserError(
+                "confined mode (--root): name the project (project=<name> / -p)")
+        if cwd is None:
+            raise CribUserError(
+                "confined mode (--root): pass project_path=<the checkout dir>; "
+                "a repo-scoped op never falls back to the server's cwd")
+        base = Path(cwd).resolve()
+        trusted = self.paths.project_dir(project) / ".crib"
+        link = CribLink._parse(trusted, base) if trusted.is_file() else None
+        if link is None:
+            return CribLink(
+                project=project, root=base,
+                paths=self._detect_code_globs(base) if want_code else [],
+                docs=["README.md", "docs/**/*.md"] if want_docs else [],
+            )
+        if link.project != project:
+            raise CribUserError(
+                f"{trusted} names project {link.project!r}, not {project!r}")
+        return dataclasses.replace(link, root=base, store=None, facets={}, refs=[],
+                                   imports=[], import_into=None)
 
     async def _index_project_code(
         self,
@@ -6624,6 +6674,10 @@ class Crib:
         return await self.edit_note(relpath, content, project=proj, facet=facet)
 
     def snapshot(self, message: str | None = None) -> str:
+        if self.paths.root is not None:
+            raise CribUserError(
+                "confined mode (--root) keeps no git history: the root is "
+                "disposable and never synced")
         return self.git.snapshot(message)
 
     def history(self, relpath: str | None = None) -> list[str]:
@@ -6806,6 +6860,12 @@ def _build_store(
             f"[store] backend = {backend!r} is not a store crib knows (duckdb)"
         )
     if config.duckdb.mode == "shared":
+        if paths.root is not None:
+            raise CribUserError(
+                "confined mode (--root) runs an embedded store only: the shared "
+                "store server lives outside the root. Set [duckdb] mode = "
+                '"embedded" in the root\'s config.toml'
+            )
         return _build_shared_duckdb(paths, config)
     if config.duckdb.mode != "embedded":
         raise CribUserError(

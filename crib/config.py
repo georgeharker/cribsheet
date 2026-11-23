@@ -12,7 +12,7 @@ import yaml
 
 from .access import writable_from
 from .errors import CribUserError
-from .paths import check_project_name, confine
+from .paths import check_project_name, confine, confined_root
 
 
 def _warn(msg: str) -> None:
@@ -929,6 +929,12 @@ def resolve_project(
     under `projects/`, and it comes from a tool argument or someone's `.crib`."""
     if explicit:
         return check_project_name(explicit)
+    if confined_root() is not None:
+        # confined mode takes NOTHING from a checkout's .crib (it may be the
+        # code under review): the project is named, or it isn't resolved
+        raise CribUserError(
+            "confined mode (--root): name the project (project=<name> / -p); "
+            "a checkout's .crib is never read")
     if cwd is not None and (link := CribLink.find(cwd)):
         return check_project_name(link.project)
     return check_project_name(cfg.default_project)
