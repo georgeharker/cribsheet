@@ -22,6 +22,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
+from .bundle import VECTORS_FILE
 from .access import WriteAccess
 from . import __version__, claudemem, facets, notes
 from .chunk import (
@@ -183,30 +184,6 @@ def _kinded(
     return out or None
 
 
-_DURATION = {"s": 1, "m": 60, "h": 3600, "d": 86400}
-
-
-def _expiry(spec: str) -> str:
-    """`expires` as an ISO-8601 UTC time: an ISO time is taken as given (UTC
-    if it names no zone), a duration (`90s`, `30m`, `2h`, `1d`) counts from now."""
-    spec = spec.strip()
-    if spec and spec[-1] in _DURATION and spec[:-1].isdigit():
-        at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
-            seconds=int(spec[:-1]) * _DURATION[spec[-1]])
-    else:
-        try:
-            at = datetime.datetime.fromisoformat(spec)
-        except ValueError as e:
-            raise CribUserError(
-                f"expires: {spec!r} is neither an ISO time nor a duration like "
-                "30m / 2h / 1d") from e
-        if at.tzinfo is None:
-            at = at.replace(tzinfo=datetime.UTC)
-    return at.astimezone(datetime.UTC).isoformat(timespec="seconds")
-
-
-# A bundle's portable embedding-cache rows (crib.bundle), under its data dir.
-BUNDLE_VECTORS = "embed-cache.parquet"
 
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
@@ -230,7 +207,7 @@ class Crib:
         # (e.g. on --store scratch) loads it, so the rebuild re-embeds nothing.
         if (
             paths.root is not None
-            and (vecs := paths.data_dir / BUNDLE_VECTORS).is_file()
+            and (vecs := paths.data_dir / VECTORS_FILE).is_file()
             and callable(getattr(store, "ec_import", None))
             and store.ec_count() == 0  # type: ignore[attr-defined]
         ):
@@ -277,6 +254,7 @@ class Crib:
         self.pending_facets: dict[str, str] = store.facet_pending()
         # which projects this instance may write (crib/access.py; None = all)
         self.access = WriteAccess(config.writable)
+        self._sweep_warned: set[str] = set()  # scheduled-delete failures, reported once
         self.pillars: dict[str, NoteStore] = {
             spec.name: NoteStore(
                 paths, store, self.index, self.versions, self.project_paths, spec,
@@ -3766,7 +3744,9 @@ class Crib:
                 "message": f"{name} already exists (implicit birth on first "
                 "write, or a previous create) — nothing changed",
             }
-        until = _expiry(expires) if expires else None
+        from . import expiry
+
+        until = expiry.parse(expires) if expires else None
         pdir = self.paths.project_dir(name)
         pdir.mkdir(parents=True, exist_ok=True)
         if transient:
@@ -3792,56 +3772,68 @@ class Crib:
             ),
         }
 
-    def sweep_expired_transients(self, now: datetime.datetime | None = None) -> list[str]:
-        """Delete every transient project whose `expires` has passed (the
-        scheduled delete): the ordinary delete path (index rows, vectors,
-        stamps, bindings, files), with no .trash. Returns the names deleted."""
-        now = now or datetime.datetime.now(datetime.UTC)
-        gone: list[str] = []
+    def _discardable(self, project: str) -> bool:
+        """A transient project THIS machine made, so it may be deleted without
+        .trash (and on schedule): its stub says transient, its directory still
+        carries the `*` .gitignore written at birth, and its stub names this host.
+        A stub alone could have arrived by git sync, a hand edit or a merge."""
+        try:
+            pp = self.project_paths(project)
+            pcfg = ProjectConfig.load(pp.config_file, project)
+            ignore = (pp.project_dir / ".gitignore").read_text().strip()
+        except Exception:  # noqa: BLE001 — unreadable: not provably ours
+            return False
+        return bool(pcfg.transient) and ignore == "*" and pcfg.host == claudemem.hostslug()
+
+    def expired_transients(self, now: datetime.datetime | None = None) -> list[str]:
+        """The transient projects due for their scheduled delete: discardable
+        (see `_discardable`) and past `expires`."""
+        from . import expiry
+
+        due = []
         for name in self.projects():
             try:
                 pp = self.project_paths(name)
             except Exception:  # noqa: BLE001 — an unreadable stub is not ours to delete
                 continue
-            if not (pp.transient and pp.expires):
-                continue
-            try:
-                due = datetime.datetime.fromisoformat(pp.expires)
-            except ValueError:
-                continue
-            if due.tzinfo is None:
-                due = due.replace(tzinfo=datetime.UTC)
-            if due <= now:
-                gone.append(name)
-        return gone
+            if pp.transient and expiry.due(pp.expires, now) and self._discardable(name):
+                due.append(name)
+        return due
 
     async def delete_expired_transients(
         self, now: datetime.datetime | None = None
     ) -> list[str]:
-        """`sweep_expired_transients`, deleting each due project."""
-        due = self.sweep_expired_transients(now)
+        """Delete each of `expired_transients` through the ordinary delete path
+        (index rows, vectors, stamps, bindings, files; no .trash). One that
+        can't be deleted is reported once and retried next sweep."""
         deleted = []
-        for name in due:
+        for name in self.expired_transients(now):
             try:
                 await self.project_delete(project=name, force=True)
                 deleted.append(name)
-            except CribUserError as e:  # e.g. a sweep still running: next time
-                print(f"[crib] transient {name!r} not deleted yet: {e}", file=sys.stderr)
+            except Exception as e:  # noqa: BLE001 — one project never stops the sweep
+                key = f"{name}: {e}"
+                if key not in self._sweep_warned:
+                    self._sweep_warned.add(key)
+                    print(f"[crib] transient {name!r} not deleted yet: {e}",
+                          file=sys.stderr)
         return deleted
 
     async def _transient_sweeper(self, every_s: float = 300.0) -> None:
-        """The daemon's scheduled delete of expired transient projects, and of
-        expired registered bundles (crib.bundle; trusted side only)."""
+        """The daemon's scheduled deletes: expired transient projects, and (on
+        the trusted side) expired registered bundles. In confined mode neither:
+        a bundle's lifetime belongs to the trusted side."""
         from . import bundle as bundles
 
+        if self.paths.root is not None:
+            return
         while True:
             await self.delete_expired_transients()
-            if self.paths.root is None:
-                try:
-                    for gone in bundles.sweep(self.paths):
-                        print(f"[crib] expired bundle deleted: {gone}", file=sys.stderr)
-                except Exception as e:  # noqa: BLE001 — a sweep never kills the daemon
-                    print(f"[crib] bundle sweep failed: {e}", file=sys.stderr)
+            try:
+                for gone in await asyncio.to_thread(bundles.sweep, self.paths):
+                    print(f"[crib] expired bundle deleted: {gone}", file=sys.stderr)
+            except Exception as e:  # noqa: BLE001 — a sweep never kills the daemon
+                print(f"[crib] bundle sweep failed: {e}", file=sys.stderr)
             await asyncio.sleep(every_s)
 
     def _pillar_note_count(self, pp: ProjectPaths) -> int:
@@ -3962,7 +3954,7 @@ class Crib:
             # The global tree (machine-local stub + derived caches) travels to
             # the trash — it is shared-git/data-root state, undo for free.
             # The user repo's store is deliberately NOT touched here.
-            if plan["tree_exists"] and self._is_transient(proj):
+            if plan["tree_exists"] and self._discardable(proj):
                 # a transient project is discarded whole: no undo copy
                 shutil.rmtree(self.paths.project_dir(proj))
             elif plan["tree_exists"]:

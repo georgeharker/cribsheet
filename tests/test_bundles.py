@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import datetime
 import json
+from pathlib import Path
 
 import pytest
 
@@ -313,30 +314,164 @@ def test_no_vectors_skips_the_store(trusted, tmp_path, counting):
 def test_the_trusted_source_root_is_never_carried(trusted, tmp_path):
     """`.source_root` is the trusted machine's repo path: a sandbox would
     revalidate against it (dropping records, or reading trusted code)."""
-    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
-                   vectors=False)
+    bundles.create(
+        trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"], vectors=False
+    )
     assert not list((tmp_path / "b").rglob(".source_root"))
 
 
-def test_a_read_only_projects_records_survive_revalidation(trusted, tmp_path,
-                                                           monkeypatch):
+def test_a_read_only_projects_records_survive_revalidation(
+    trusted, tmp_path, monkeypatch
+):
     """Inside the sandbox a context project is read-only: revalidation and
     file drops never touch its records, even if a source root says files are
     gone."""
     from crib.codeindex import SymbolIndex
 
-    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
-                   vectors=False)
+    bundles.create(
+        trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"], vectors=False
+    )
     monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
     paths = Paths.resolve()
     si = SymbolIndex(paths.project_dir("llmkit"))
-    si.write({"fqn": "m.f", "name": "f", "kind": "function", "lang": "python",
-              "module": "m", "parent": "", "content_hash": "h", "file": "m.py",
-              "line": 1, "signature": "def f():", "description": "d",
-              "container": [], "calls": [], "called_by": [], "name_terms": ["f"],
-              "symbol_ref": "m.py#f"})
+    si.write(
+        {
+            "fqn": "m.f",
+            "name": "f",
+            "kind": "function",
+            "lang": "python",
+            "module": "m",
+            "parent": "",
+            "content_hash": "h",
+            "file": "m.py",
+            "line": 1,
+            "signature": "def f():",
+            "description": "d",
+            "container": [],
+            "calls": [],
+            "called_by": [],
+            "name_terms": ["f"],
+            "symbol_ref": "m.py#f",
+        }
+    )
     si.set_source_root(tmp_path / "gone")  # e.g. a path that isn't in the pod
     box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
     box._revalidate("llmkit")
     box._drop_file("llmkit", "m.py")
     assert [e["name"] for e in box.code.records("llmkit")] == ["f"]
+
+
+# ── review fixes: the trusted side vs a hostile sandbox ──────────────────────
+
+
+def test_a_hostile_manifest_never_hangs_or_floods_the_trusted_side(trusted, tmp_path):
+    """The manifest is writable in the sandbox: a FIFO (would block the read),
+    a symlink (read through to anywhere) or a huge file is unreadable, and the
+    sweep leaves that bundle alone."""
+    import os
+
+    for i, plant in enumerate(("fifo", "symlink", "huge")):
+        b = tmp_path / f"b{i}"
+        bundles.create(trusted, Config(), b, f"toucan:pr-{i}", [], vectors=False)
+        m = b / "bundle.toml"
+        m.unlink()
+        if plant == "fifo":
+            os.mkfifo(m)
+        elif plant == "symlink":
+            (tmp_path / "elsewhere.toml").write_text(
+                'format = 1\nexpires = "2000-01-01"\n'
+            )
+            m.symlink_to(tmp_path / "elsewhere.toml")
+        else:
+            m.write_text('format = 1\nexpires = "2000-01-01"\n' + "#" * 100_000)
+    rows = {Path(r["bundle"]).name: r["state"] for r in bundles.listing(trusted)}
+    assert rows == {"b0": "unreadable", "b1": "unreadable", "b2": "unreadable"}
+    assert bundles.sweep(trusted) == []
+
+
+def test_trusted_expire_takes_the_overlay_from_the_registry(trusted, tmp_path):
+    """A sandbox that rewrites the manifest's overlay, or swaps the overlay's
+    dir for a symlink into the trusted store, can't make the trusted `expire`
+    write a trusted project's stub."""
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
+    victim = trusted.project_dir("toucan") / ".cribproject"
+    before = victim.read_text() if victim.exists() else None
+    ov = b / "data" / "projects" / "toucan@pr-1"
+    import shutil
+
+    shutil.rmtree(ov)
+    ov.symlink_to(trusted.project_dir("toucan"))
+    with pytest.raises(CribUserError, match="symlink"):
+        bundles.expire(b, "30d", trusted)
+    assert (victim.read_text() if victim.exists() else None) == before
+    with pytest.raises(CribUserError, match="not a registered bundle"):
+        bundles.expire(tmp_path / "unregistered", "1d", trusted)
+
+
+def test_expire_replaces_a_planted_manifest_symlink_instead_of_following_it(
+    trusted, tmp_path
+):
+    b = tmp_path / "b"
+    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
+    other = tmp_path / "other.toml"
+    other.write_text((b / "bundle.toml").read_text())
+    (b / "bundle.toml").unlink()
+    (b / "bundle.toml").symlink_to(other)
+    before = other.read_text()
+    with pytest.raises(CribUserError):  # the planted manifest is unreadable...
+        bundles.expire(b, "30d", trusted)
+    assert other.read_text() == before  # ...and the target was never written
+
+
+def test_confined_expire_extends_only_its_own_root(trusted, tmp_path, monkeypatch):
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False)
+    bundles.create(trusted, Config(), tmp_path / "c", "toucan:pr-2", [], vectors=False)
+    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
+    paths = Paths.resolve()
+    bundles.expire(tmp_path / "b", "30d", paths)
+    with pytest.raises(CribUserError, match="only this bundle"):
+        bundles.expire(tmp_path / "c", "30d", paths)
+
+
+def test_a_failed_create_leaves_nothing_behind(trusted, tmp_path, monkeypatch):
+    def boom(*a, **k):
+        raise RuntimeError("model unavailable")
+
+    monkeypatch.setattr(bundles, "_build_vectors", boom)
+    with pytest.raises(RuntimeError):
+        bundles.create(
+            trusted,
+            Config(),
+            tmp_path / "b",
+            "toucan:pr-1",
+            ["llmkit"],
+            context_to=tmp_path / "ctx",
+        )
+    assert not (tmp_path / "b").exists() and not (tmp_path / "ctx").exists()
+    assert bundles.registry(trusted) == {}
+    monkeypatch.undo()
+    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False)
+
+
+def test_one_stuck_bundle_doesnt_block_the_sweep(trusted, tmp_path, monkeypatch):
+    for name in ("b1", "b2"):
+        bundles.create(
+            trusted,
+            Config(),
+            tmp_path / name,
+            f"toucan:{name}",
+            [],
+            expires="1s",
+            vectors=False,
+        )
+    real = bundles.delete
+
+    def flaky(paths, b):
+        if Path(b).name == "b1":
+            raise OSError("busy")
+        return real(paths, b)
+
+    monkeypatch.setattr(bundles, "delete", flaky)
+    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
+    assert [Path(g).name for g in bundles.sweep(trusted, now=later)] == ["b2"]

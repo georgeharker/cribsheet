@@ -519,7 +519,9 @@ class ProjectConfig:
             created=data.get("created"),
             host=data.get("host"),
             mappings=m if isinstance(m := data.get("mappings"), dict) and m else None,
-            transient=bool(data["transient"]) if "transient" in data else None,
+            # only a real YAML true counts ("false" as a string is not truthy)
+            transient=(data["transient"] is True or str(data["transient"]).lower() == "true")
+            if "transient" in data else None,
             expires=str(data["expires"]) if data.get("expires") else None,
         )
 

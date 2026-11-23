@@ -31,7 +31,9 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import shutil
+import sys
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -41,7 +43,9 @@ from .paths import Paths, check_project_name
 
 MANIFEST = "bundle.toml"
 REGISTRY = "bundles.json"
+VECTORS_FILE = "embed-cache.parquet"  # the bundle's vectors, under DIR/data
 FORMAT = 1
+_MANIFEST_MAX = 64 * 1024  # a manifest is a few lines; anything bigger is hostile
 
 
 # ── manifest ─────────────────────────────────────────────────────────────────
@@ -49,6 +53,58 @@ FORMAT = 1
 
 def _toml_str(v: str) -> str:
     return json.dumps(v)  # a JSON string is a valid TOML basic string
+
+
+def _read_small(f: Path, limit: int = _MANIFEST_MAX) -> str:
+    """A file the SANDBOX can rewrite, read safely: a regular file only (not a
+    symlink, not a FIFO that would block), at most `limit` bytes."""
+    import stat
+
+    try:
+        fd = os.open(f, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError as e:
+        raise CribUserError(f"{f}: not a readable regular file ({e})") from e
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise CribUserError(f"{f}: not a regular file")
+        if st.st_size > limit:
+            raise CribUserError(f"{f}: larger than {limit} bytes")
+        return os.read(fd, limit + 1).decode("utf-8", errors="strict")
+    except UnicodeDecodeError as e:
+        raise CribUserError(f"{f}: not UTF-8 text") from e
+    finally:
+        os.close(fd)
+
+
+def _replace_text(f: Path, text: str) -> None:
+    """Write `f` atomically, replacing (never writing through) whatever is
+    there: a symlink planted at `f` is replaced, not followed."""
+    import tempfile
+
+    fd, tmp = tempfile.mkstemp(dir=f.parent, prefix=f".{f.name}.")
+    try:
+        with os.fdopen(fd, "w") as out:
+            out.write(text)
+        os.replace(tmp, f)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def _no_symlink_between(base: Path, target: Path) -> bool:
+    """`target` lies under `base` with no symlink on the way (so a write to it
+    can't be redirected outside the bundle)."""
+    try:
+        rel = target.relative_to(base)
+    except ValueError:
+        return False
+    p = base
+    for part in rel.parts:
+        p = p / part
+        if p.is_symlink():
+            return False
+    return True
 
 
 def write_manifest(bundle: Path, m: dict[str, Any]) -> None:
@@ -59,14 +115,14 @@ def write_manifest(bundle: Path, m: dict[str, Any]) -> None:
     lines.append(
         "context = [" + ", ".join(_toml_str(p) for p in m.get("context", [])) + "]"
     )
-    (bundle / MANIFEST).write_text("\n".join(lines) + "\n")
+    _replace_text(bundle / MANIFEST, "\n".join(lines) + "\n")
 
 
 def read_manifest(bundle: Path) -> dict[str, Any]:
     f = bundle / MANIFEST
     try:
-        data = tomllib.loads(f.read_text())
-    except (OSError, tomllib.TOMLDecodeError) as e:
+        data = tomllib.loads(_read_small(f))
+    except tomllib.TOMLDecodeError as e:
         raise CribUserError(f"{f}: not a readable bundle manifest ({e})") from e
     if data.get("format") != FORMAT:
         raise CribUserError(f"{f}: unknown bundle format {data.get('format')!r}")
@@ -76,14 +132,9 @@ def read_manifest(bundle: Path) -> dict[str, Any]:
 def manifest_expiry(bundle: Path) -> datetime.datetime | None:
     """The bundle's CURRENT expiry, strictly parsed (the one field the trusted
     side reads back from a manifest a sandbox may have rewritten)."""
-    raw = read_manifest(bundle).get("expires")
-    if not isinstance(raw, str):
-        return None
-    try:
-        at = datetime.datetime.fromisoformat(raw)
-    except ValueError:
-        return None
-    return at if at.tzinfo else at.replace(tzinfo=datetime.UTC)
+    from . import expiry
+
+    return expiry.when(read_manifest(bundle).get("expires"))
 
 
 # ── registry (trusted side) ──────────────────────────────────────────────────
@@ -202,8 +253,7 @@ def create(
     their files go to `context_to` (default `bundle/context`), which the
     sandbox mounts read-only, at `context_mount` (default: `$ROOT/context`, i.e.
     inside the bundle wherever it is mounted)."""
-    from .app import _expiry
-    from .config import ProjectConfig
+    from . import expiry
 
     if paths_root := paths.root:
         raise CribUserError(
@@ -229,7 +279,33 @@ def create(
     ctx_dir = context_to.expanduser().resolve() if context_to else bundle / "context"
     if context and context_to and ctx_dir.exists() and any(ctx_dir.iterdir()):
         raise CribUserError(f"{ctx_dir} exists and isn't empty")
-    until = _expiry(expires) if expires else None
+    until = expiry.parse(expires) if expires else None
+    made_bundle = not bundle.exists()
+    made_ctx = bool(context and context_to) and not ctx_dir.exists()
+    try:
+        return _build(paths, cfg, bundle, base, proj, context, ctx_dir, context_to,
+                      context_mount, until, vectors)
+    except BaseException:
+        # a half-built bundle is unregistered, so nothing would ever clean it up
+        # (and a retry would refuse the non-empty dir): remove what was made
+        for d, made in ((bundle, made_bundle), (ctx_dir, made_ctx)):
+            if d.is_dir():
+                if made:
+                    shutil.rmtree(d, ignore_errors=True)
+                else:
+                    for child in d.iterdir():
+                        (shutil.rmtree(child, ignore_errors=True) if child.is_dir()
+                         and not child.is_symlink() else child.unlink(missing_ok=True))
+        raise
+
+
+def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
+           context: list[str], ctx_dir: Path, context_to: Path | None,
+           context_mount: str | None, until: str | None, vectors: bool
+           ) -> dict[str, Any]:
+    """`create`'s body, once the arguments are checked."""
+    from .config import ProjectConfig
+
     now = datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")
 
     bpaths = Paths(
@@ -352,7 +428,7 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
     (nothing worth carrying)."""
     import asyncio
 
-    from .app import BUNDLE_VECTORS, Crib, _build_store
+    from .app import Crib, _build_store
     from .config import Config
     from .embedcache import CachedEmbedder
     from .store_duckdb import DuckDBStore
@@ -386,7 +462,7 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
                 crib.code.fill_vectors(p)
 
         asyncio.run(index_all())
-        return bstore.ec_export(bpaths.data_dir / BUNDLE_VECTORS)
+        return bstore.ec_export(bpaths.data_dir / VECTORS_FILE)
     finally:
         bstore.close()
         if close_main is not None:
@@ -396,25 +472,41 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
 # ── lifecycle ────────────────────────────────────────────────────────────────
 
 
-def expire(bundle: Path, when: str) -> dict[str, Any]:
-    """Set the bundle's expiry (works inside the sandbox on its own root)."""
-    from .app import _expiry
+def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any]:
+    """Set a bundle's expiry: rewrite its manifest and its overlay's stub.
+
+    On the TRUSTED side (`paths`, not confined) the bundle must be registered
+    and the overlay is taken from the registry, never from the manifest (which
+    the sandbox may have rewritten); in confined mode only the root itself can
+    be extended. Nothing is written through a symlink."""
+    from . import expiry
     from .config import ProjectConfig
 
     bundle = bundle.expanduser().resolve()
+    if paths is None or paths.root is not None:
+        root = paths.root if paths is not None else None
+        if root is not None and bundle != root:
+            raise CribUserError(f"confined mode: only this bundle ({root}) can be extended")
+        overlay = read_manifest(bundle).get("overlay")
+    else:
+        entry = registry(paths).get(str(bundle))
+        if entry is None:
+            raise CribUserError(f"{bundle} is not a registered bundle (`crib bundle list`)")
+        overlay = entry.get("overlay")
     m = read_manifest(bundle)
-    until = _expiry(when)
+    until = expiry.parse(when)
     m["expires"] = until
     write_manifest(bundle, m)
-    overlay = m.get("overlay")
     if isinstance(overlay, str):
-        stub = (
-            bundle / "data" / "projects" / check_project_name(overlay) / ".cribproject"
-        )
+        stub = bundle / "data" / "projects" / check_project_name(overlay) / ".cribproject"
+        if not _no_symlink_between(bundle, stub):
+            raise CribUserError(f"{stub}: reached through a symlink; not written")
         if stub.is_file():
             pcfg = ProjectConfig.load(stub, overlay)
             pcfg.expires = until
-            pcfg.save(stub)
+            tmp = stub.with_name(f".{stub.name}.new")
+            pcfg.save(tmp)
+            os.replace(tmp, stub)
     return {"bundle": str(bundle), "expires": until}
 
 
@@ -462,6 +554,10 @@ def sweep(paths: Paths, now: datetime.datetime | None = None) -> list[str]:
     gone = []
     for row in listing(paths, now):
         if row.get("state") == "due":
-            delete(paths, Path(row["bundle"]))
-            gone.append(row["bundle"])
+            try:
+                delete(paths, Path(row["bundle"]))
+                gone.append(row["bundle"])
+            except Exception as e:  # noqa: BLE001 — one bundle never blocks the rest
+                print(f"[crib] expired bundle {row['bundle']} not deleted: {e}",
+                      file=sys.stderr)
     return gone

@@ -4166,7 +4166,7 @@ def _bundle_cmd(args: Any) -> int:
         target = args.dir or paths.root
         if target is None:
             raise CribUserError("crib bundle expire: name the bundle directory")
-        out: Any = bundles.expire(target, args.expires)
+        out: Any = bundles.expire(target, args.expires, paths)
         human = f"{out['bundle']}: expires {out['expires']}"
     elif paths.root is not None:
         raise CribUserError(

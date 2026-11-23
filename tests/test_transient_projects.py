@@ -8,7 +8,8 @@ import datetime
 
 import pytest
 
-from crib.app import Crib, _expiry
+from crib.app import Crib
+from crib.expiry import parse as _expiry
 from crib.config import Config, ProjectConfig
 from crib.errors import CribUserError
 from crib.paths import Paths
@@ -109,3 +110,43 @@ def test_the_sweep_deletes_only_expired_transients(crib):
     assert deleted == ["due"]
     assert set(crib.projects()) >= {"later", "forever", "kept"}
     assert "due" not in crib.projects()
+
+
+def test_a_synced_stub_claiming_transient_is_not_discarded(crib):
+    """A `.cribproject` arriving by git sync (or a hand edit) that says
+    transient and expired, but without the birth .gitignore or this host, is
+    neither swept nor deleted without trash."""
+    run(crib.store_note("precious", title="P", project="synced"))
+    stub = crib.paths.project_dir("synced") / ".cribproject"
+    pcfg = ProjectConfig.load(stub, "synced")
+    pcfg.transient, pcfg.expires, pcfg.host = True, "2020-01-01T00:00:00+00:00", "other-host"
+    pcfg.save(stub)
+    crib.project_paths.invalidate("synced")
+    assert crib.expired_transients() == []
+    out = run(crib.project_delete(project="synced"))
+    assert out.get("trash")  # an ordinary, undoable delete
+
+
+def test_expiry_errors_are_user_errors():
+    with pytest.raises(CribUserError):
+        _expiry("99999999999d")
+
+
+def test_a_string_false_is_not_transient(crib, tmp_path):
+    stub = tmp_path / ".cribproject"
+    stub.write_text('name: x\ntransient: "false"\n')
+    assert not ProjectConfig.load(stub, "x").transient
+    stub.write_text("name: x\ntransient: true\n")
+    assert ProjectConfig.load(stub, "x").transient
+
+
+def test_a_failing_transient_delete_is_reported_once(crib, monkeypatch, capsys):
+    run(crib.project_create(project="due", transient=True, expires="2020-01-01T00:00:00"))
+
+    async def stuck(project=None, force=False, cwd=None):
+        raise OSError("busy")
+
+    monkeypatch.setattr(crib, "project_delete", stuck)
+    assert run(crib.delete_expired_transients()) == []
+    assert run(crib.delete_expired_transients()) == []
+    assert capsys.readouterr().err.count("not deleted yet") == 1
