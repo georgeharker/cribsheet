@@ -4454,7 +4454,11 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps({"error": msg}))
             return 2
     try:
-        if cfg.daemon.enabled and not args.no_daemon:
+        from .paths import confined_root
+
+        # confined mode (--root) runs verbs IN-PROCESS: a sandbox has no warm
+        # daemon (and no sharedserver) to attach to, and must not reach one
+        if cfg.daemon.enabled and not args.no_daemon and confined_root() is None:
             from . import sharedserver
 
             if not sharedserver.available():

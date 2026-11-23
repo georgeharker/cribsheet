@@ -9,6 +9,19 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Fixed
+
+- **Confined mode in a sandbox.** CLI verbs under `--root` now run
+  in-process: they tried to attach to a warm daemon (needing `sharedserver`),
+  which a sandbox doesn't have. A bundle's config also says
+  `[daemon] enabled = false`.
+- **`--root`, `--store` and `--writable` take effect before crib loads.** The
+  facet registry is read at import, so `--root` used to leave it read from the
+  default config dir (outside the root). The `crib` command now applies these
+  global flags first (`crib.entry`).
+
 ## [0.28.0-dev1] - 2026-11-22
 
 Dev release: crib for sandboxed review. Bundles (`crib bundle`), confined

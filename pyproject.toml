@@ -82,7 +82,7 @@ st = ["sentence-transformers>=2.2"]
 dev = ["pytest>=8", "pytest-xdist>=3", "pytest-timeout>=2", "basedpyright>=1.19", "ruff>=0.15"]
 
 [project.scripts]
-crib = "crib.cli:main"
+crib = "crib.entry:main"
 
 [build-system]
 requires = ["hatchling"]

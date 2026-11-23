@@ -6,6 +6,7 @@ overlays", part 3 (and part 7: a reopened root reconciles its projects)."""
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
@@ -163,3 +164,36 @@ def test_the_cli_flag_sets_the_root(tmp_path, monkeypatch):
     )
     cli.main(["--root", str(tmp_path / "r"), "--no-daemon", "plan", "list", "-p", "x"])
     assert seen == [str((tmp_path / "r").resolve())]
+
+
+def test_confined_cli_verbs_run_in_process(root, monkeypatch):
+    """A sandbox has no warm daemon or sharedserver: confined verbs never
+    attach to one, whatever [daemon] says."""
+    from crib import cli
+
+    ran = []
+    monkeypatch.setattr(cli, "_run_daemon", lambda a, c: ran.append("daemon"))
+    monkeypatch.setattr(cli, "_run_inprocess", lambda a, c: ran.append("inprocess"))
+    cli.main(["plan", "list", "-p", "x"])
+    assert ran == ["inprocess"]
+
+
+def test_the_entry_point_sets_env_flags_before_crib_loads(monkeypatch):
+    """--root/--store/--writable are applied before the CLI is imported (the
+    facet registry resolves at import, from the config dir); a subcommand's
+    own --store is not a global flag."""
+    from crib import entry
+
+    for v in ("CRIB_ROOT", "CRIB_INDEX_DIR", "CRIB_WRITABLE"):
+        monkeypatch.setenv(v, "x")
+        monkeypatch.delenv(v)
+    entry._apply_env_flags(["--json", "--root", "/tmp/r", "--writable=a",
+                            "--writable", "b", "--store", "/tmp/s", "plan", "list"])
+    import os
+
+    assert os.environ["CRIB_ROOT"] == str(Path("/tmp/r").resolve())
+    assert os.environ["CRIB_INDEX_DIR"] == str(Path("/tmp/s").resolve())
+    assert os.environ["CRIB_WRITABLE"] == "a,b"
+    monkeypatch.delenv("CRIB_INDEX_DIR")
+    entry._apply_env_flags(["project", "create", "x", "--store", "notes"])
+    assert "CRIB_INDEX_DIR" not in os.environ
