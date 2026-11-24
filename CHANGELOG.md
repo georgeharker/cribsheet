@@ -11,6 +11,14 @@ version has no heading here.
 
 ## [Unreleased]
 
+### Added
+
+- `crib status` is coloured throughout (on a terminal; `--json` and piped
+  output unchanged): git clean/dirty and ahead/behind, LSP sessions (busy,
+  idle, dead; repo roots linked), the daemon and its log (linked), queues,
+  pending descriptions, a degraded watcher, and the project table, whose
+  zero counts are dimmed so the counts that are there stand out.
+
 ### Changed
 
 - **A bundle's lifetime is the caller's, not crib's.** `bundle create`'s

@@ -320,10 +320,24 @@ _SYM = {
                 {
                     "store": "S",
                     "embed_model": "E",
-                    "git": {"enabled": False},
+                    "git": {"enabled": True, "remote": "git@x:y.git", "dirty": 3,
+                            "ahead": 1, "behind": 0, "last_commit": "abc msg"},
                     "lsp_sessions": [
-                        {"server": "ty", "root": "/r", "pid": 1, "alive": False}
+                        {"server": "ty", "root": "/r", "pid": 1, "alive": False},
+                        {"server": "gopls", "root": "/g", "pid": 2, "alive": True,
+                         "busy": True},
                     ],
+                    "reconciling": True,
+                    "reconcile_remaining": 2,
+                    "sweeps": {"p": {"done": 1, "total": 3}},
+                    "daemon": {"uptime_s": 90, "log_file": "/tmp/d.log",
+                               "background": [{"job": "j", "running_s": 5,
+                                               "detail": "x"}],
+                               "queues": {"describe": 4},
+                               "watchers": {"notes": {"state": "delayed",
+                                                      "last_latency_s": 3}}},
+                    "generation": {"mode": "on",
+                                   "pending_descriptions": {"p": 7}},
                     "projects": [
                         {
                             "project": "p",

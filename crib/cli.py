@@ -446,41 +446,51 @@ def _emit_status(d: Any, as_json: bool) -> None:
     if as_json:
         _emit(d, True)
         return
-    print(f"{_lab('store')} {d.get('store')}  embed: {d.get('embed_model')}")
+    paint = _st.paint
+    print(f"{_lab('store')} {paint('name', d.get('store'))}  "
+          f"{paint('meta', 'embed:')} {d.get('embed_model')}")
     g = d.get("git") or {}
     if g.get("enabled"):
         parts = [
-            g.get("remote") or "no remote",
-            "clean" if not g.get("dirty") else f"{g['dirty']} uncommitted",
+            g.get("remote") or paint("warn", "no remote"),
+            paint("ok", "clean") if not g.get("dirty")
+            else paint("warn", f"{g['dirty']} uncommitted"),
         ]
         if "ahead" in g:
-            parts.append(f"↑{g['ahead']} ↓{g['behind']}")
+            parts.append(paint("warn" if g["ahead"] else "meta", f"↑{g['ahead']}") + " "
+                         + paint("warn" if g["behind"] else "meta", f"↓{g['behind']}"))
         print(f"{_lab('git')} " + "  ".join(parts))
         if g.get("last_commit"):
-            print(f"{'':10} last: {g['last_commit']}")
+            print(f"{'':10} " + paint("meta", f"last: {g['last_commit']}"))
     else:
-        print(f"{_lab('git')} not enabled (crib memory setup --remote <url>)")
+        print(f"{_lab('git')} {paint('warn', 'not enabled')} "
+              + paint("meta", "(crib memory setup --remote <url>)"))
     for s in d.get("lsp_sessions") or []:
-        state = "busy" if s.get("busy") else f"idle {s.get('idle_s', 0):.0f}s"
-        alive = "" if s.get("alive") else _st.paint("error", "  DEAD")
+        state = (paint("warn", "busy") if s.get("busy")
+                 else paint("meta", f"idle {s.get('idle_s', 0):.0f}s"))
+        alive = "" if s.get("alive") else paint("error", "  DEAD")
+        root = s.get("root")
         print(
-            f"{_lab('lsp')} {s.get('server')}  {s.get('root')}  "
-            f"pid {s.get('pid')}  {state}{alive}"
+            f"{_lab('lsp')} {paint('name', s.get('server'))}  "
+            f"{paint('path', root, _st.file_link(root))}  "
+            + paint("meta", f"pid {s.get('pid')}") + f"  {state}{alive}"
         )
     if d.get("reconciling"):
         why = f" ({d['reconcile_reason']})" if d.get("reconcile_reason") else ""
         print(
-            f"{_lab('reconcile')} in progress{why}: "
+            f"{_lab('reconcile')} {paint('warn', 'in progress')}{why}: "
             f"{d.get('reconcile_remaining', '?')} project(s) to go"
         )
     if d.get("index_rebuilding"):
         print(
-            f"{_lab('rebuilding')} not re-embedded yet: {', '.join(d['index_rebuilding'])}"
+            f"{_lab('rebuilding')} {paint('warn', 'not re-embedded yet:')} "
+            f"{', '.join(d['index_rebuilding'])}"
         )
     for proj, sw in (d.get("sweeps") or {}).items():
-        print(f"{_lab('sweep')} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
+        print(f"{_lab('sweep')} {paint('name', proj)}: "
+              f"{sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
-        print(f"{_lab('indexing')} {proj}: {', '.join(files)}")
+        print(f"{_lab('indexing')} {paint('name', proj)}: {', '.join(files)}")
     _emit_daemon(d)
     projs = d.get("projects") or []
     print(f"{_lab('projects')} {len(projs)}")
@@ -494,12 +504,20 @@ def _emit_status(d: Any, as_json: bool) -> None:
                 if p.get("design_tainted")
                 else ""
             )
-            print(
-                f"  {_st.paint('name', format(p['project'], f'{w}'))}  notes {p['notes']:4}  "
-                f"designs {p.get('designs', 0):3}  plans {p.get('plans', 0):3}  "
-                f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
-                f"learnings {p['learnings']:3}{stale}"
-            )
+            cols = "  ".join(
+                _count_col(label, p.get(key) or 0, width)
+                for label, key, width in (
+                    ("notes", "notes", 4), ("designs", "designs", 3),
+                    ("plans", "plans", 3), ("docs", "doc_chunks", 4),
+                    ("symbols", "symbols", 5), ("learnings", "learnings", 3)))
+            print(f"  {paint('name', format(p['project'], f'{w}'))}  {cols}{stale}")
+
+
+def _count_col(label: str, n: int, width: int) -> str:
+    """One `label count` column of status's project table: the label dim, and
+    a zero count dim too, so the counts that are there stand out."""
+    count = f"{n:{width}}"
+    return _st.paint("meta", label) + " " + (count if n else _st.paint("meta", count))
 
 
 def _E_ops(d, a):
@@ -2168,26 +2186,31 @@ def _emit_daemon(d: dict[str, Any]) -> None:
     """status's daemon and generation state, one line per thing that is going on."""
     dm = d.get("daemon") or {}
     if dm:
-        log = f"  log {dm['log_file']}" if dm.get("log_file") else ""
-        print(f"{_lab('daemon')} up {_secs(dm.get('uptime_s', 0))}{log}")
+        lf = dm.get("log_file")
+        log = ("  " + _st.paint("meta", "log") + " "
+               + _st.paint("path", lf, _st.file_link(lf))) if lf else ""
+        print(f"{_lab('daemon')} {_st.paint('ok', 'up')} "
+              f"{_secs(dm.get('uptime_s', 0))}{log}")
     for j in dm.get("background") or []:
-        detail = f"  {j['detail']}" if j.get("detail") else ""
-        print(f"{_lab('running')} {j['job']} for {_secs(j.get('running_s', 0))}{detail}")
+        detail = "  " + _st.paint("meta", j["detail"]) if j.get("detail") else ""
+        print(f"{_lab('running')} {j['job']} "
+              + _st.paint("meta", f"for {_secs(j.get('running_s', 0))}") + detail)
     queued = {k: v for k, v in (dm.get("queues") or {}).items() if v}
     if queued:
-        print(f"{_lab('queued')} " + ", ".join(f"{k.replace('_', ' ')} {v}"
-                                             for k, v in queued.items()))
+        print(f"{_lab('queued')} " + ", ".join(
+            f"{k.replace('_', ' ')} {_st.paint('warn', v)}" for k, v in queued.items()))
     notes = (dm.get("watchers") or {}).get("notes") or {}
     if notes.get("state") and notes["state"] != "healthy":
         lat = (f" ({notes['last_latency_s']}s)"
                if notes.get("last_latency_s") is not None else "")
-        print(f"{_lab('watching')} {notes['state']}{lat}: reads still refresh; a "
-              f"catch-up sweep runs while degraded")
+        print(f"{_lab('watching')} {_st.paint('warn', notes['state'] + lat)}: reads "
+              "still refresh; a catch-up sweep runs while degraded")
     gen = d.get("generation") or {}
     if gen:
         pending = gen.get("pending_descriptions") or {}
         waiting = (": descriptions waiting in "
-                   + ", ".join(f"{p} {n}" for p, n in pending.items())
+                   + ", ".join(f"{_st.paint('name', p)} {_st.paint('warn', n)}"
+                               for p, n in pending.items())
                    if pending else "")
         print(f"{_lab('generate')} {gen.get('mode', '?')}{waiting}")
 
