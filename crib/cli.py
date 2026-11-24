@@ -1939,6 +1939,21 @@ def build_parser() -> argparse.ArgumentParser:
                      help="skip building the bundle's store and vector file "
                      "(a sandbox then re-embeds with the model in its image)")
     bsub.add_parser("list", help="registered bundles")
+    _bs = bsub.add_parser(
+        "seed", help="create a real project seeded from a bundle's project (its "
+        "items, and symbol records), read as untrusted input")
+    _bs.add_argument("dir", type=Path, help="the bundle directory")
+    _bs.add_argument("name", help="the new project (must not exist)")
+    _bs.add_argument("--project", dest="bundle_project", metavar="P",
+                     help="the bundle project to seed from (default: its overlay)")
+    _bs.add_argument("--facets", metavar="LIST",
+                     help="comma-separated facets to copy (nouns or stores, e.g. "
+                     "notes,design); default: all")
+    _bs.add_argument("--no-symbols", dest="symbols", action="store_false",
+                     help="don't copy the symbol records")
+    _bs.add_argument("--proposed", action="store_true",
+                     help="land active decisions as `proposed` (they gate nothing "
+                     "until `crib design promote`); default: as written")
     _bd = bsub.add_parser("delete", help="remove a registered bundle (its lifetime "
                           "is the caller's: delete it when the sandbox is done)")
     _bd.add_argument("dir", type=Path)
@@ -4201,7 +4216,7 @@ def _user_errors() -> tuple[type[BaseException], ...]:
 
 
 def _bundle_cmd(args: Any) -> int:
-    """`crib bundle create|list|delete`: local, trusted-side admin."""
+    """`crib bundle create|seed|list|delete`: local, trusted-side admin."""
     from . import bundle as bundles
     from .config import Config
     from .errors import CribUserError
@@ -4231,6 +4246,27 @@ def _bundle_cmd(args: Any) -> int:
         human = "\n".join(
             f"{r['state']:8} {r['bundle']}  {r.get('overlay', '')}  "
             f"created {r.get('created') or '-'}" for r in out) or "(no bundles)"
+    elif cmd == "seed":
+        from .paths import check_project_name
+
+        name = check_project_name(args.name)
+        if paths.project_dir(name).exists():
+            raise CribUserError(f"project {name!r} exists: seed a new one")
+        bundles.seed_source(args.dir, args.bundle_project)  # refuse before creating
+        # the inner verbs run where this one does (`--no-daemon` carries over)
+        mode = ["--no-daemon"] if getattr(args, "no_daemon", False) else []
+        if main([*mode, "project", "create", name]) != 0:
+            return 2
+        out = bundles.seed(paths, args.dir, name, args.bundle_project,
+                           [f.strip() for f in args.facets.split(",") if f.strip()]
+                           if args.facets else None,
+                           symbols=args.symbols, proposed=args.proposed)
+        # index what was copied (stamp-gated: only the new files are read)
+        main([*mode, "project", "reconcile"])
+        copied = ", ".join(f"{k} {v}" for k, v in out["copied"].items()) or "nothing"
+        human = (f"seeded {out['project']} from {out['from']}: {copied}; "
+                 f"{out['ids_renewed']} item ids renewed"
+                 + ("; decisions land proposed" if out["proposed"] else ""))
     else:  # delete
         out = bundles.delete(paths, args.dir)
         human = f"deleted {out['bundle']}" + (

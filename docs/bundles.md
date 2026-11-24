@@ -56,6 +56,26 @@ crib --root /bundle --store /scratch/crib --mcp      # MCP over stdio for the re
 then edges re-resolved (`dangling` lists calls whose target the change removed
 or renamed), then descriptions; `phases` says what each left unfinished.
 
+### Seeding a real project from a bundle
+
+When a sandbox session produced something worth keeping, make a new project
+from the bundle's overlay, on the trusted side:
+
+```bash
+crib bundle seed /bundles/pr-123 toucan-review-123 \
+    [--project toucan@pr-123] [--facets notes,design] [--no-symbols] [--proposed]
+```
+
+This creates the project and copies the overlay's items (every facet, or the
+ones named) and, unless `--no-symbols`, its symbol records, then indexes them.
+The bundle was written in a sandbox, so it is read as untrusted input: regular
+`.md` / `.toml` files only, never through a symlink, at most 1 MiB each.
+Every item gets a fresh id, rewritten wherever the copied items refer to it,
+so the decision and plan graph holds and nothing collides with the project the
+bundle was made from. Statuses land as written; `--proposed` lands active
+decisions as `proposed` instead (they gate nothing until `crib design
+promote`). The new project must not exist yet.
+
 ## What confined mode guarantees
 
 With `--root DIR` (or `$CRIB_ROOT`):

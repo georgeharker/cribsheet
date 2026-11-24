@@ -529,3 +529,97 @@ def test_lsp_json_commands_become_bare_names_in_the_bundle(trusted, tmp_path):
     assert specs["gopls"] == {"command": "gopls", "args": ["serve"]}
     assert specs["ty"]["command"] == "ty"
     assert out["lsp_rewritten"] == {"gopls": "/opt/homebrew/bin/gopls"}
+
+
+# ── seeding a real project from a bundle ─────────────────────────────────────
+
+
+def _id_of(text: str) -> str:
+    import re
+
+    m = re.search(r"^id: (\S+)", text, re.M)
+    assert m is not None, text[:200]
+    return m.group(1)
+
+
+def _seeded_bundle(trusted, tmp_path):
+    """A bundle whose overlay gained a decision that rests on the base's."""
+
+    _create(trusted, tmp_path, context=[], vectors=False)
+    ov = tmp_path / "b" / "data" / "projects" / "toucan@pr-1"
+    base = next((ov / "design").glob("*.md")).read_text()
+    base_id = _id_of(base)
+    (ov / "design" / "review-finding.md").write_text(
+        "---\nid: 01J0000000000000000000000Z\ntitle: Review finding\ntype: design\n"
+        f"status: active\ndeps:\n- {base_id}\nchecked: {{}}\n---\n\nFound it.\n")
+    return ov, base_id
+
+
+def test_seed_makes_a_new_project_with_fresh_ids_and_an_intact_graph(trusted,
+                                                                      tmp_path):
+
+    ov, base_id = _seeded_bundle(trusted, tmp_path)
+    bundles_out = bundles.seed(trusted, tmp_path / "b", "reviewed")
+    assert bundles_out["copied"] == {"notes": 1, "design": 2, "symbols": 1}
+    dest = trusted.project_dir("reviewed")
+    texts = {p.name: p.read_text() for p in (dest / "design").glob("*.md")}
+    ids = {n: _id_of(t) for n, t in texts.items()}
+    assert base_id not in ids.values() and "01J0000000000000000000000Z" not in ids.values()
+    finding = texts["review-finding.md"]
+    other = next(i for n, i in ids.items() if n != "review-finding.md")
+    assert f"- {other}" in finding  # the dep follows its item to the fresh id
+    assert "status: active" in finding
+    assert (dest / "symbol_index" / "rec.toml").exists()
+
+
+def test_seed_options_facets_symbols_proposed(trusted, tmp_path):
+    _seeded_bundle(trusted, tmp_path)
+    out = bundles.seed(trusted, tmp_path / "b", "r2", facet_names=["design"],
+                       symbols=False, proposed=True)
+    dest = trusted.project_dir("r2")
+    assert out["copied"] == {"design": 2}
+    assert not (dest / "notes").exists() and not (dest / "symbol_index").exists()
+    assert all("status: proposed" in p.read_text() for p in (dest / "design").glob("*.md"))
+    with pytest.raises(CribUserError, match="no facet"):
+        bundles.seed(trusted, tmp_path / "b", "r3", facet_names=["nope"])
+
+
+def test_seed_reads_the_bundle_as_untrusted_input(trusted, tmp_path):
+    """Symlinked files and dirs, FIFOs and oversized files in the bundle are
+    skipped: nothing outside the bundle is read through it."""
+    import os
+
+    ov, _ = _seeded_bundle(trusted, tmp_path)
+    secret = tmp_path / "secret.md"
+    secret.write_text("---\ntitle: secret\n---\nprivate\n")
+    (ov / "notes" / "link.md").symlink_to(secret)
+    (tmp_path / "outside").mkdir()
+    (tmp_path / "outside" / "x.md").write_text("outside\n")
+    (ov / "notes" / "sub").symlink_to(tmp_path / "outside")
+    os.mkfifo(ov / "notes" / "fifo.md")
+    (ov / "notes" / "huge.md").write_text("x" * (bundles._SEED_MAX + 1))
+    out = bundles.seed(trusted, tmp_path / "b", "r4")
+    dest = trusted.project_dir("r4") / "notes"
+    assert out["copied"]["notes"] == 1
+    assert sorted(p.name for p in dest.rglob("*")) == ["base-note.md"]
+
+
+def test_seed_needs_a_bundle_and_names_an_ambiguous_project(trusted, tmp_path):
+    with pytest.raises(CribUserError, match="not a bundle"):
+        bundles.seed(trusted, tmp_path / "nothing", "x")
+    _create(trusted, tmp_path, context=[], vectors=False)
+    (tmp_path / "b" / "data" / "projects" / "second").mkdir()
+    with pytest.raises(CribUserError, match="name one with --project"):
+        bundles.seed(trusted, tmp_path / "b", "x")
+
+
+def test_the_seed_cli_creates_seeds_and_indexes(trusted, tmp_path, capsys):
+    from crib import cli
+
+    _seeded_bundle(trusted, tmp_path)
+    assert cli.main(["--no-daemon", "bundle", "seed", str(tmp_path / "b"),
+                     "reviewed"]) == 0
+    assert "seeded reviewed" in capsys.readouterr().out
+    assert (trusted.project_dir("reviewed") / "design" / "review-finding.md").exists()
+    assert cli.main(["--no-daemon", "bundle", "seed", str(tmp_path / "b"),
+                     "reviewed"]) == 2  # exists

@@ -13,6 +13,11 @@ version has no heading here.
 
 ### Added
 
+- `crib bundle seed DIR NAME`: a new, real project seeded from a bundle's
+  project (its overlay by default): its items (all facets, or `--facets`) and
+  symbol records (`--no-symbols` to skip), read as untrusted input (regular
+  files only, no symlinks, size-capped), with fresh item ids rewritten across
+  the copied graph; `--proposed` lands active decisions as `proposed`.
 - Confined mode (`--root`) conforms the store to the declared facets when it
   opens (the store is a disposable cache; nothing is dropped), so a bundle's
   routines and agents list without a manual `crib facets sync`.

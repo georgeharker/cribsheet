@@ -173,8 +173,10 @@ def _copy_lsp_json(src: Path, dest: Path) -> dict[str, str]:
         print(f"[crib] {src} not copied into the bundle: {e}", file=sys.stderr)
         return {}
     if not isinstance(specs, dict):
-        print(f"[crib] {src} not copied into the bundle: not a JSON object",
-              file=sys.stderr)
+        print(
+            f"[crib] {src} not copied into the bundle: not a JSON object",
+            file=sys.stderr,
+        )
         return {}
     rewritten: dict[str, str] = {}
     for label, spec in specs.items():
@@ -253,8 +255,18 @@ def create(
     if context and context_to:
         owned.append((ctx_dir, not ctx_dir.exists()))
     try:
-        return _build(paths, cfg, bundle, base, proj, context, ctx_dir, context_to,
-                      context_mount, vectors)
+        return _build(
+            paths,
+            cfg,
+            bundle,
+            base,
+            proj,
+            context,
+            ctx_dir,
+            context_to,
+            context_mount,
+            vectors,
+        )
     except BaseException:
         # a half-built bundle is unregistered, so nothing would ever clean it up
         # (and a retry would refuse the non-empty dir): remove what was made
@@ -264,15 +276,26 @@ def create(
                     shutil.rmtree(d, ignore_errors=True)
                 else:
                     for child in d.iterdir():
-                        (shutil.rmtree(child, ignore_errors=True) if child.is_dir()
-                         and not child.is_symlink() else child.unlink(missing_ok=True))
+                        (
+                            shutil.rmtree(child, ignore_errors=True)
+                            if child.is_dir() and not child.is_symlink()
+                            else child.unlink(missing_ok=True)
+                        )
         raise
 
 
-def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
-           context: list[str], ctx_dir: Path, context_to: Path | None,
-           context_mount: str | None, vectors: bool
-           ) -> dict[str, Any]:
+def _build(
+    paths: Paths,
+    cfg: Any,
+    bundle: Path,
+    base: str,
+    proj: str,
+    context: list[str],
+    ctx_dir: Path,
+    context_to: Path | None,
+    context_mount: str | None,
+    vectors: bool,
+) -> dict[str, Any]:
     """`create`'s body, once the arguments are checked."""
     from .config import ProjectConfig
 
@@ -291,9 +314,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     pdir = bpaths.project_dir(proj)
     pdir.mkdir(parents=True)
     files[proj] = _copy_project_files(paths, cfg, base, pdir, pdir)
-    ProjectConfig(name=proj, created=now, transient=True).save(
-        pdir / ".cribproject"
-    )
+    ProjectConfig(name=proj, created=now, transient=True).save(pdir / ".cribproject")
     (pdir / ".gitignore").write_text("*\n")
     if (trusted := _trusted_crib(paths, base, proj)) is not None:
         (pdir / ".crib").write_text(trusted)
@@ -323,8 +344,9 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     # the sandbox embeds with the SAME model, or its store refuses the vectors
     lines += ["", "[embed]", f"model = {json.dumps(cfg.embed.model)}"]
     (bpaths.config_dir / "config.toml").write_text("\n".join(lines) + "\n")
-    lsp_rewritten = _copy_lsp_json(paths.config_dir / "lsp.json",
-                                   bpaths.config_dir / "lsp.json")
+    lsp_rewritten = _copy_lsp_json(
+        paths.config_dir / "lsp.json", bpaths.config_dir / "lsp.json"
+    )
     for extra in ("grammar.json", "facets.toml"):
         if (src := paths.config_dir / extra).is_file():
             shutil.copy2(src, bpaths.config_dir / extra)
@@ -338,8 +360,13 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
             "context": context,
         },
     )
-    vec_rows = (_build_vectors(paths, cfg, bundle, [proj, *context],
-                               ctx_dir if context else None) if vectors else None)
+    vec_rows = (
+        _build_vectors(
+            paths, cfg, bundle, [proj, *context], ctx_dir if context else None
+        )
+        if vectors
+        else None
+    )
     reg = registry(paths)
     reg[str(bundle)] = {
         "created": now,
@@ -386,8 +413,9 @@ class _ReadThrough:
         self.local.ec_put(model, rows)
 
 
-def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
-                   context_dir: Path | None) -> int | None:
+def _build_vectors(
+    paths: Paths, cfg: Any, bundle: Path, projects: list[str], context_dir: Path | None
+) -> int | None:
     """Index the bundle's projects into its OWN store (DIR/index, ready for a
     sandbox that keeps the store in the root), embedding through the main
     store's cache, then export that store's cache, i.e. exactly the bundle's
@@ -401,8 +429,11 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
     from .embedcache import CachedEmbedder
     from .store_duckdb import DuckDBStore
 
-    bpaths = Paths(config_dir=bundle / "config", data_dir=bundle / "data",
-                   index_dir=bundle / "index")
+    bpaths = Paths(
+        config_dir=bundle / "config",
+        data_dir=bundle / "data",
+        index_dir=bundle / "index",
+    )
     bcfg = Config.load(bpaths.config_file)
     bcfg.locations["ROOT"] = str(bundle)
     if context_dir is not None:  # the copies as they sit HERE, not in the sandbox
@@ -443,9 +474,14 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
 def listing(paths: Paths) -> list[dict[str, Any]]:
     """Registered bundles: the registry's entry, and whether the directory is
     still there (`present` / `missing`)."""
-    return [{"bundle": path, **entry,
-             "state": "present" if Path(path).is_dir() else "missing"}
-            for path, entry in sorted(registry(paths).items())]
+    return [
+        {
+            "bundle": path,
+            **entry,
+            "state": "present" if Path(path).is_dir() else "missing",
+        }
+        for path, entry in sorted(registry(paths).items())
+    ]
 
 
 def delete(paths: Paths, bundle: Path) -> dict[str, Any]:
@@ -464,3 +500,152 @@ def delete(paths: Paths, bundle: Path) -> dict[str, Any]:
     del reg[key]
     _save_registry(paths, reg)
     return {"bundle": key, "removed": removed}
+
+
+# ── seeding a real project from a bundle ─────────────────────────────────────
+
+# what seeding reads from a bundle (written in a sandbox: untrusted input)
+_SEED_MAX = 1024 * 1024  # bytes per file: an item or a symbol record is small
+_ULID_RE = __import__("re").compile(r"\b[0-9A-HJKMNP-TV-Z]{26}\b")
+
+
+def _seed_read(f: Path) -> str | None:
+    """A bundle file's text, read safely: a regular file (no symlink, no FIFO),
+    at most _SEED_MAX bytes, UTF-8; None when it isn't one."""
+    import stat
+
+    try:
+        fd = os.open(f, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        return None
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_size > _SEED_MAX:
+            return None
+        return os.read(fd, _SEED_MAX + 1).decode("utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    finally:
+        os.close(fd)
+
+
+def _seed_files(src: Path, suffix: str) -> list[tuple[str, str]]:
+    """(relpath, text) for each `*suffix` regular file under `src`, never
+    following a symlink (file or directory) and skipping dot-names."""
+    out: list[tuple[str, str]] = []
+    if src.is_symlink() or not src.is_dir():
+        return out
+    for dirpath, dirnames, filenames in os.walk(src, followlinks=False):
+        dirnames[:] = [
+            d
+            for d in dirnames
+            if not d.startswith(".") and not (Path(dirpath) / d).is_symlink()
+        ]
+        for fn in sorted(filenames):
+            if fn.startswith(".") or not fn.endswith(suffix):
+                continue
+            text = _seed_read(Path(dirpath) / fn)
+            if text is not None:
+                out.append((str((Path(dirpath) / fn).relative_to(src)), text))
+    return out
+
+
+def seed_source(bundle: Path, project: str | None = None) -> tuple[str, Path]:
+    """The bundle project to seed from: `project`, or the bundle's one writable
+    project (its overlay: the only project under DIR/data/projects)."""
+    bundle = bundle.expanduser().resolve()
+    pdir = bundle / "data" / "projects"
+    if not pdir.is_dir() or pdir.is_symlink():
+        raise CribUserError(f"{bundle} is not a bundle (no data/projects)")
+    if project is None:
+        names = sorted(
+            p.name for p in pdir.iterdir() if p.is_dir() and not p.is_symlink()
+        )
+        if len(names) != 1:
+            raise CribUserError(
+                f"{bundle} holds {len(names)} projects ({', '.join(names) or 'none'}): "
+                "name one with --project"
+            )
+        project = names[0]
+    src = pdir / check_project_name(project)
+    if src.is_symlink() or not src.is_dir():
+        raise CribUserError(f"no project {project!r} in {bundle}")
+    return project, src
+
+
+def seed(
+    paths: Paths,
+    bundle: Path,
+    into: str,
+    project: str | None = None,
+    facet_names: list[str] | None = None,
+    symbols: bool = True,
+    proposed: bool = False,
+) -> dict[str, Any]:
+    """Copy a bundle project's items (and symbol records) into the EXISTING,
+    empty project `into` (the caller creates it). The bundle was written in a
+    sandbox, so it is read as untrusted input: regular `.md` / `.toml` files
+    only, under the chosen facets' directories, never through a symlink,
+    size-capped. Every item gets a fresh id, rewritten wherever the copied
+    items refer to it (deps, checked, links), so the graph holds and nothing
+    collides with the project the bundle was made from. `proposed` lands
+    active decisions as `proposed` (they gate nothing until promoted)."""
+    from . import facets
+    from .util import new_ulid
+
+    if paths.root is not None:
+        raise CribUserError("seeding runs on the trusted side, not in confined mode")
+    name, src = seed_source(bundle, project)
+    dest = paths.project_dir(into)
+    stores = facets.stores()
+    if facet_names:
+        chosen = []
+        for f in facet_names:
+            spec = facets.by_store(f)
+            if spec is None:
+                try:
+                    spec = facets.by_noun(f)
+                except KeyError:
+                    spec = None
+            if spec is None or spec.store not in stores:
+                raise CribUserError(f"no facet {f!r} (one of: {', '.join(stores)})")
+            chosen.append(spec.store)
+        stores = list(dict.fromkeys(chosen))
+    items = {s: _seed_files(src / s, ".md") for s in stores}
+    # fresh ids: the old -> new map, from every copied item's frontmatter `id:`
+    remap: dict[str, str] = {}
+    for files in items.values():
+        for _rel, text in files:
+            head = text.split("\n---", 1)[0] if text.startswith("---") else ""
+            for line in head.splitlines():
+                if line.startswith("id:"):
+                    old = line[3:].strip().strip("'\"")
+                    if _ULID_RE.fullmatch(old):
+                        remap.setdefault(old, new_ulid())
+
+    def rewrite(text: str) -> str:
+        return _ULID_RE.sub(lambda m: remap.get(m.group(0), m.group(0)), text)
+
+    counts: dict[str, int] = {}
+    for s, files in items.items():
+        for rel, text in files:
+            text = rewrite(text)
+            if proposed and s == "design":
+                text = text.replace("\nstatus: active\n", "\nstatus: proposed\n", 1)
+            out = dest / s / rel
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(text)
+            counts[s] = counts.get(s, 0) + 1
+    if symbols:
+        for rel, text in _seed_files(src / "symbol_index", ".toml"):
+            out = dest / "symbol_index" / rel
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(text)
+            counts["symbols"] = counts.get("symbols", 0) + 1
+    return {
+        "project": into,
+        "from": f"{bundle.expanduser().resolve()}#{name}",
+        "copied": counts,
+        "ids_renewed": len(remap),
+        "proposed": proposed,
+    }
