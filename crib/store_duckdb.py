@@ -50,10 +50,6 @@ _RETIRED_META = ("record_format",)
 # The embedding cache (crib.embedcache): text hash -> vector per model; plain
 # vectors, no index (search builds what it needs in memory).
 EMBED_CACHE = "crib_embed_cache"
-# Scheduled deletes (crib.expiry): each transient project's expiry, epoch
-# seconds, mirrored from its stub so the daemon waits on MIN(due_at). Derived: the
-# daemon rebuilds it from the stubs at start.
-EXPIRY = "crib_expiry"
 # Versions and identities the rest of the file depends on: schema_version (bump it
 # when any table's layout changes; a mismatch drops every crib table, since all
 # of them are rebuildable) and embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
@@ -109,7 +105,6 @@ def _facet_columns(fields: Any) -> str:
 _FIXED_TABLES = MappingProxyType(
     {
         EMBED_CACHE: "model VARCHAR, h VARCHAR, vec FLOAT[], PRIMARY KEY (model, h)",
-        EXPIRY: "project VARCHAR PRIMARY KEY, due_at DOUBLE",
         LEDGER: "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, "
         "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
@@ -1496,49 +1491,6 @@ class DuckDBStore:
             ex.run_many(f"INSERT INTO {EMBED_CACHE} VALUES (?, ?, ?)", data)
 
         self._transaction(write)
-
-    # ── scheduled deletes (crib.expiry) ──────────────────────────────────────
-
-    def expiry_set(self, project: str, at: float | None) -> None:
-        """Record (or with None, clear) a project's expiry, epoch seconds."""
-
-        def write(ex: Any) -> None:
-            # pi-lens-ignore: python-sql-injection
-            ex.run(f"DELETE FROM {EXPIRY} WHERE project = ?", [project])
-            if at is not None:
-                # pi-lens-ignore: python-sql-injection
-                ex.run(f"INSERT INTO {EXPIRY} VALUES (?, ?)", [project, float(at)])
-
-        self._transaction(write)
-
-    def expiry_replace(self, rows: dict[str, float]) -> None:
-        """Replace every expiry (the daemon's startup sync from the stubs)."""
-
-        def write(ex: Any) -> None:
-            # pi-lens-ignore: python-sql-injection
-            ex.run(f"DELETE FROM {EXPIRY}")
-            if rows:
-                # pi-lens-ignore: python-sql-injection
-                ex.run_many(f"INSERT INTO {EXPIRY} VALUES (?, ?)",
-                            [[p, float(a)] for p, a in rows.items()])
-
-        self._transaction(write)
-
-    def expiry_next(self) -> tuple[str, float] | None:
-        """The soonest expiry, MIN(due_at): (project, due_at), or None."""
-        with self._reading() as ex:
-            # pi-lens-ignore: python-sql-injection
-            rows = ex.run(f"SELECT project, due_at FROM {EXPIRY} ORDER BY due_at, project LIMIT 1")
-        return (rows[0][0], float(rows[0][1])) if rows else None
-
-    def expiry_due(self, now: float) -> list[str]:
-        """Projects whose expiry is at or before `now`, soonest first."""
-        with self._reading() as ex:
-            # pi-lens-ignore: python-sql-injection
-            rows = ex.run(f"SELECT project FROM {EXPIRY} WHERE due_at <= ? "
-                          "ORDER BY due_at, project",
-                          [float(now)])
-        return [p for (p,) in rows]
 
     # ── the generation ledger (crib.genledger) ───────────────────────────────
 

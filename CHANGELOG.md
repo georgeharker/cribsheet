@@ -18,13 +18,18 @@ version has no heading here.
   bundle sweep are gone; whoever runs the sandbox calls `crib bundle delete
   DIR` when it is done. The trusted side now reads nothing back from a bundle.
   `bundle list` reports `present` / `missing`.
-- **Scheduled deletes of transient projects wait, not poll.** Each transient
-  project's expiry is mirrored from its stub into the store (a `crib_expiry`
-  table, rebuilt from the stubs at daemon start); the daemon waits until the
-  soonest one (`MIN`), and the file watcher, which now reports `.cribproject`
-  changes, wakes it to re-read that stub and wait again. No 5-minute rescan.
-  A due project's stub is re-read before it is deleted, so an extension is
-  honoured; a failed delete is retried an hour later.
+  Bundles created by 0.28.0-dev1 to dev3 are no longer deleted on expiry:
+  `crib bundle delete` them when done.
+- **Scheduled deletes of transient projects wait, not poll.** The daemon
+  reads each transient project's expiry from its stub once at start into an
+  in-memory queue, and waits until the soonest (each wait capped at an hour,
+  which only re-reads the queue: the loop's clock stops while a laptop
+  sleeps). The file watcher, which now reports `.cribproject` changes, wakes
+  it to re-read that stub and wait again; a create or rename here does the
+  same. No 5-minute rescan. A due project's stub is re-read from disk before
+  it is deleted, so an extension is honoured; a failed delete is retried an
+  hour later, and a failed pass backs off without stopping the sweeper.
+  Scheduled deletes run only while the daemon's watchers do.
 
 ## [0.28.0-dev3] - 2026-11-23
 

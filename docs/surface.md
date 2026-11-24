@@ -38,7 +38,7 @@ process (`serve`/`--mcp`, `--no-daemon` verbs); also `$CRIB_WRITABLE` or
 `writable = [...]` in config.toml.
 `--root DIR` (or `$CRIB_ROOT`) is confined mode: everything under DIR, nothing
 written outside it, a checkout's own `.crib` never read, projects named explicitly.
-`crib bundle create DIR --overlay BASE:NAME [--context P]... [--expires 7d]`
+`crib bundle create DIR --overlay BASE:NAME [--context P]...`
 writes such a root for a sandbox; `crib bundle list|delete` manage it (its lifetime is the caller's).
 Content-taking verbs (`note store`/`append`/`edit`, `learning add`/`edit`) accept `-`
 to read the content from stdin.

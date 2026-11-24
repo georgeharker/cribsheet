@@ -456,18 +456,6 @@ class QuackStore(DuckDBStore):
     def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
         self._call(super().ec_put, model, rows)
 
-    def expiry_set(self, project: str, at: float | None) -> None:
-        self._call(super().expiry_set, project, at)
-
-    def expiry_replace(self, rows: dict[str, float]) -> None:
-        self._call(super().expiry_replace, rows)
-
-    def expiry_next(self) -> tuple[str, float] | None:
-        return self._call(super().expiry_next)
-
-    def expiry_due(self, now: float) -> list[str]:
-        return self._call(super().expiry_due, now)
-
     def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
         return self._call(super().ledger_rows, purpose, targets)
 

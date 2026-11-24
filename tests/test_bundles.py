@@ -86,7 +86,9 @@ def test_create_writes_a_self_contained_bundle(trusted, tmp_path):
     assert 'writable = ["toucan@pr-1"]' in cfg and 'mode = "embedded"' in cfg
     assert 'context_dir = "$ROOT/context"' in cfg
     assert (b / "config" / "lsp.json").exists()
-    m = bundles.read_manifest(b)
+    import tomllib
+
+    m = tomllib.loads((b / "bundle.toml").read_text())
     assert m["overlay"] == "toucan@pr-1" and m["context"] == ["llmkit"]
     assert (
         "expires" not in m

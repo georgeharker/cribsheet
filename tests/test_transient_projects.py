@@ -103,21 +103,6 @@ def test_delete_discards_without_trash(crib):
     assert not trash.exists() or not any(trash.glob("scratch-*"))
 
 
-def test_the_sweep_deletes_only_expired_transients(crib):
-    run(
-        crib.project_create(
-            project="due", transient=True, expires="2020-01-01T00:00:00"
-        )
-    )
-    run(crib.project_create(project="later", transient=True, expires="1d"))
-    run(crib.project_create(project="forever", transient=True))
-    run(crib.project_create(project="kept"))
-    deleted = run(crib.delete_expired_transients())
-    assert deleted == ["due"]
-    assert set(crib.projects()) >= {"later", "forever", "kept"}
-    assert "due" not in crib.projects()
-
-
 def test_a_synced_stub_claiming_transient_is_not_discarded(crib):
     """A `.cribproject` arriving by git sync (or a hand edit) that says
     transient and expired, but without the birth .gitignore or this host, is
@@ -132,7 +117,7 @@ def test_a_synced_stub_claiming_transient_is_not_discarded(crib):
     )
     pcfg.save(stub)
     crib.project_paths.invalidate("synced")
-    assert crib.expired_transients() == []
+    assert crib._expiry_at("synced") is None  # never scheduled
     out = run(crib.project_delete(project="synced"))
     assert out.get("trash")  # an ordinary, undoable delete
 
@@ -148,22 +133,6 @@ def test_a_string_false_is_not_transient(crib, tmp_path):
     assert not ProjectConfig.load(stub, "x").transient
     stub.write_text("name: x\ntransient: true\n")
     assert ProjectConfig.load(stub, "x").transient
-
-
-def test_a_failing_transient_delete_is_reported_once(crib, monkeypatch, capsys):
-    run(
-        crib.project_create(
-            project="due", transient=True, expires="2020-01-01T00:00:00"
-        )
-    )
-
-    async def stuck(project=None, force=False, cwd=None):
-        raise OSError("busy")
-
-    monkeypatch.setattr(crib, "project_delete", stuck)
-    assert run(crib.delete_expired_transients()) == []
-    assert run(crib.delete_expired_transients()) == []
-    assert capsys.readouterr().err.count("not deleted yet") == 1
 
 
 def _sweeper_cycles(crib, monkeypatch, cycles=1):
@@ -198,19 +167,19 @@ def test_the_sweeper_deletes_due_and_waits_until_the_next_expiry(crib, monkeypat
             project="due", transient=True, expires="2020-01-01T00:00:00"
         )
     )
-    run(crib.project_create(project="soon", transient=True, expires="2h"))
+    run(crib.project_create(project="soon", transient=True, expires="30m"))
     run(crib.project_create(project="later", transient=True, expires="1d"))
     run(crib.project_create(project="forever", transient=True))
     (timeout,) = _sweeper_cycles(crib, monkeypatch)
     assert "due" not in crib.projects()
     assert {"soon", "later", "forever"} <= set(crib.projects())
-    assert 2 * 3600 - 60 < timeout <= 2 * 3600  # until "soon", not a fixed poll
+    assert 1800 - 60 < timeout <= 1800  # until "soon", not a fixed poll
     assert crib._expiry.expiry_next()[0] == "soon"
 
 
 def test_with_nothing_scheduled_the_sweeper_waits_until_woken(crib, monkeypatch):
     run(crib.project_create(project="forever", transient=True))
-    assert _sweeper_cycles(crib, monkeypatch) == [None]
+    assert _sweeper_cycles(crib, monkeypatch) == [3600.0]  # capped, not None
 
 
 def test_a_stub_change_reschedules_and_wakes_the_wait(crib):
@@ -232,20 +201,6 @@ def test_a_stub_change_reschedules_and_wakes_the_wait(crib):
     run(crib.project_delete(project="t", force=True))
     run(crib._on_stub_change("t"))
     assert crib._expiry.expiry_next() is None
-
-
-def test_an_extension_seen_only_at_due_time_is_honoured(crib, monkeypatch):
-    """The table said due, but the stub was extended (a change the watcher
-    missed): the stub is re-read first, so nothing is deleted."""
-    import time
-
-    run(crib.project_create(project="t", transient=True, expires="1h"))
-    stub = crib.paths.project_dir("t") / ".cribproject"
-    crib._expiry.expiry_set("t", time.time() - 10)  # stale row
-    monkeypatch.setattr(crib, "_sync_expiry_all", lambda: None)  # keep it stale
-    _sweeper_cycles(crib, monkeypatch)
-    assert "t" in crib.projects() and stub.exists()
-    assert crib._expiry.expiry_next()[1] > time.time()
 
 
 def test_a_failed_scheduled_delete_retries_later(crib, monkeypatch, capsys):
@@ -279,16 +234,63 @@ def test_the_watcher_reports_stub_changes(tmp_path):
     assert decode_stub(pd, str(tmp_path / "elsewhere" / ".cribproject")) is None
 
 
-def test_the_duckdb_store_keeps_the_expiry_table(tmp_path):
-    from crib.store_duckdb import DuckDBStore
+def test_the_sweeper_deletes_only_due_discardable_transients(crib, monkeypatch):
+    """Through the path that runs: a due transient goes; a later one, one with
+    no expiry, an ordinary project, and a synced stub from another host stay."""
+    run(crib.project_create(project="due", transient=True,
+                            expires="2020-01-01T00:00:00"))
+    run(crib.project_create(project="later", transient=True, expires="1d"))
+    run(crib.project_create(project="forever", transient=True))
+    run(crib.project_create(project="kept"))
+    run(crib.store_note("precious", title="P", project="synced"))
+    stub = crib.paths.project_dir("synced") / ".cribproject"
+    pcfg = ProjectConfig.load(stub, "synced")
+    pcfg.transient, pcfg.expires, pcfg.host = True, "2020-01-01T00:00:00+00:00", "other-host"
+    pcfg.save(stub)
+    _sweeper_cycles(crib, monkeypatch)
+    assert "due" not in crib.projects()
+    assert {"later", "forever", "kept", "synced"} <= set(crib.projects())
 
-    s = DuckDBStore.embedded(tmp_path / "x.duckdb")
-    try:
-        s.expiry_replace({"a": 30.0, "b": 10.0, "c": 20.0})
-        assert s.expiry_next() == ("b", 10.0)
-        assert s.expiry_due(20.0) == ["b", "c"]
-        s.expiry_set("b", None)
-        s.expiry_set("a", 5.0)
-        assert s.expiry_next() == ("a", 5.0)
-    finally:
-        s.close()
+
+def test_an_extension_no_event_reported_is_honoured(crib, monkeypatch):
+    """The stub was extended but no watcher event arrived (cached paths, a due
+    row): the stub itself is re-read before deleting, so nothing goes."""
+    import time
+
+    run(crib.project_create(project="t", transient=True, expires="2020-01-01T00:00:00"))
+    crib.project_paths("t")  # cached with the old expiry
+    stub = crib.paths.project_dir("t") / ".cribproject"
+    pcfg = ProjectConfig.load(stub, "t")
+    pcfg.expires = "2030-01-01T00:00:00+00:00"
+    pcfg.save(stub)  # no invalidate, no _on_stub_change
+    monkeypatch.setattr(crib, "_sync_expiry_all",
+                        lambda: crib._expiry.expiry_set("t", time.time() - 10))
+    _sweeper_cycles(crib, monkeypatch)
+    assert "t" in crib.projects() and stub.exists()
+
+
+def test_each_wait_is_capped(crib, monkeypatch):
+    """The loop's clock stops while a laptop sleeps; a far expiry, or none,
+    is still re-checked within the cap (a cheap re-read of the queue)."""
+    run(crib.project_create(project="far", transient=True, expires="30d"))
+    assert _sweeper_cycles(crib, monkeypatch) == [3600.0]
+
+
+def test_a_failed_pass_backs_off_and_the_sweeper_survives(crib, monkeypatch, capsys):
+    calls = []
+
+    def boom(now):
+        calls.append(now)
+        raise RuntimeError("store gone")
+
+    monkeypatch.setattr(crib._expiry, "expiry_due", boom)
+    waits = _sweeper_cycles(crib, monkeypatch, cycles=2)
+    assert waits == [60.0, 60.0] and len(calls) == 2
+    assert capsys.readouterr().err.count("scheduled-delete pass failed") == 1
+
+
+def test_a_rename_moves_the_schedule(crib):
+    run(crib.project_create(project="a", transient=True, expires="1d"))
+    run(crib.project_rename(project="a", to="b"))
+    nxt = crib._expiry.expiry_next()
+    assert nxt is not None and nxt[0] == "b"

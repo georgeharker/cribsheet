@@ -31,7 +31,6 @@ import json
 import os
 import shutil
 import sys
-import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -42,7 +41,6 @@ MANIFEST = "bundle.toml"
 REGISTRY = "bundles.json"
 VECTORS_FILE = "embed-cache.parquet"  # the bundle's vectors, under DIR/data
 FORMAT = 1
-_MANIFEST_MAX = 64 * 1024  # a manifest is a few lines; anything bigger is hostile
 
 
 # ── manifest ─────────────────────────────────────────────────────────────────
@@ -50,28 +48,6 @@ _MANIFEST_MAX = 64 * 1024  # a manifest is a few lines; anything bigger is hosti
 
 def _toml_str(v: str) -> str:
     return json.dumps(v)  # a JSON string is a valid TOML basic string
-
-
-def _read_small(f: Path, limit: int = _MANIFEST_MAX) -> str:
-    """A file the SANDBOX can rewrite, read safely: a regular file only (not a
-    symlink, not a FIFO that would block), at most `limit` bytes."""
-    import stat
-
-    try:
-        fd = os.open(f, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-    except OSError as e:
-        raise CribUserError(f"{f}: not a readable regular file ({e})") from e
-    try:
-        st = os.fstat(fd)
-        if not stat.S_ISREG(st.st_mode):
-            raise CribUserError(f"{f}: not a regular file")
-        if st.st_size > limit:
-            raise CribUserError(f"{f}: larger than {limit} bytes")
-        return os.read(fd, limit + 1).decode("utf-8", errors="strict")
-    except UnicodeDecodeError as e:
-        raise CribUserError(f"{f}: not UTF-8 text") from e
-    finally:
-        os.close(fd)
 
 
 def _replace_text(f: Path, text: str) -> None:
@@ -98,17 +74,6 @@ def write_manifest(bundle: Path, m: dict[str, Any]) -> None:
         "context = [" + ", ".join(_toml_str(p) for p in m.get("context", [])) + "]"
     )
     _replace_text(bundle / MANIFEST, "\n".join(lines) + "\n")
-
-
-def read_manifest(bundle: Path) -> dict[str, Any]:
-    f = bundle / MANIFEST
-    try:
-        data = tomllib.loads(_read_small(f))
-    except tomllib.TOMLDecodeError as e:
-        raise CribUserError(f"{f}: not a readable bundle manifest ({e})") from e
-    if data.get("format") != FORMAT:
-        raise CribUserError(f"{f}: unknown bundle format {data.get('format')!r}")
-    return data
 
 
 # ── registry (trusted side) ──────────────────────────────────────────────────
