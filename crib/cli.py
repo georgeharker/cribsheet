@@ -3924,9 +3924,11 @@ def _sweep_watcher(
             ticker.draw(f"{pick}: {format_sweep(sweeps[pick])}")
 
 
-def _run_daemon(args: Any, cfg: Any) -> None:
+def _run_daemon(args: Any, cfg: Any,
+                answer: Callable[[str], str | None] | None = None) -> None:
     """Run a verb via the warm daemon: build the call, ship the caller's cwd as
-    `project_path`, call the MCP tool, and emit — all off one registry row."""
+    `project_path`, call the MCP tool, and emit — all off one registry row.
+    `answer` answers the tool's elicitations (see DaemonClient.call)."""
     from .client import DaemonClient
     from .errors import CribUserError
 
@@ -3938,7 +3940,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     handler = _daemon_sweep_progress(ticker) if entry.tool in _SWEEP_TOOLS else None
     with DaemonClient(cfg.daemon) as client:
         try:
-            data = client.call(entry.tool, call, progress_handler=handler)
+            data = client.call(entry.tool, call, progress_handler=handler,
+                               answer=answer)
         except Exception as e:  # noqa: BLE001 — only the unknown-tool case is ours
             if f"Unknown tool: {entry.tool!r}" not in str(e) and \
                     f"Unknown tool: {entry.tool}" not in str(e):
@@ -4058,6 +4061,14 @@ def _reconcile(cfg: Any) -> Any:
         return asyncio.run(crib.reconcile_all())
     finally:
         crib.close()
+
+
+def _delete_confirmation(proj: str) -> Callable[[str], str | None]:
+    """The daemon's delete confirmation, answered for a human who has already
+    confirmed in the terminal: echo `proj` to the question naming it
+    (`Type the project name '<proj>'`), decline anything else."""
+    quoted = f"'{proj}'"
+    return lambda question: proj if quoted in question else None
 
 
 def _confirm_delete_terminal(args: Any, proj: str) -> bool:
@@ -4465,17 +4476,15 @@ def main(argv: list[str] | None = None) -> int:
             _daemon_sweep_fence(cfg, proj)
             if not _confirm_delete_terminal(args, proj):
                 return 2
-            _run_inprocess(args, cfg)
-            if _daemon_is_up(cfg):
-                # a warm daemon holds per-project state this process cannot
-                # clean (code-watcher roots, mirror snapshot, warm caches):
-                # say so rather than leave it silent
-                print(
-                    f"crib: a running daemon still holds warm state for "
-                    f"{proj!r} (watchers/caches) — restart the daemon to "
-                    "drop it (its index tiers were already cleaned here)",
-                    file=sys.stderr,
-                )
+            if not args.no_daemon and _daemon_is_up(cfg):
+                # A running daemon deletes it ITSELF, so its warm state
+                # (watchers, caches, queues) goes too. Its tool elicits the
+                # confirmation; the human has just given it here, so the
+                # client answers that one question (echo the name) and
+                # declines anything else.
+                _run_daemon(args, cfg, answer=_delete_confirmation(proj))
+            else:
+                _run_inprocess(args, cfg)
             return 0
         except _user_errors() as e:
             msg = str(e)

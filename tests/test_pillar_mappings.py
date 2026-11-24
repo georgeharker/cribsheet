@@ -300,7 +300,7 @@ def test_the_cli_names_the_fix_when_the_daemon_lacks_a_tool(monkeypatch):
         def __init__(self, _cfg): ...
         def __enter__(self): return self
         def __exit__(self, *a): return False
-        def call(self, tool, args, progress_handler=None):
+        def call(self, tool, args, progress_handler=None, answer=None):
             raise RuntimeError(f"Unknown tool: {tool!r}")
 
     monkeypatch.setattr(client, "DaemonClient", Fake)

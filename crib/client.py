@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import os
 import time
+from collections.abc import Callable
 from typing import Any, Protocol
 
 from . import sharedserver
@@ -58,6 +59,20 @@ def _data(res: Any) -> Any:
     return "".join(getattr(b, "text", "") for b in blocks)
 
 
+def _elicitation(answer: Callable[[str], str | None] | None) -> dict[str, Any]:
+    """fastmcp Client kwargs answering elicitations with `answer` (none: the
+    client declares no elicitation support, as before)."""
+    if answer is None:
+        return {}
+    from fastmcp.client.elicitation import ElicitResult
+
+    async def handler(message: str, _type: Any, _params: Any, _ctx: Any) -> Any:
+        reply = answer(message)
+        return reply if reply is not None else ElicitResult(action="decline")
+
+    return {"elicitation_handler": handler}
+
+
 class DaemonClient:
     """Attach to the warm daemon for the duration of a `with` block.
 
@@ -97,15 +112,19 @@ class DaemonClient:
         tool: str,
         arguments: dict[str, Any],
         progress_handler: ProgressHandler | None = None,
+        answer: Callable[[str], str | None] | None = None,
     ) -> Any:
         """Call one MCP tool and return its result as plain Python.
 
         `progress_handler`, when given, receives the tool's progress notifications
-        as they stream in (rendered by the CLI's sweep ticker)."""
+        as they stream in (rendered by the CLI's sweep ticker). `answer`, when
+        given, answers the tool's elicitations: called with each question's
+        text, its reply is the answer (None declines). The CLI passes one only
+        for a question the human has already answered in the terminal."""
         args = {k: v for k, v in arguments.items() if v is not None}
-        return asyncio.run(self._call(tool, args, progress_handler))
+        return asyncio.run(self._call(tool, args, progress_handler, answer))
 
-    def _make_client(self) -> Any:
+    def _make_client(self, answer: Callable[[str], str | None] | None = None) -> Any:
         """A fastmcp Client for the daemon, presenting the inbound bearer when the
         daemon is locked down (CRIBSHEET_AUTH_TOKEN). This is the direct CLI ↔
         daemon path; the combiner reaches the same daemon over its own
@@ -121,6 +140,7 @@ class DaemonClient:
                     self.url, headers={"Authorization": f"Bearer {tok}"}
                 ),
                 mode="legacy",
+                **_elicitation(answer),
             )
         # mode="legacy": pin the initialize-handshake era. fastmcp 4's Client
         # defaults to mode="auto", which probes the server and negotiates the
@@ -129,16 +149,17 @@ class DaemonClient:
         # current project, DESIGN §15) would not persist and server-initiated
         # requests (elicitation) are forbidden. Progress notifications work in
         # both eras; sessions and elicitation only exist on legacy.
-        return Client(self.url, mode="legacy")
+        return Client(self.url, mode="legacy", **_elicitation(answer))
 
     async def _call(
         self,
         tool: str,
         args: dict[str, Any],
         progress_handler: ProgressHandler | None = None,
+        answer: Callable[[str], str | None] | None = None,
     ) -> Any:
         await self._wait_ready()
-        async with self._make_client() as client:
+        async with self._make_client(answer) as client:
             return _data(
                 await client.call_tool(tool, args, progress_handler=progress_handler)
             )

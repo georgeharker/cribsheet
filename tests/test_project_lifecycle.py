@@ -919,3 +919,27 @@ def test_project_status_shows_a_failed_job_as_a_row_not_an_exception(crib):
     assert gone[0]["done"] == 3 and gone[0]["total"] == 9
     # clean up so other tests don't see the corpse
     crib.relocate_jobs.pop("gone", None)
+
+
+def test_cli_delete_runs_in_the_daemon_when_one_is_up(monkeypatch, tmp_path):
+    """With a daemon listening, `crib project delete --yes` hands the delete to
+    it (so its warm state goes too); without one, it runs in-process."""
+    from crib import cli
+
+    for v in ("CRIB_CONFIG_DIR", "CRIB_DATA_DIR", "CRIB_INDEX_DIR"):
+        monkeypatch.setenv(v, str(tmp_path / v))
+    ran: list[tuple[str, Any]] = []
+    monkeypatch.setattr(cli, "_daemon_sweep_fence", lambda cfg, proj: None)
+    monkeypatch.setattr(cli, "_run_daemon",
+                        lambda a, c, answer=None: ran.append(("daemon", answer)))
+    monkeypatch.setattr(cli, "_run_inprocess", lambda a, c: ran.append(("here", None)))
+    monkeypatch.setattr(cli, "_daemon_is_up", lambda cfg: True)
+    assert cli.main(["project", "delete", "p", "--yes"]) == 0
+    where, answer = ran[-1]
+    assert where == "daemon" and answer("Type the project name 'p'") == "p"
+    monkeypatch.setattr(cli, "_daemon_is_up", lambda cfg: False)
+    assert cli.main(["project", "delete", "p", "--yes"]) == 0
+    assert ran[-1][0] == "here"
+    monkeypatch.setattr(cli, "_daemon_is_up", lambda cfg: True)
+    assert cli.main(["--no-daemon", "project", "delete", "p", "--yes"]) == 0
+    assert ran[-1][0] == "here"

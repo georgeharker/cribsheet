@@ -13,6 +13,11 @@ version has no heading here.
 
 ### Added
 
+- `crib project delete` with a daemon running hands the delete to the daemon
+  (after you confirm in the terminal, the CLI answers the daemon's own
+  confirmation), so the project leaves its warm state too: watchers, caches,
+  queues, the scheduled-delete queue. No more "restart the daemon" warning.
+  `--no-daemon`, or no daemon up, deletes in-process as before.
 - `crib status` is coloured throughout (on a terminal; `--json` and piped
   output unchanged): git clean/dirty and ahead/behind, LSP sessions (busy,
   idle, dead; repo roots linked), the daemon and its log (linked), queues,

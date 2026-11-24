@@ -233,3 +233,40 @@ def test_2026_destructive_confirm_is_asked_per_call(crib, http_url):
     assert "kept" in crib.projects()
     asyncio_run(delete("doomed", right))
     assert len(asked) == 1 and "doomed" not in crib.projects()
+
+
+# ── the CLI's delete, run BY the daemon (its warm state goes with it) ────────
+
+
+def test_the_cli_client_answers_the_delete_confirmation(crib, http_url):
+    """`crib project delete` with a daemon up: the human confirmed in the
+    terminal, so the CLI's client answers the daemon's confirmation (echo the
+    name) and the daemon deletes the project itself; any other question is
+    declined."""
+    from urllib.parse import urlparse
+
+    from crib import cli
+    from crib.client import DaemonClient
+    from crib.config import DaemonConfig
+
+    asyncio.run(crib.project_create("doomed"))
+    asyncio.run(crib.project_create("kept"))
+    u = urlparse(http_url)
+    client = DaemonClient(DaemonConfig(host=u.hostname, port=u.port))
+    asyncio.run(client._call("project_delete", {"project": "doomed"}, None,
+                             cli._delete_confirmation("doomed")))
+    assert "doomed" not in crib.projects()
+    # answering for a different project echoes nothing: the delete is refused
+    with pytest.raises(Exception, match="did not echo|aborted|confirmation"):
+        asyncio.run(client._call("project_delete", {"project": "kept"}, None,
+                                 cli._delete_confirmation("doomed")))
+    assert "kept" in crib.projects()
+
+
+def test_the_delete_confirmation_answers_only_its_own_question():
+    from crib import cli
+
+    ans = cli._delete_confirmation("p")
+    assert ans("Confirm: DELETE crib project 'p' ... Type the project name 'p'") == "p"
+    assert ans("Which crib project should this fact be stored in?") is None
+    assert ans("Type the project name 'other'") is None
