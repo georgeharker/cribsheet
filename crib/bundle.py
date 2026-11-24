@@ -4,27 +4,24 @@
 (design "Transient projects, out-of-store homes, and code overlays", parts 3,
 6, 7, 9):
 
-    DIR/bundle.toml                  manifest: expiry, overlay, context projects
+    DIR/bundle.toml                  manifest: created, overlay, context projects
     DIR/config/config.toml           embedded store, writable = [overlay],
                                      [locations] CONTEXT for the context copies
     DIR/config/{lsp.json,facets.toml}  the trusted side's, copied
     DIR/data/projects/<base>@<name>/ the OVERLAY: a writable, transient copy of
                                      <base> (its pillars, symbol records, and a
-                                     trusted .crib), expiring with the bundle
-    DIR/data/projects/<p>/           a CONTEXT project's stub + symbol records;
-                                     its notes live in the context copy
-    <context dir>/<p>/               the context copies (read-only mount in the
+                                     trusted .crib)
+    <context dir>/<p>/               each CONTEXT project, whole (config
+                                     `context_dir`; a read-only mount in the
                                      sandbox: default DIR/context)
 
 The sandbox opens it with `crib --root DIR [--store SCRATCH]`: writes go only
 to the overlay (`writable`), and only under DIR (confined mode).
 
-The trusted side REGISTERS each bundle (`<data>/bundles.json`) and owns its
-deletion: `crib bundle delete`, or the daemon's expiry sweep when the
-manifest's `expires` passes. The manifest is writable inside the sandbox (a
-session extends the expiry with `crib bundle expire`), so ONLY the expiry is
-read back from it; which directories a delete removes comes from the trusted
-registry, never from the manifest.
+The trusted side REGISTERS each bundle (`<data>/bundles.json`). A bundle's
+LIFETIME is not crib's: whoever runs the sandbox (toucan) decides when it is
+done and calls `crib bundle delete DIR`, which removes only the directories
+the trusted registry recorded. Nothing is ever read back from a bundle.
 """
 
 from __future__ import annotations
@@ -46,11 +43,6 @@ REGISTRY = "bundles.json"
 VECTORS_FILE = "embed-cache.parquet"  # the bundle's vectors, under DIR/data
 FORMAT = 1
 _MANIFEST_MAX = 64 * 1024  # a manifest is a few lines; anything bigger is hostile
-# the cap a registry entry with no `max_expires` (one written by 0.28.0-dev1)
-# gets: `bundle create`'s default --max-retention, counted from its creation
-DEFAULT_RETENTION = datetime.timedelta(days=30)
-# bundles the sweep failed to delete and has said so (once per bundle per process)
-_SWEEP_WARNED: set[str] = set()
 
 
 # ── manifest ─────────────────────────────────────────────────────────────────
@@ -97,24 +89,9 @@ def _replace_text(f: Path, text: str) -> None:
         raise
 
 
-def _no_symlink_between(base: Path, target: Path) -> bool:
-    """`target` lies under `base` with no symlink on the way (so a write to it
-    can't be redirected outside the bundle)."""
-    try:
-        rel = target.relative_to(base)
-    except ValueError:
-        return False
-    p = base
-    for part in rel.parts:
-        p = p / part
-        if p.is_symlink():
-            return False
-    return True
-
-
 def write_manifest(bundle: Path, m: dict[str, Any]) -> None:
     lines = [f"format = {FORMAT}"]
-    for key in ("created", "expires", "overlay", "base"):
+    for key in ("created", "overlay", "base"):
         if m.get(key):
             lines.append(f"{key} = {_toml_str(str(m[key]))}")
     lines.append(
@@ -132,14 +109,6 @@ def read_manifest(bundle: Path) -> dict[str, Any]:
     if data.get("format") != FORMAT:
         raise CribUserError(f"{f}: unknown bundle format {data.get('format')!r}")
     return data
-
-
-def manifest_expiry(bundle: Path) -> datetime.datetime | None:
-    """The bundle's CURRENT expiry, strictly parsed (the one field the trusted
-    side reads back from a manifest a sandbox may have rewritten)."""
-    from . import expiry
-
-    return expiry.when(read_manifest(bundle).get("expires"))
 
 
 # ── registry (trusted side) ──────────────────────────────────────────────────
@@ -277,9 +246,7 @@ def create(
     context: list[str] | None = None,
     context_to: Path | None = None,
     context_mount: str | None = None,
-    expires: str | None = "7d",
     vectors: bool = True,
-    max_retention: str = "30d",
 ) -> dict[str, Any]:
     """Write a bundle at `bundle` (see the module docstring) and register it.
 
@@ -287,9 +254,8 @@ def create(
     transient project `<base>@<name>`. `context` projects ride along read-only:
     their files go to `context_to` (default `bundle/context`), which the
     sandbox mounts read-only, at `context_mount` (default: `$ROOT/context`, i.e.
-    inside the bundle wherever it is mounted)."""
-    from . import expiry
-
+    inside the bundle wherever it is mounted). Its lifetime is the caller's:
+    `delete` it when done."""
     if paths_root := paths.root:
         raise CribUserError(
             f"bundles are created on the trusted side, not in "
@@ -314,14 +280,6 @@ def create(
     ctx_dir = context_to.expanduser().resolve() if context_to else bundle / "context"
     if context and context_to and ctx_dir.exists() and any(ctx_dir.iterdir()):
         raise CribUserError(f"{ctx_dir} exists and isn't empty")
-    # The HARD cap, held only in the trusted registry: the manifest (rewritable
-    # in the sandbox) can shorten or extend the expiry, never past this.
-    cap = expiry.parse(max_retention)
-    until = expiry.parse(expires) if expires else cap
-    u_at, cap_at = expiry.when(until), expiry.when(cap)
-    capped = u_at is not None and cap_at is not None and u_at > cap_at
-    if capped:
-        until = cap
     # Directories this create owns: the bundle (absent, or checked empty above)
     # and, only when context projects are copied to --context-to, that dir
     # (likewise absent or checked empty). Nothing else is ever cleaned up: a
@@ -331,7 +289,7 @@ def create(
         owned.append((ctx_dir, not ctx_dir.exists()))
     try:
         return _build(paths, cfg, bundle, base, proj, context, ctx_dir, context_to,
-                      context_mount, until, vectors, cap, capped)
+                      context_mount, vectors)
     except BaseException:
         # a half-built bundle is unregistered, so nothing would ever clean it up
         # (and a retry would refuse the non-empty dir): remove what was made
@@ -348,8 +306,7 @@ def create(
 
 def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
            context: list[str], ctx_dir: Path, context_to: Path | None,
-           context_mount: str | None, until: str | None, vectors: bool,
-           cap: str | None = None, capped: bool = False
+           context_mount: str | None, vectors: bool
            ) -> dict[str, Any]:
     """`create`'s body, once the arguments are checked."""
     from .config import ProjectConfig
@@ -369,7 +326,7 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
     pdir = bpaths.project_dir(proj)
     pdir.mkdir(parents=True)
     files[proj] = _copy_project_files(paths, cfg, base, pdir, pdir)
-    ProjectConfig(name=proj, created=now, transient=True, expires=until).save(
+    ProjectConfig(name=proj, created=now, transient=True).save(
         pdir / ".cribproject"
     )
     (pdir / ".gitignore").write_text("*\n")
@@ -411,7 +368,6 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         bundle,
         {
             "created": now,
-            "expires": until,
             "overlay": proj,
             "base": base,
             "context": context,
@@ -424,7 +380,6 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "created": now,
         "overlay": proj,
         "context_dir": str(ctx_dir) if context else None,
-        "max_expires": cap,
     }
     _save_registry(paths, reg)
     return {
@@ -433,8 +388,6 @@ def _build(paths: Paths, cfg: Any, bundle: Path, base: str, proj: str,
         "base": base,
         "context": context,
         "context_dir": str(ctx_dir) if context else None,
-        "expires": until,
-        "expires_capped": capped,
         "lsp_rewritten": lsp_rewritten,
         "files": files,
         "vectors": vec_rows,
@@ -522,96 +475,12 @@ def _build_vectors(paths: Paths, cfg: Any, bundle: Path, projects: list[str],
 # ── lifecycle ────────────────────────────────────────────────────────────────
 
 
-def expire(bundle: Path, when: str, paths: Paths | None = None) -> dict[str, Any]:
-    """Set a bundle's expiry.
-
-    In confined mode (the sandbox, extending its own root) the manifest and the
-    overlay's stub are rewritten. On the TRUSTED side (`paths`, not confined)
-    the bundle must be registered, and only the manifest and the registry are
-    written: the registry's cap moves with the operator's expiry, and the stub
-    (inside the sandbox's writable tree, whose directories it can swap for
-    symlinks between a check and a write) is never touched; nothing trusted
-    reads it."""
-    from . import expiry
-    import yaml
-
-    from .config import ProjectConfig
-
-    bundle = bundle.expanduser().resolve()
-    if paths is None or paths.root is not None:
-        root = paths.root if paths is not None else None
-        if root is not None and bundle != root:
-            raise CribUserError(f"confined mode: only this bundle ({root}) can be extended")
-        overlay = read_manifest(bundle).get("overlay")
-    else:
-        reg = registry(paths)
-        entry = reg.get(str(bundle))
-        if entry is None:
-            raise CribUserError(f"{bundle} is not a registered bundle (`crib bundle list`)")
-        until = expiry.parse(when)
-        m = read_manifest(bundle)
-        m["expires"] = until
-        write_manifest(bundle, m)
-        entry["max_expires"] = until  # the operator sets the cap, up or down
-        _save_registry(paths, reg)
-        return {"bundle": str(bundle), "expires": until}
-    m = read_manifest(bundle)
-    until = expiry.parse(when)
-    m["expires"] = until
-    write_manifest(bundle, m)
-    if isinstance(overlay, str):
-        stub = bundle / "data" / "projects" / check_project_name(overlay) / ".cribproject"
-        if not _no_symlink_between(bundle, stub):
-            raise CribUserError(f"{stub}: reached through a symlink; not written")
-        if stub.exists() or stub.is_symlink():
-            # read and written as the manifest is: a small regular file, never
-            # through a symlink (the stub lives in the sandbox's writable root)
-            try:
-                pcfg = ProjectConfig.loads(_read_small(stub), overlay, where=str(stub))
-            except yaml.YAMLError as e:
-                raise CribUserError(f"{stub}: not readable YAML ({e})") from e
-            pcfg.expires = until
-            _replace_text(stub, pcfg.dumps())
-    return {"bundle": str(bundle), "expires": until}
-
-
-def _entry_cap(entry: dict[str, Any]) -> datetime.datetime | None:
-    """A registry entry's hard cap: its `max_expires`, or for an entry from
-    before caps (0.28.0-dev1) its creation plus DEFAULT_RETENTION."""
-    from . import expiry
-
-    if (cap := expiry.when(entry.get("max_expires"))) is not None:
-        return cap
-    if (made := expiry.when(entry.get("created"))) is not None:
-        return made + DEFAULT_RETENTION
-    return None
-
-
-def listing(paths: Paths, now: datetime.datetime | None = None) -> list[dict[str, Any]]:
-    """Registered bundles with their state (live/due/missing/unreadable) and
-    effective expiry: the manifest's, capped at the registry's `max_expires`."""
-    now = now or datetime.datetime.now(datetime.UTC)
-    out = []
-    for path, entry in sorted(registry(paths).items()):
-        row: dict[str, Any] = {"bundle": path, **entry}
-        b = Path(path)
-        cap = _entry_cap(entry)
-        if not b.is_dir():
-            row["state"] = "missing"
-        else:
-            try:
-                at = manifest_expiry(b)
-            except CribUserError as e:
-                # unreadable (perhaps on purpose): due once the cap passes
-                row["state"] = "due" if cap and cap <= now else "unreadable"
-                row["error"] = str(e)
-            else:
-                if cap and (at is None or at > cap):
-                    at = cap  # the manifest can't extend past the trusted cap
-                row["expires"] = at.isoformat(timespec="seconds") if at else None
-                row["state"] = "due" if at and at <= now else "live"
-        out.append(row)
-    return out
+def listing(paths: Paths) -> list[dict[str, Any]]:
+    """Registered bundles: the registry's entry, and whether the directory is
+    still there (`present` / `missing`)."""
+    return [{"bundle": path, **entry,
+             "state": "present" if Path(path).is_dir() else "missing"}
+            for path, entry in sorted(registry(paths).items())]
 
 
 def delete(paths: Paths, bundle: Path) -> dict[str, Any]:
@@ -630,21 +499,3 @@ def delete(paths: Paths, bundle: Path) -> dict[str, Any]:
     del reg[key]
     _save_registry(paths, reg)
     return {"bundle": key, "removed": removed}
-
-
-def sweep(paths: Paths, now: datetime.datetime | None = None) -> list[str]:
-    """Delete every registered bundle that is due (the scheduled delete): its
-    manifest's expiry, capped by the registry's `max_expires`, has passed; an
-    unreadable manifest is left alone until the cap passes."""
-    gone = []
-    for row in listing(paths, now):
-        if row.get("state") == "due":
-            try:
-                delete(paths, Path(row["bundle"]))
-                gone.append(row["bundle"])
-            except Exception as e:  # noqa: BLE001 — one bundle never blocks the rest
-                if row["bundle"] not in _SWEEP_WARNED:  # once, not every sweep
-                    _SWEEP_WARNED.add(row["bundle"])
-                    print(f"[crib] expired bundle {row['bundle']} not deleted: {e}",
-                          file=sys.stderr)
-    return gone

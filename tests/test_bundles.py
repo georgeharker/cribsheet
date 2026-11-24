@@ -5,7 +5,6 @@ overlays", parts 6, 7, 9)."""
 from __future__ import annotations
 
 import asyncio
-import datetime
 import json
 from pathlib import Path
 
@@ -74,7 +73,7 @@ def test_create_writes_a_self_contained_bundle(trusted, tmp_path):
     assert any((ov / "design").glob("*.md"))
     assert (ov / "symbol_index" / "rec.toml").exists()
     stub = (ov / ".cribproject").read_text()
-    assert "transient: true" in stub and "expires:" in stub
+    assert "transient: true" in stub and "expires:" not in stub  # the caller's
     trusted_crib = (ov / ".crib").read_text()
     assert "project: toucan@pr-1" in trusted_crib and "src/**/*.py" in trusted_crib
     assert "store" not in trusted_crib  # residency never carried
@@ -88,7 +87,11 @@ def test_create_writes_a_self_contained_bundle(trusted, tmp_path):
     assert 'context_dir = "$ROOT/context"' in cfg
     assert (b / "config" / "lsp.json").exists()
     m = bundles.read_manifest(b)
-    assert m["overlay"] == "toucan@pr-1" and m["context"] == ["llmkit"] and m["expires"]
+    assert m["overlay"] == "toucan@pr-1" and m["context"] == ["llmkit"]
+    assert (
+        "expires" not in m
+        and "max_expires" not in bundles.registry(trusted)[str(b.resolve())]
+    )
     assert str(b.resolve()) in bundles.registry(trusted)
     assert not any(b.rglob(".versions"))
 
@@ -125,21 +128,6 @@ def test_the_sandbox_opens_it_confined(trusted, tmp_path, monkeypatch):
         run(box.store_note("nope", title="Nope", project="llmkit"))
 
 
-def test_expire_extends_from_inside_and_the_sweep_reads_it(trusted, tmp_path):
-    _create(trusted, tmp_path, expires="1d")
-    b = tmp_path / "b"
-    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
-    assert bundles.sweep(trusted, now=later) == [str(b.resolve())]  # due: gone
-    assert not b.exists() and bundles.registry(trusted) == {}
-
-    _create(trusted, tmp_path, expires="1d")
-    bundles.expire(b, "30d")  # e.g. a session inside the sandbox
-    assert bundles.sweep(trusted, now=later) == []
-    assert b.exists()
-    stub = (b / "data" / "projects" / "toucan@pr-1" / ".cribproject").read_text()
-    assert bundles.read_manifest(b)["expires"] in stub
-
-
 def test_delete_trusts_the_registry_not_the_manifest(trusted, tmp_path):
     """The manifest is writable in the sandbox: a planted path in it is never
     deleted; only the registered bundle and context dirs are."""
@@ -161,10 +149,11 @@ def test_delete_trusts_the_registry_not_the_manifest(trusted, tmp_path):
 def test_listing_states(trusted, tmp_path):
     _create(trusted, tmp_path)
     rows = bundles.listing(trusted)
-    assert len(rows) == 1 and rows[0]["state"] == "live"
-    (tmp_path / "b" / "bundle.toml").write_text("not = [toml")
-    assert bundles.listing(trusted)[0]["state"] == "unreadable"
-    assert bundles.sweep(trusted) == []  # an unreadable manifest is left alone
+    assert len(rows) == 1 and rows[0]["state"] == "present"
+    import shutil
+
+    shutil.rmtree(tmp_path / "b")
+    assert bundles.listing(trusted)[0]["state"] == "missing"
 
 
 def test_the_cli(trusted, tmp_path, capsys):
@@ -180,8 +169,6 @@ def test_the_cli(trusted, tmp_path, capsys):
                 "toucan:pr-1",
                 "--context",
                 "llmkit",
-                "--expires",
-                "2h",
             ]
         )
         == 0
@@ -195,7 +182,6 @@ def test_the_cli(trusted, tmp_path, capsys):
 
 
 def test_a_location_may_be_a_token_itself():
-    from pathlib import Path
 
     from crib.config import expand_location
 
@@ -366,75 +352,6 @@ def test_a_read_only_projects_records_survive_revalidation(
 # ── review fixes: the trusted side vs a hostile sandbox ──────────────────────
 
 
-def test_a_hostile_manifest_never_hangs_or_floods_the_trusted_side(trusted, tmp_path):
-    """The manifest is writable in the sandbox: a FIFO (would block the read),
-    a symlink (read through to anywhere) or a huge file is unreadable, and the
-    sweep leaves that bundle alone."""
-    import os
-
-    for i, plant in enumerate(("fifo", "symlink", "huge")):
-        b = tmp_path / f"b{i}"
-        bundles.create(trusted, Config(), b, f"toucan:pr-{i}", [], vectors=False)
-        m = b / "bundle.toml"
-        m.unlink()
-        if plant == "fifo":
-            os.mkfifo(m)
-        elif plant == "symlink":
-            (tmp_path / "elsewhere.toml").write_text(
-                'format = 1\nexpires = "2000-01-01"\n'
-            )
-            m.symlink_to(tmp_path / "elsewhere.toml")
-        else:
-            m.write_text('format = 1\nexpires = "2000-01-01"\n' + "#" * 100_000)
-    rows = {Path(r["bundle"]).name: r["state"] for r in bundles.listing(trusted)}
-    assert rows == {"b0": "unreadable", "b1": "unreadable", "b2": "unreadable"}
-    assert bundles.sweep(trusted) == []
-
-
-def test_trusted_expire_takes_the_overlay_from_the_registry(trusted, tmp_path):
-    """A sandbox that rewrites the manifest's overlay, or swaps the overlay's
-    dir for a symlink into the trusted store, can't make the trusted `expire`
-    write a trusted project's stub."""
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    victim = trusted.project_dir("toucan") / ".cribproject"
-    before = victim.read_text() if victim.exists() else None
-    ov = b / "data" / "projects" / "toucan@pr-1"
-    import shutil
-
-    shutil.rmtree(ov)
-    ov.symlink_to(trusted.project_dir("toucan"))
-    bundles.expire(b, "30d", trusted)  # writes only the manifest and registry
-    assert (victim.read_text() if victim.exists() else None) == before
-    with pytest.raises(CribUserError, match="not a registered bundle"):
-        bundles.expire(tmp_path / "unregistered", "1d", trusted)
-
-
-def test_expire_replaces_a_planted_manifest_symlink_instead_of_following_it(
-    trusted, tmp_path
-):
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    other = tmp_path / "other.toml"
-    other.write_text((b / "bundle.toml").read_text())
-    (b / "bundle.toml").unlink()
-    (b / "bundle.toml").symlink_to(other)
-    before = other.read_text()
-    with pytest.raises(CribUserError):  # the planted manifest is unreadable...
-        bundles.expire(b, "30d", trusted)
-    assert other.read_text() == before  # ...and the target was never written
-
-
-def test_confined_expire_extends_only_its_own_root(trusted, tmp_path, monkeypatch):
-    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False)
-    bundles.create(trusted, Config(), tmp_path / "c", "toucan:pr-2", [], vectors=False)
-    monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
-    paths = Paths.resolve()
-    bundles.expire(tmp_path / "b", "30d", paths)
-    with pytest.raises(CribUserError, match="only this bundle"):
-        bundles.expire(tmp_path / "c", "30d", paths)
-
-
 def test_a_failed_create_leaves_nothing_behind(trusted, tmp_path, monkeypatch):
     def boom(*a, **k):
         raise RuntimeError("model unavailable")
@@ -455,38 +372,26 @@ def test_a_failed_create_leaves_nothing_behind(trusted, tmp_path, monkeypatch):
     bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False)
 
 
-def test_one_stuck_bundle_doesnt_block_the_sweep(trusted, tmp_path, monkeypatch):
-    for name in ("b1", "b2"):
-        bundles.create(
-            trusted,
-            Config(),
-            tmp_path / name,
-            f"toucan:{name}",
-            [],
-            expires="1s",
-            vectors=False,
-        )
-    real = bundles.delete
-
-    def flaky(paths, b):
-        if Path(b).name == "b1":
-            raise OSError("busy")
-        return real(paths, b)
-
-    monkeypatch.setattr(bundles, "delete", flaky)
-    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
-    assert [Path(g).name for g in bundles.sweep(trusted, now=later)] == ["b2"]
-
-
 def test_a_context_copy_mounted_elsewhere(trusted, tmp_path, monkeypatch):
     """--context-to writes the context copy outside the bundle; --context-mount
     says where the sandbox sees it; a confined instance reads it there."""
     mount = tmp_path / "ro-mount"
-    bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", ["llmkit"],
-                   context_to=mount, context_mount=str(mount), vectors=False)
+    bundles.create(
+        trusted,
+        Config(),
+        tmp_path / "b",
+        "toucan:pr-1",
+        ["llmkit"],
+        context_to=mount,
+        context_mount=str(mount),
+        vectors=False,
+    )
     assert (mount / "llmkit" / "notes" / "ctx-note.md").exists()
     assert not (tmp_path / "b" / "context").exists()
-    assert f'context_dir = "{mount}"' in (tmp_path / "b" / "config" / "config.toml").read_text()
+    assert (
+        f'context_dir = "{mount}"'
+        in (tmp_path / "b" / "config" / "config.toml").read_text()
+    )
     monkeypatch.setenv(ROOT_ENV, str(tmp_path / "b"))
     paths = Paths.resolve()
     box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
@@ -498,37 +403,9 @@ def test_a_context_copy_mounted_elsewhere(trusted, tmp_path, monkeypatch):
 # ── re-review fixes ──────────────────────────────────────────────────────────
 
 
-def test_trusted_expire_never_writes_through_a_planted_link(trusted, tmp_path):
-    """The sandbox plants symlinks at the overlay stub and at a temp-file name:
-    the trusted `expire` writes neither target (B-1)."""
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    victim = tmp_path / "victim.txt"
-    victim.write_text("precious\n")
-    ov = b / "data" / "projects" / "toucan@pr-1"
-    (ov / "..cribproject.new").symlink_to(victim)
-    stub = ov / ".cribproject"
-    stub.unlink()
-    stub.symlink_to(victim)
-    bundles.expire(b, "30d", trusted)  # the trusted side never touches the stub
-    assert victim.read_text() == "precious\n"
-
-
-def test_trusted_expire_moves_the_cap_and_leaves_the_stub(trusted, tmp_path):
-    """The operator's expire sets the registry cap (N-3); the stub, in the
-    sandbox's tree, is not written (N-2)."""
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    stub = b / "data" / "projects" / "toucan@pr-1" / ".cribproject"
-    before = stub.read_text()
-    out = bundles.expire(b, "60d", trusted)
-    assert stub.read_text() == before
-    assert bundles.registry(trusted)[str(b.resolve())]["max_expires"] == out["expires"]
-    assert bundles.listing(trusted)[0]["expires"] == out["expires"]
-
-
-def test_a_failed_create_never_touches_a_preexisting_context_to(trusted, tmp_path,
-                                                                monkeypatch):
+def test_a_failed_create_never_touches_a_preexisting_context_to(
+    trusted, tmp_path, monkeypatch
+):
     """--context-to given without --context: a failure leaves it alone (B-2)."""
     mine = tmp_path / "mine"
     mine.mkdir()
@@ -539,42 +416,28 @@ def test_a_failed_create_never_touches_a_preexisting_context_to(trusted, tmp_pat
 
     monkeypatch.setattr(bundles, "_build_vectors", boom)
     with pytest.raises(KeyboardInterrupt):
-        bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
-                       context_to=mine)
+        bundles.create(
+            trusted, Config(), tmp_path / "b", "toucan:pr-1", [], context_to=mine
+        )
     assert (mine / "precious.txt").read_text() == "keep me"
     assert not (tmp_path / "b").exists()
-
-
-def test_the_registry_caps_a_bundles_life(trusted, tmp_path):
-    """The manifest (sandbox-writable) can't extend past --max-retention, and an
-    unreadable manifest is due once the cap passes (S-4)."""
-    b = tmp_path / "b"
-    out = bundles.create(trusted, Config(), b, "toucan:pr-1", [], expires="7d",
-                         max_retention="1d", vectors=False)
-    cap = bundles.registry(trusted)[str(b.resolve())]["max_expires"]
-    assert out["expires"] == cap  # clamped at create
-    m = bundles.read_manifest(b)
-    m["expires"] = "9999-01-01T00:00:00+00:00"
-    bundles.write_manifest(b, m)
-    assert bundles.listing(trusted)[0]["expires"] == cap
-    (b / "bundle.toml").unlink()
-    soon = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
-    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
-    assert bundles.listing(trusted, soon)[0]["state"] == "unreadable"
-    assert bundles.sweep(trusted, now=later) == [str(b.resolve())]
 
 
 # ── context projects: a read-only second projects dir ───────────────────────
 
 
-def test_a_context_project_is_read_only_and_cannot_be_shadowed(trusted, tmp_path,
-                                                                monkeypatch):
+def test_a_context_project_is_read_only_and_cannot_be_shadowed(
+    trusted, tmp_path, monkeypatch
+):
     _create(trusted, tmp_path)
     b = tmp_path / "b"
     cfgf = b / "config" / "config.toml"
     # even listed as writable, and even with a same-named dir planted in the root
-    cfgf.write_text(cfgf.read_text().replace('writable = ["toucan@pr-1"]',
-                                             'writable = ["toucan@pr-1", "llmkit"]'))
+    cfgf.write_text(
+        cfgf.read_text().replace(
+            'writable = ["toucan@pr-1"]', 'writable = ["toucan@pr-1", "llmkit"]'
+        )
+    )
     (b / "data" / "projects" / "llmkit" / "notes").mkdir(parents=True)
     monkeypatch.setenv(ROOT_ENV, str(b))
     paths = Paths.resolve()
@@ -584,8 +447,9 @@ def test_a_context_project_is_read_only_and_cannot_be_shadowed(trusted, tmp_path
         run(box.store_note("nope", title="Nope", project="llmkit"))
 
 
-def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
-                                                         monkeypatch):
+def test_a_read_only_context_mount_loads_without_writing(
+    trusted, tmp_path, monkeypatch
+):
     """The pod mounts the context read-only: opening, reconciling and reading
     never write there."""
     import os
@@ -604,12 +468,17 @@ def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
         box = Crib(paths, Config.load(paths.config_file), InMemoryStore())
         r = run(box.reconcile_all())
         assert not r["skipped"]
-        assert any("ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit"))
+        assert any(
+            "ctx-note" in h.relpath for h in box.lookup("gears", project="llmkit")
+        )
         # the enrichment catch-up, with generation on, skips the context project
         monkeypatch.setattr(box, "_may_generate", lambda **kw: True)
         touched: list[str] = []
-        monkeypatch.setattr(box, "_skip_if_unavailable",
-                            lambda pp, why: touched.append(pp.project) or True)
+        monkeypatch.setattr(
+            box,
+            "_skip_if_unavailable",
+            lambda pp, why: touched.append(pp.project) or True,
+        )
         run(box._keyword_backlog())
         assert "llmkit" not in touched
         with pytest.raises(CribUserError, match="read-only context project"):
@@ -623,51 +492,6 @@ def test_a_read_only_context_mount_loads_without_writing(trusted, tmp_path,
 
 
 # ── nits from round 4 ───────────────────────────────────────────────────────
-
-
-def test_create_says_when_the_expiry_was_capped(trusted, tmp_path):
-    out = bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
-                         expires="60d", max_retention="1d", vectors=False)
-    assert out["expires_capped"] is True
-    out2 = bundles.create(trusted, Config(), tmp_path / "c", "toucan:pr-2", [],
-                          expires="1d", vectors=False)
-    assert out2["expires_capped"] is False
-
-
-def test_a_dev1_registry_entry_without_a_cap_gets_the_default(trusted, tmp_path):
-    """An entry written before `max_expires` existed is capped at created+30d."""
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], vectors=False)
-    reg = bundles.registry(trusted)
-    entry = reg[str(b.resolve())]
-    del entry["max_expires"]
-    bundles._save_registry(trusted, reg)
-    m = bundles.read_manifest(b)
-    m["expires"] = "9999-01-01T00:00:00+00:00"
-    bundles.write_manifest(b, m)
-    made = datetime.datetime.fromisoformat(entry["created"])
-    row = bundles.listing(trusted)[0]
-    assert row["expires"] == (made + bundles.DEFAULT_RETENTION).isoformat(
-        timespec="seconds")
-    assert bundles.sweep(trusted, now=made + datetime.timedelta(days=31)) == [
-        str(b.resolve())]
-
-
-def test_the_sweep_reports_an_undeletable_bundle_once(trusted, tmp_path,
-                                                      monkeypatch, capsys):
-    b = tmp_path / "b"
-    bundles.create(trusted, Config(), b, "toucan:pr-1", [], expires="1d",
-                   vectors=False)
-
-    def stuck(paths, bundle):
-        raise OSError("busy")
-
-    monkeypatch.setattr(bundles, "delete", stuck)
-    monkeypatch.setattr(bundles, "_SWEEP_WARNED", set())
-    later = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
-    bundles.sweep(trusted, now=later)
-    bundles.sweep(trusted, now=later)
-    assert capsys.readouterr().err.count("not deleted") == 1
 
 
 def test_item_links_resolve_context_projects(trusted, tmp_path, monkeypatch):
@@ -688,12 +512,17 @@ def test_lsp_json_commands_become_bare_names_in_the_bundle(trusted, tmp_path):
     reduced to its bare name (found on PATH there); bare ones are unchanged."""
     import json as _json
 
-    (trusted.config_dir / "lsp.json").write_text(_json.dumps({
-        "gopls": {"command": "/opt/homebrew/bin/gopls", "args": ["serve"]},
-        "ty": {"command": "ty", "args": ["server"]},
-    }))
-    out = bundles.create(trusted, Config(), tmp_path / "b", "toucan:pr-1", [],
-                         vectors=False)
+    (trusted.config_dir / "lsp.json").write_text(
+        _json.dumps(
+            {
+                "gopls": {"command": "/opt/homebrew/bin/gopls", "args": ["serve"]},
+                "ty": {"command": "ty", "args": ["server"]},
+            }
+        )
+    )
+    out = bundles.create(
+        trusted, Config(), tmp_path / "b", "toucan:pr-1", [], vectors=False
+    )
     specs = _json.loads((tmp_path / "b" / "config" / "lsp.json").read_text())
     assert specs["gopls"] == {"command": "gopls", "args": ["serve"]}
     assert specs["ty"]["command"] == "ty"

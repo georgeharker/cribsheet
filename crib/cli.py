@@ -1917,21 +1917,12 @@ def build_parser() -> argparse.ArgumentParser:
                      "the sandbox mounts it read-only")
     _bc.add_argument("--context-mount", metavar="PATH",
                      help="where --context-to appears inside the sandbox")
-    _bc.add_argument("--expires", default="7d", metavar="WHEN",
-                     help="ISO time or duration (30m/2h/7d); default 7d")
-    _bc.add_argument("--max-retention", default="30d", metavar="WHEN",
-                     help="hard cap on the bundle's life, kept on the trusted side: "
-                     "an expiry set or extended in the sandbox never passes it "
-                     "(default 30d)")
     _bc.add_argument("--no-vectors", dest="vectors", action="store_false",
                      help="skip building the bundle's store and vector file "
                      "(a sandbox then re-embeds with the model in its image)")
-    _be = bsub.add_parser("expire", help="set a bundle's expiry (also inside it)")
-    _be.add_argument("dir", type=Path, nargs="?",
-                     help="the bundle (default: the --root you're confined to)")
-    _be.add_argument("--expires", required=True, metavar="WHEN")
-    bsub.add_parser("list", help="registered bundles and their expiry")
-    _bd = bsub.add_parser("delete", help="remove a registered bundle now")
+    bsub.add_parser("list", help="registered bundles")
+    _bd = bsub.add_parser("delete", help="remove a registered bundle (its lifetime "
+                          "is the caller's: delete it when the sandbox is done)")
     _bd.add_argument("dir", type=Path)
     n_facets = sub.add_parser(
         "facets", help="the facet registry: show it, conform the store to it"
@@ -4167,8 +4158,7 @@ def _user_errors() -> tuple[type[BaseException], ...]:
 
 
 def _bundle_cmd(args: Any) -> int:
-    """`crib bundle create|expire|list|delete`: local, trusted-side admin (except
-    `expire`, which also works inside a confined bundle on its own root)."""
+    """`crib bundle create|list|delete`: local, trusted-side admin."""
     from . import bundle as bundles
     from .config import Config
     from .errors import CribUserError
@@ -4176,36 +4166,28 @@ def _bundle_cmd(args: Any) -> int:
 
     paths = Paths.resolve()
     cmd = args.bundle_cmd
-    if cmd == "expire":
-        target = args.dir or paths.root
-        if target is None:
-            raise CribUserError("crib bundle expire: name the bundle directory")
-        out: Any = bundles.expire(target, args.expires, paths)
-        human = f"{out['bundle']}: expires {out['expires']}"
-    elif paths.root is not None:
+    out: Any
+    if paths.root is not None:
         raise CribUserError(
             f"crib bundle {cmd}: run on the trusted side, not in confined mode")
     elif cmd == "create":
         cfg = Config.load(paths.ensure().config_file)
         out = bundles.create(paths, cfg, args.dir, args.overlay, args.context,
-                             args.context_to, args.context_mount, args.expires,
-                             vectors=args.vectors, max_retention=args.max_retention)
+                             args.context_to, args.context_mount,
+                             vectors=args.vectors)
         files = ", ".join(f"{p} {n}" for p, n in out["files"].items())
         human = (f"bundle {out['bundle']}\n  overlay {out['overlay']} (writable, from "
                  f"{out['base']})\n  context {', '.join(out['context']) or '-'}"
                  + (f" at {out['context_dir']}" if out["context_dir"] else "")
                  + f"\n  files: {files}\n  vectors: {out['vectors']}\n"
-                 f"  expires {out['expires']}"
-                 + (" (capped by --max-retention)" if out.get("expires_capped") else "")
-                 + "\n"
                  + "".join(f"  lsp.json {label}: {was} -> bare name (found on PATH)\n"
                            for label, was in (out.get("lsp_rewritten") or {}).items())
                  + f"  open it with: crib --root {out['bundle']} [--store SCRATCH]")
     elif cmd == "list":
         out = bundles.listing(paths)
         human = "\n".join(
-            f"{r['state']:10} {r['bundle']}  {r.get('overlay', '')}  "
-            f"expires {r.get('expires') or '-'}" for r in out) or "(no bundles)"
+            f"{r['state']:8} {r['bundle']}  {r.get('overlay', '')}  "
+            f"created {r.get('created') or '-'}" for r in out) or "(no bundles)"
     else:  # delete
         out = bundles.delete(paths, args.dir)
         human = f"deleted {out['bundle']}" + (

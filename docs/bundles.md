@@ -13,18 +13,17 @@ On the **trusted side** (the machine with your crib store):
 crib bundle create /bundles/pr-123 \
     --overlay toucan:pr-123 \            # copy `toucan` as the writable project toucan@pr-123
     --context llmkit --context mcp-combiner \   # read-only context projects
-    --context-to /ro/pr-123 --context-mount /run/ro \  # optional: a separate read-only mount
-    --expires 7d --max-retention 30d
+    --context-to /ro/pr-123 --context-mount /run/ro    # optional: a separate read-only mount
 ```
 
 This writes the bundle: the overlay's notes and symbol records, the context
 copies, a config (embedded store, only the overlay writable, daemon off, the
 same embedding model), a ready store in `index/`, the vectors as
-`data/embed-cache.parquet`, and a manifest. The bundle is **registered**; the
-trusted daemon deletes it when its expiry passes (`crib bundle list`,
-`crib bundle delete DIR` to drop it early). A session may extend the expiry,
-but never past `--max-retention`, a cap the trusted registry holds (a bundle
-whose manifest is missing or unreadable is deleted once the cap passes). Add a `[generate]` section to the
+`data/embed-cache.parquet`, and a manifest. The bundle is **registered**
+(`crib bundle list`). Its **lifetime is not crib's**: whoever runs the sandbox
+decides when the bundle is done and calls `crib bundle delete DIR`, which
+removes the directories the registry recorded (the bundle, and its context
+copy). Add a `[generate]` section to the
 bundle's `config/config.toml` if the sandbox should describe symbols (e.g. an
 openai-compatible endpoint at a key-holding proxy; crib sends a placeholder
 bearer when no key is configured).
@@ -51,7 +50,6 @@ In the **sandbox**:
 ```bash
 crib --root /bundle --store /scratch/crib project index -p toucan@pr-123 -P /checkout --budget 300
 crib --root /bundle --store /scratch/crib --mcp      # MCP over stdio for the review agent
-crib --root /bundle bundle expire --expires 14d     # keep it longer (this bundle only)
 ```
 
 `project index` runs **phased** under `--root`: the changed files' structure,
@@ -78,10 +76,9 @@ With `--root DIR` (or `$CRIB_ROOT`):
   command reduced to a bare name, found on the image's PATH; without one the
   built-in specs (all bare names) apply.
 
-The trusted side reads back only a bundle's expiry (the manifest is writable
-in the sandbox: it is read as a small regular file, never through a symlink,
-and capped by `--max-retention`), writes nothing through a symlink, and
-deletes only paths from its own registry.
+The trusted side never reads anything back from a bundle (the manifest and
+stubs are writable in the sandbox), and `bundle delete` removes only paths
+from its own registry.
 
 Inside the sandbox, the `writable` list lives in the bundle's `config/`: unless
 that is mounted read-only, a hostile agent there can edit it, so treat it as

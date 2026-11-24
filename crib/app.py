@@ -257,6 +257,13 @@ class Crib:
         # which projects this instance may write (crib/access.py; None = all)
         self.access = WriteAccess(config.writable, read_only=paths.in_context)
         self._sweep_warned: set[str] = set()  # scheduled-delete failures, reported once
+        # Scheduled deletes: each transient project's expiry, mirrored from its
+        # stub into the store (crib_expiry); the sweeper waits on MIN(at), and a
+        # stub change (the watcher, or a create here) wakes it to wait again.
+        from . import expiry as _expiry
+
+        self._expiry: Any = _expiry.table_for(store)
+        self._expiry_wake: asyncio.Event | None = None
         self.pillars: dict[str, NoteStore] = {
             spec.name: NoteStore(
                 paths, store, self.index, self.versions, self.project_paths, spec,
@@ -396,6 +403,7 @@ class Crib:
             self._in_root(self._in_repo_store_roots()),
             on_records=self._on_record_change,
             mapped=self._in_root(self._mapped_facet_roots()),
+            on_stub=self._on_stub_change,
         )
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
@@ -678,6 +686,9 @@ class Crib:
         with DIAG.track("watch catch-up sweep"):
             await self.reconcile_all()
             await self._refresh_records_at_start()
+            if self._expiry_wake is not None:  # stub changes may have been missed
+                self._sync_expiry_all()
+                self._expiry_wake.set()
 
     def _refresh_symbols(self, project: str, names: list[str] | None = None) -> None:
         self.code.refresh(project, names)
@@ -3783,6 +3794,8 @@ class Crib:
             pcfg.transient, pcfg.expires = True, until
         pcfg.save(pdir / ".cribproject")
         self.project_paths.invalidate(name)
+        if transient:  # scheduled now; the watcher would see the stub too
+            await self._on_stub_change(name)
         return {
             "project": name,
             "project_created": True,
@@ -3842,22 +3855,70 @@ class Crib:
                           file=sys.stderr)
         return deleted
 
-    async def _transient_sweeper(self, every_s: float = 300.0) -> None:
-        """The daemon's scheduled deletes: expired transient projects, and (on
-        the trusted side) expired registered bundles. In confined mode neither:
-        a bundle's lifetime belongs to the trusted side."""
-        from . import bundle as bundles
+    def _expiry_at(self, project: str) -> float | None:
+        """When `project` is due for its scheduled delete (epoch seconds), read
+        from its stub: a discardable transient with an `expires`; else None."""
+        from . import expiry
 
+        try:
+            pp = self.project_paths(project)
+        except Exception:  # noqa: BLE001 — an unreadable stub is not ours to delete
+            return None
+        if not (pp.transient and pp.expires) or not self._discardable(project):
+            return None
+        at = expiry.when(pp.expires)
+        return at.timestamp() if at is not None else None
+
+    def _sync_expiry_all(self) -> None:
+        """Rebuild the expiry table from every stub (daemon start, and the
+        watch catch-up while events aren't arriving)."""
+        rows = {n: at for n in self.projects() if (at := self._expiry_at(n)) is not None}
+        self._expiry.expiry_replace(rows)
+
+    async def _on_stub_change(self, project: str) -> None:
+        """A stub was created, rewritten or deleted: re-read its expiry and wake
+        the sweeper to wait on the (possibly new) soonest one."""
+        self.project_paths.invalidate(project)
+        self._expiry.expiry_set(project, self._expiry_at(project))
+        if self._expiry_wake is not None:
+            self._expiry_wake.set()
+
+    async def _transient_sweeper(self, retry_s: float = 3600.0) -> None:
+        """The daemon's scheduled deletes of expired transient projects: wait
+        until MIN(due_at) (none: until woken), delete what is due, repeat.
+        A stub change wakes the wait. Each due project's stub is re-read first,
+        so an extension made anywhere is honoured; a failed delete is retried
+        after `retry_s`. Not in confined mode (a bundle's lifetime is the
+        caller's, and its overlay is discarded with it)."""
         if self.paths.root is not None:
             return
+        self._expiry_wake = wake = asyncio.Event()
+        self._sync_expiry_all()
         while True:
-            await self.delete_expired_transients()
+            wake.clear()  # before reading the table: a change after this wakes us
+            now = time.time()
+            for name in self._expiry.expiry_due(now):
+                at = self._expiry_at(name)
+                if at is None or at > now:  # extended, or no longer transient
+                    self._expiry.expiry_set(name, at)
+                    continue
+                try:
+                    await self.project_delete(project=name, force=True)
+                    self._expiry.expiry_set(name, None)
+                except Exception as e:  # noqa: BLE001 — one project never stops the sweep
+                    self._expiry.expiry_set(name, now + retry_s)
+                    if name not in self._sweep_warned:  # once per project
+                        self._sweep_warned.add(name)
+                        print(f"[crib] transient {name!r} not deleted yet: {e}",
+                              file=sys.stderr)
+            nxt = self._expiry.expiry_next()
+            timeout = None if nxt is None else max(0.0, nxt[1] - time.time())
+            if timeout == 0.0 and not wake.is_set():
+                continue  # something came due while we deleted
             try:
-                for gone in await asyncio.to_thread(bundles.sweep, self.paths):
-                    print(f"[crib] expired bundle deleted: {gone}", file=sys.stderr)
-            except Exception as e:  # noqa: BLE001 — a sweep never kills the daemon
-                print(f"[crib] bundle sweep failed: {e}", file=sys.stderr)
-            await asyncio.sleep(every_s)
+                await asyncio.wait_for(wake.wait(), timeout)
+            except TimeoutError:
+                pass
 
     def _pillar_note_count(self, pp: ProjectPaths) -> int:
         """*.md count across every pillar of a project (delete/rename reports)."""

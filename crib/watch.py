@@ -85,6 +85,21 @@ RECORD_TIERS = {
 }
 
 
+STUB_NAME = ".cribproject"
+
+
+def decode_stub(projects_dir: Path, raw_path: str) -> str | None:
+    """The project whose stub (`<projects>/<p>/.cribproject`) this path is."""
+    p = Path(raw_path)
+    if p.name != STUB_NAME:
+        return None
+    try:
+        rel = p.resolve().relative_to(projects_dir.resolve())
+    except ValueError:
+        return None
+    return rel.parts[0] if len(rel.parts) == 2 else None
+
+
 def decode_record(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:
     """Map a filesystem path to (project, facet, name) for a record file under
     `<project>/<tier>/` at its tier's depth (see RECORD_TIERS); `name` is the
@@ -338,10 +353,14 @@ class Watcher(_FSWatcher):
         stores: dict[str, Path] | None = None,
         on_records: Callable[[str, str, list[str] | None], Awaitable[None]] | None = None,
         mapped: dict[tuple[str, str], Path] | None = None,
+        on_stub: Callable[[str], Awaitable[None]] | None = None,
     ) -> None:
         super().__init__(loop)
         self.projects_dir = projects_dir
         self._on_change = on_change
+        # A project's stub changed (created, rewritten, deleted): `on_stub(p)`
+        # (the scheduled deletes re-read its expiry).
+        self._on_stub = on_stub
         self.stores = dict(stores or {})
         # Mapped facets' roots: (project, store) -> the facet's own directory.
         self.mapped = dict(mapped or {})
@@ -409,6 +428,10 @@ class Watcher(_FSWatcher):
                 *(str(d) for d in self.mapped.values())]
 
     def _decode(self, raw_path: str, deleted: bool) -> tuple[str, ...] | None:
+        if self._on_stub is not None and (
+            proj := decode_stub(self.projects_dir, raw_path)
+        ) is not None:
+            return ("\x00stub", proj)
         # index_file drops chunks once it sees the path is gone, so deletes flow too
         key = decode(self.projects_dir, raw_path)
         if key is not None:
@@ -548,6 +571,14 @@ class Watcher(_FSWatcher):
         super().stop()
 
     async def _dispatch(self, *key: Any) -> None:
+        if key[0] == "\x00stub":
+            try:
+                assert self._on_stub is not None
+                await self._on_stub(key[1])
+            except Exception as e:  # noqa: BLE001 — one stub never kills the watcher
+                print(f"[crib] watch stub change failed ({key[1]}): {e}",
+                      file=sys.stderr)
+            return
         # key = (project, store, relpath) from _decode — destructured because the
         # base contract is varargs (each watcher's decode tuple has its own shape).
         project, store, relpath = key

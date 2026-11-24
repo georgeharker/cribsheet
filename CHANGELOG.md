@@ -9,6 +9,23 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [Unreleased]
+
+### Changed
+
+- **A bundle's lifetime is the caller's, not crib's.** `bundle create`'s
+  `--expires` / `--max-retention`, `crib bundle expire` and the daemon's
+  bundle sweep are gone; whoever runs the sandbox calls `crib bundle delete
+  DIR` when it is done. The trusted side now reads nothing back from a bundle.
+  `bundle list` reports `present` / `missing`.
+- **Scheduled deletes of transient projects wait, not poll.** Each transient
+  project's expiry is mirrored from its stub into the store (a `crib_expiry`
+  table, rebuilt from the stubs at daemon start); the daemon waits until the
+  soonest one (`MIN`), and the file watcher, which now reports `.cribproject`
+  changes, wakes it to re-read that stub and wait again. No 5-minute rescan.
+  A due project's stub is re-read before it is deleted, so an extension is
+  honoured; a failed delete is retried an hour later.
+
 ## [0.28.0-dev3] - 2026-11-23
 
 ### Fixed
