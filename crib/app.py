@@ -256,6 +256,16 @@ class Crib:
         # (`crib facets sync`) is PENDING: no store, not indexed or watched; its
         # verbs refuse with the reason.
         self.pending_facets: dict[str, str] = store.facet_pending()
+        if self.pending_facets and paths.root is not None:
+            # Confined mode: the store is a disposable cache rebuilt from the
+            # root, and the facets come from the root's (trusted) config, so
+            # conform it here rather than leave a bundle's routines/agents
+            # unlisted until someone runs `facets sync`. Never drops a facet.
+            try:
+                store.facet_sync(drop=False)
+                self.pending_facets = store.facet_pending()
+            except Exception as e:  # noqa: BLE001 — stays pending, verbs say why
+                print(f"[crib] confined: facet sync skipped: {e}", file=sys.stderr)
         # which projects this instance may write (crib/access.py; None = all)
         self.access = WriteAccess(config.writable, read_only=paths.in_context)
         self._sweep_warned: set[str] = set()  # scheduled-delete failures, reported once

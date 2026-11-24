@@ -256,3 +256,26 @@ def test_a_subcommands_own_store_option_is_not_the_global_one(tmp_path, monkeypa
     args = cli.build_parser().parse_args(["project", "create", "demo", "--store", ".s"])
     assert args.g_store is None and args.store == ".s"
     assert cli._env_flags_unapplied(args) is None
+
+
+def test_a_confined_store_conforms_its_facets_at_open(root, monkeypatch):
+    """A bundle's store is a disposable cache: declared facets pending in it
+    are conformed when a --root crib opens it (never dropping one), so a
+    bundle's routines/agents list without a manual `facets sync`."""
+    from crib.app import Crib
+    from crib.config import Config
+    from crib.paths import Paths
+    from crib.store import InMemoryStore
+
+    synced: list[bool] = []
+
+    class Pending(InMemoryStore):
+        def facet_pending(self):
+            return {} if synced else {"routine": "its table is created"}
+
+        def facet_sync(self, drop=False, shared=False):
+            synced.append(drop)
+            return []
+
+    crib = Crib(Paths.resolve().ensure(), Config(), Pending())
+    assert synced == [False] and crib.pending_facets == {}

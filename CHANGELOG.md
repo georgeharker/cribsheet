@@ -13,6 +13,9 @@ version has no heading here.
 
 ### Added
 
+- Confined mode (`--root`) conforms the store to the declared facets when it
+  opens (the store is a disposable cache; nothing is dropped), so a bundle's
+  routines and agents list without a manual `crib facets sync`.
 - `crib status` shows the next scheduled delete of a transient project
   (`next del  <project> in 9m58s (<time>; N more scheduled)`, or `none
   scheduled`) instead of listing the resident sweeper as a running job.
