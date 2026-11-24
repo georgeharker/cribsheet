@@ -13,6 +13,7 @@ One process-wide `DIAG`:
 from __future__ import annotations
 
 import contextlib
+import contextvars
 import itertools
 import sys
 import threading
@@ -20,6 +21,14 @@ import time
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, TextIO
+
+# The background job this code runs under (`status`'s "running" row), so a
+# backlog can report progress from deep inside without passing a token down;
+# set by `Diag.bind` (the daemon's spawned tasks), inherited across await,
+# gather and to_thread. And what a generation call is FOR (`Diag.what`), so
+# its own row says which project and file.
+_JOB: contextvars.ContextVar[int | None] = contextvars.ContextVar("crib_job", default=None)
+_WHAT: contextvars.ContextVar[str] = contextvars.ContextVar("crib_what", default="")
 
 _T0 = time.monotonic()
 
@@ -57,6 +66,24 @@ class Diagnostics:
         with self._lock:
             if token in self._jobs:
                 self._jobs[token]["detail"] = detail
+
+    def bind(self, token: int) -> None:
+        """Make `token` the current job of this context (see _JOB)."""
+        _JOB.set(token)
+
+    def progress(self, detail: str) -> None:
+        """Set the current job's detail (`status` shows it); a no-op outside
+        a job (an explicit verb in the CLI, say)."""
+        if (token := _JOB.get()) is not None:
+            self.update(token, detail)
+
+    def what(self, detail: str) -> None:
+        """Label the generation calls made from here on, in this context
+        (a task, or a thread started from it)."""
+        _WHAT.set(detail)
+
+    def current_what(self) -> str:
+        return _WHAT.get()
 
     def done(self, token: int) -> None:
         with self._lock:

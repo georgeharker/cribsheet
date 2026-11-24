@@ -166,3 +166,63 @@ def test_plain_status_prints_the_background_work(capsys):
     assert "queued     describe files 3" in out and "describe symbols" not in out
     assert "watching   delayed (41.2s)" in out
     assert "generate   explicit: descriptions waiting in un-bien 120" in out
+
+
+# ── what a background job is doing (status's "running" detail) ───────────────
+
+
+def test_a_spawned_task_reports_its_progress_on_its_own_row(tmp_path, monkeypatch):
+    """`Crib._spawn_bg` binds the job to the task's context: DIAG.progress from
+    anywhere inside it (awaits, gathered tasks, to_thread) sets that row's
+    detail; outside a job it's a no-op."""
+    import asyncio
+
+    from crib.app import Crib
+    from crib.config import Config
+    from crib.diag import DIAG
+    from crib.paths import Paths
+    from crib.store import InMemoryStore
+
+    for v in ("CRIB_CONFIG_DIR", "CRIB_DATA_DIR", "CRIB_INDEX_DIR"):
+        monkeypatch.setenv(v, str(tmp_path / v))
+    crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    seen: list[str] = []
+
+    async def body() -> None:
+        async def inner() -> None:
+            DIAG.progress("p: 3/10 notes")
+
+        await asyncio.gather(inner())
+        await asyncio.to_thread(lambda: None)
+        seen.extend(j.get("detail", "") for j in DIAG.snapshot()["background"]
+                    if j["job"] == "probe job")
+
+    async def main() -> None:
+        DIAG.progress("ignored")  # not in a job: no-op
+        crib._spawn_bg(asyncio.get_running_loop(), body(), "probe job")
+        await asyncio.sleep(0.05)
+
+    asyncio.run(main())
+    assert seen == ["p: 3/10 notes"]
+
+
+def test_a_generation_call_says_what_it_is_for(monkeypatch):
+    """A generation call's row carries the label set where it was made
+    (DIAG.what), read in the caller: the pool thread has its own context."""
+    from crib import generate
+    from crib.config import GenerateConfig
+    from crib.diag import DIAG
+
+    rows: list[dict] = []
+
+    def fn() -> str:
+        rows.extend(j for j in DIAG.snapshot()["background"]
+                    if j["job"] == "generation (probe)")
+        return "ok"
+
+    DIAG.what("cribsheet: crib/app.py")
+    try:
+        assert generate._bounded(GenerateConfig(), "probe", fn) == "ok"
+    finally:
+        DIAG.what("")
+    assert rows and rows[0].get("detail") == "cribsheet: crib/app.py"

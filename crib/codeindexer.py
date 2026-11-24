@@ -551,7 +551,10 @@ class CodeIndexer:
         body moved again since it was queued (a newer edit already re-queued it)."""
         from .codeindex import SymbolIndex, describe_symbols, match_meta
 
+        from .diag import DIAG
+
         syms = list(pending.values())
+        DIAG.what(f"{proj}: {rel}")  # the generation call's status row says so
         descs = await asyncio.to_thread(describe_symbols, self.config.generate, syms)
         if not descs:
             return {"described": 0, "file": rel}

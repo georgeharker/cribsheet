@@ -177,8 +177,10 @@ def _bounded(cfg: GenerateConfig, purpose: str, fn: Any, *args: Any, **kw: Any) 
 
     from .diag import DIAG
 
+    what = DIAG.current_what()  # read here: the pool thread has its own context
+
     def run() -> Any:
-        token = DIAG.job(f"generation ({purpose})")
+        token = DIAG.job(f"generation ({purpose})", what)
         try:
             return fn(*args, **kw)
         finally:

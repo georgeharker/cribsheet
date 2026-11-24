@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import contextvars
 import functools
 import dataclasses
 import datetime
@@ -35,6 +36,7 @@ from .chunk import (
 )
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
+from .diag import DIAG
 from .codequery import CodeQuery
 from .codestore import CodeStore, StoreCode
 from .codestore import format_sweep
@@ -633,7 +635,9 @@ class Crib:
         from .diag import DIAG
 
         token = DIAG.job(name)
-        t = loop.create_task(coro)
+        ctx = contextvars.copy_context()
+        ctx.run(DIAG.bind, token)  # the task reports progress on its own row
+        t = loop.create_task(coro, context=ctx)
         self._bg_tasks.add(t)
         t.add_done_callback(self._bg_tasks.discard)
         t.add_done_callback(lambda _t: DIAG.done(token))
@@ -838,6 +842,9 @@ class Crib:
                         break
                     attempted += 1
                     rel = target.split(":", 1)[1]
+                    DIAG.progress(f"{name}: {rel} ({attempted} of at most {budget} "
+                                  f"files; {pending} waiting)")
+                    DIAG.what(f"{name}: {rel}")
                     try:  # inline: describe now, no queue — per-file boundary
                         await asyncio.to_thread(
                             self._index_code_file_tracked, root, rel, name, True
@@ -883,6 +890,7 @@ class Crib:
                 continue  # read-only here: its enrichment tiers aren't ours to write
             if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
                 continue
+            DIAG.progress(name)
             try:
                 # one combined pass, all facets; background: the ledger may skip
                 await self.enrich(project=name, background=True)
@@ -6320,6 +6328,7 @@ class Crib:
         done: dict[str, set[str]] = {f["label"]: set() for f in facets}  # label → shs
         tag = f"{purpose} {'+'.join(f['label'] for f in facets)}"
         mode = "bulk+mop-up" if gen.bulk else "per-section"
+        DIAG.progress(f"{proj}: {total} sections to generate ({purpose})")
         print(
             f"[{tag}] {total} sections to generate ({mode}; skipped {skipped} "
             f"cached; concurrency {gen.concurrency}, timeout {gen.timeout:g}s)",
@@ -6441,6 +6450,7 @@ class Crib:
 
             async def _bulk(batch: list[tuple]) -> None:
                 rp = batch[0][1]
+                DIAG.what(f"{proj}: {rp}")  # this task's generation call
                 by_head = {t[2]: t for t in batch}
                 user = "\n\n".join(f"<<< SECTION: {t[2]} >>>\n{t[3]}" for t in batch)
                 try:
@@ -6480,6 +6490,8 @@ class Crib:
                         if terms:
                             _record(facet, tgt[0], tgt[1], tgt[2], terms)
                 counters["bulk_docs"] += 1
+                DIAG.progress(f"{proj}: {counters['bulk_docs']}/{len(batches)} notes "
+                              f"({purpose})")
                 got = sum(
                     1 for t in batch if all(t[0] in done[f["label"]] for f in t[4])
                 )

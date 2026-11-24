@@ -13,6 +13,10 @@ version has no heading here.
 
 ### Added
 
+- `crib status` says what the background work is doing: the describe
+  backlog names the project and file it is on (and how many wait), the
+  keyword/summary catch-up the project and how many notes of how many, and
+  each `generation (...)` row the project and file or note it is for.
 - `crib project delete` with a daemon running hands the delete to the daemon
   (after you confirm in the terminal, the CLI answers the daemon's own
   confirmation), so the project leaves its warm state too: watchers, caches,
