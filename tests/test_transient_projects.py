@@ -294,3 +294,29 @@ def test_a_rename_moves_the_schedule(crib):
     run(crib.project_rename(project="a", to="b"))
     nxt = crib._expiry.expiry_next()
     assert nxt is not None and nxt[0] == "b"
+
+
+def test_status_shows_the_next_delete_not_a_running_job(crib):
+    """The sweeper is resident: status lists no "running" row for it, but its
+    soonest scheduled delete (and how many are scheduled)."""
+    run(crib.project_create(project="a", transient=True, expires="2h"))
+    run(crib.project_create(project="b", transient=True, expires="1d"))
+    crib._expiry_wake = asyncio.Event()  # as when the sweeper runs
+    crib._sync_expiry_all()
+    nd = crib.status()["next_delete"]
+    assert nd["project"] == "a" and nd["scheduled"] == 2
+    assert 2 * 3600 - 60 < nd["in_s"] <= 2 * 3600
+    crib._expiry.expiry_replace({})
+    assert crib.status()["next_delete"] == {"scheduled": 0}
+
+
+def test_the_sweeper_is_not_listed_as_running(crib):
+    from crib.diag import DIAG
+
+    async def main() -> list[str]:
+        crib._spawn_bg(asyncio.get_running_loop(), asyncio.sleep(0.05),
+                       "transient expiry", listed=False)
+        await asyncio.sleep(0)
+        return [j["job"] for j in DIAG.snapshot()["background"]]
+
+    assert "transient expiry" not in run(main())

@@ -13,6 +13,9 @@ version has no heading here.
 
 ### Added
 
+- `crib status` shows the next scheduled delete of a transient project
+  (`next del  <project> in 9m58s (<time>; N more scheduled)`, or `none
+  scheduled`) instead of listing the resident sweeper as a running job.
 - `crib status` says what the background work is doing: the describe
   backlog names the project and file it is on (and how many wait), the
   keyword/summary catch-up the project and how many notes of how many, and

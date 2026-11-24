@@ -2195,6 +2195,15 @@ def _emit_daemon(d: dict[str, Any]) -> None:
         detail = "  " + _st.paint("meta", j["detail"]) if j.get("detail") else ""
         print(f"{_lab('running')} {j['job']} "
               + _st.paint("meta", f"for {_secs(j.get('running_s', 0))}") + detail)
+    if (nd := d.get("next_delete")) is not None:
+        if nd.get("project"):
+            more = nd.get("scheduled", 1) - 1
+            print(f"{_lab('next del')} {_st.paint('name', nd['project'])} in "
+                  f"{_secs(nd.get('in_s', 0))} "
+                  + _st.paint("meta", f"({nd.get('at')}"
+                              + (f"; {more} more scheduled" if more else "") + ")"))
+        else:
+            print(f"{_lab('next del')} " + _st.paint("meta", "none scheduled"))
     queued = {k: v for k, v in (dm.get("queues") or {}).items() if v}
     if queued:
         print(f"{_lab('queued')} " + ", ".join(

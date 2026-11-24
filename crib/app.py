@@ -444,7 +444,8 @@ class Crib:
         # the watcher only sees edits from now on, and reads refresh lazily.
         self._spawn_bg(loop, self._refresh_records_at_start(), "symbol refresh (startup)")
         self._spawn_bg(loop, self._keyword_backlog(), "keyword backlog")
-        self._spawn_bg(loop, self._transient_sweeper(), "transient expiry")
+        # resident: status shows its next scheduled delete instead (next_delete)
+        self._spawn_bg(loop, self._transient_sweeper(), "transient expiry", listed=False)
         # Is the platform delivering file events? (fseventsd can saturate and
         # delay them for minutes.) While it isn't, a catch-up sweep stands in.
         d = self.config.daemon
@@ -627,20 +628,25 @@ class Crib:
         return True
 
     def _spawn_bg(
-        self, loop: asyncio.AbstractEventLoop, coro: Any, name: str = "background"
+        self, loop: asyncio.AbstractEventLoop, coro: Any, name: str = "background",
+        listed: bool = True,
     ) -> None:
         """Fire-and-forget on the daemon loop, with a strong reference held until done
         (asyncio keeps only weak refs — an unreferenced task can be GC'd mid-flight).
-        `name` is how `status` lists it while it runs (crib.diag)."""
+        `name` is how `status` lists it while it runs (crib.diag); a resident
+        loop that runs for the daemon's whole life (`listed=False`) isn't
+        "running" anything, and reports itself its own way."""
         from .diag import DIAG
 
-        token = DIAG.job(name)
         ctx = contextvars.copy_context()
-        ctx.run(DIAG.bind, token)  # the task reports progress on its own row
+        token = DIAG.job(name) if listed else None
+        if token is not None:
+            ctx.run(DIAG.bind, token)  # the task reports progress on its own row
         t = loop.create_task(coro, context=ctx)
         self._bg_tasks.add(t)
         t.add_done_callback(self._bg_tasks.discard)
-        t.add_done_callback(lambda _t: DIAG.done(token))
+        if token is not None:
+            t.add_done_callback(lambda _t: DIAG.done(token))
 
     async def _on_fs_change(self, project: str, store: str, relpath: str) -> None:
         if (spec := facets.by_store(store)) is not None and spec.noun in self.pending_facets:
@@ -3849,6 +3855,22 @@ class Crib:
         at = expiry.when(pp.expires)
         return at.timestamp() if at is not None else None
 
+    def _next_delete(self) -> dict[str, Any]:
+        """The sweeper's queue for `status`: the soonest scheduled delete
+        (project, when, in how long), and how many are scheduled; empty when
+        none is."""
+        nxt = self._expiry.expiry_next()
+        if nxt is None:
+            return {"scheduled": 0}
+        project, at = nxt
+        when = datetime.datetime.fromtimestamp(at, datetime.UTC)
+        return {
+            "project": project,
+            "at": when.isoformat(timespec="seconds"),
+            "in_s": round(max(0.0, at - time.time()), 1),
+            "scheduled": len(self._expiry),
+        }
+
     def _sync_expiry_all(self) -> None:
         """Rebuild the queue from every stub (the sweeper's start, and the
         watch catch-up while events aren't arriving)."""
@@ -5391,6 +5413,8 @@ class Crib:
             except Exception as e:  # noqa: BLE001 — status must still answer
                 out["store_stats"] = {"error": str(e)}
         out["daemon"] = self._daemon_state()
+        if self._expiry_wake is not None:  # the scheduled-delete sweeper runs
+            out["next_delete"] = self._next_delete()
         out["generation"] = self._generation_state(projects)
         hits = getattr(self.embedder, "hits", None)
         if hits is not None:

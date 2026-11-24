@@ -55,6 +55,9 @@ class ExpiryTable:
     def __init__(self) -> None:
         self._at: dict[str, float] = {}
 
+    def __len__(self) -> int:
+        return len(self._at)
+
     def expiry_set(self, project: str, at: float | None) -> None:
         if at is None:
             self._at.pop(project, None)

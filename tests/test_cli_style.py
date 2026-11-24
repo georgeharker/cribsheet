@@ -338,6 +338,8 @@ _SYM = {
                                                       "last_latency_s": 3}}},
                     "generation": {"mode": "on",
                                    "pending_descriptions": {"p": 7}},
+                    "next_delete": {"project": "t", "at": "2026-01-01T00:00:00+00:00",
+                                    "in_s": 125, "scheduled": 2},
                     "projects": [
                         {
                             "project": "p",
