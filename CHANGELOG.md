@@ -11,6 +11,11 @@ version has no heading here.
 
 ## [Unreleased]
 
+### Dependencies
+
+- fastmcp >= 4.2.6 (the MCP skills extension, SEP-2640, for moving guidance
+  into skills later). No code changes were needed.
+
 ### Added
 
 - `crib bundle seed DIR NAME`: a new, real project seeded from a bundle's

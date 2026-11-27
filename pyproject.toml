@@ -36,7 +36,7 @@ dependencies = [
 # shared venv. `SessionState` is keyed on the per-client mcp `Connection` — in mcp
 # 2 the ServerSession is constructed per-request, so it can no longer hold
 # per-CHAT state (crib/session.py).
-    "fastmcp>=4.1.5,<5",
+    "fastmcp>=4.2.6,<5",
     "watchdog>=4.0",
     # [all] pulls every LLM backend (openai/claude/anthropic/google): the daemon
     # resolves its generation adapter at runtime from config (default: claude_code),
